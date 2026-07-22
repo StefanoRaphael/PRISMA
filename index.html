@@ -601,6 +601,7 @@ a{color:inherit}
     <h2 class="h-lg">Onde você quer<br>ser visto</h2>
     <p class="p" style="margin:10px 0 8px">Escolha uma para começar. Você volta e gera outras quando precisar.</p>
     <div class="spec-line" style="width:44px;margin-bottom:20px"></div>
+    <div class="msg err" id="oc-err"></div>
     <div class="oc-grid" id="oc-grid"></div>
     <div class="spacer"></div>
     <button class="btn" id="btn-oc" onclick="go('direction')" disabled>Continuar</button>
@@ -1243,18 +1244,26 @@ function planLevel(){
 }
 
 function renderOccasions(){
-  const lvl = planLevel();
-  document.getElementById('oc-grid').innerHTML = OCCASIONS.map(o => {
-    const locked = !o.free && lvl < 2;
-    return `
-      <button class="oc ${S.occasion === o.id ? 'on' : ''} ${locked ? 'locked' : ''}"
-              onclick="${locked ? "go('plans')" : `pickOccasion('${o.id}')`}">
-        <div class="bg" style="background-image:url('${demoImg(o.id)}');background-size:cover;background-position:center"></div><div class="scrim"></div>
-        <div class="tickbox">${locked ? '' : '✓'}</div>
-        <div class="lab">${o.nome}</div>
-      </button>`;
-  }).join('');
-  document.getElementById('btn-oc').disabled = !S.occasion;
+  try {
+    const lvl = planLevel();
+    const gridEl = document.getElementById('oc-grid');
+    if (!gridEl) return console.error('oc-grid not found');
+
+    gridEl.innerHTML = OCCASIONS.map(o => {
+      const locked = !o.free && lvl < 2;
+      return `
+        <button class="oc ${S.occasion === o.id ? 'on' : ''} ${locked ? 'locked' : ''}"
+                onclick="${locked ? "go('plans')" : `pickOccasion('${o.id}')`}">
+          <div class="bg" style="background-image:url('${demoImg(o.id)}');background-size:cover;background-position:center"></div><div class="scrim"></div>
+          <div class="tickbox">${locked ? '' : '✓'}</div>
+          <div class="lab">${o.nome}</div>
+        </button>`;
+    }).join('');
+    document.getElementById('btn-oc').disabled = !S.occasion;
+  } catch(e) {
+    console.error('[renderOccasions]', e);
+    showMsg('oc-err', 'Erro ao carregar ocasiões. Tente novamente.');
+  }
 }
 
 function pickOccasion(id){
