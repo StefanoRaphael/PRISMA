@@ -1266,16 +1266,27 @@ function renderThumbs(){
 
 function removeRef(i){ S.refs.splice(i,1); renderThumbs(); }
 
+/**
+ * Salva no banco as referências que ainda não subiram.
+ *
+ * O cliente do Supabase NÃO lança erro: ele devolve { error }. A versão
+ * anterior confiava num try/catch e marcava a foto como salva mesmo quando a
+ * inserção falhava, então o app achava que tinha doze fotos guardadas e o
+ * servidor não encontrava nenhuma.
+ *
+ * @returns {Promise<number>} quantas referências estão salvas de verdade
+ */
 async function uploadPending(){
   for (const r of S.refs){
     if (r.saved || r.saving) continue;
     r.saving = true;
-    try {
-      await sb.from('referencias').insert({ user_id:S.user.id, url:r.url });
-      r.saved = true;
-    } catch { /* segue, tenta de novo depois */ }
+    const { error } = await sb.from('referencias')
+      .insert({ user_id:S.user.id, url:r.url });
+    if (error) console.error('[uploadPending]', error);
+    else r.saved = true;
     r.saving = false;
   }
+  return S.refs.filter(r => r.saved).length;
 }
 
 /* =========================================================================
@@ -1390,13 +1401,26 @@ async function startGeneration(){
   document.getElementById('btn-gen-done').style.display = 'none';
 
   try {
+    // O servidor lê as referências do banco, então elas precisam estar lá
+    // antes de gerar. Se alguma não subiu, é aqui que dá para avisar.
+    if (sb && S.user){
+      const salvas = await uploadPending();
+      if (salvas < 8){
+        go('upload');
+        showMsg('up-err', `Só ${salvas} das suas fotos foram salvas. Tente enviar de novo.`);
+        return;
+      }
+    }
+
     const r = await fetch('/api/generate', {
       method:'POST',
       headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + (await token()) },
+      // Sem as fotos: o servidor lê as referências já salvas, pelo token.
+      // Mandá-las aqui somava uns 6 MB e a Vercel devolvia 413.
       body: JSON.stringify({
         prompt: S.prompt,
         ocasiao: S.occasion,
-        referencias: S.refs.map(x => x.url).slice(0,12)
+        direcao: S.direction
       })
     });
     const d = await r.json();

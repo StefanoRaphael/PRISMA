@@ -18,13 +18,29 @@ export default async function handler(req, res) {
   const usuario = await usuarioDaRequisicao(req);
   if (!usuario) return res.status(401).json({ erro: 'Faça login de novo.' });
 
-  const { prompt, ocasiao, direcao, referencias } = req.body || {};
+  const { prompt, ocasiao, direcao } = req.body || {};
   if (!prompt || !ocasiao) return res.status(400).json({ erro: 'Pedido incompleto.' });
-  if (!Array.isArray(referencias) || referencias.length < 8) {
-    return res.status(400).json({ erro: 'Envie no mínimo 8 fotos de referência.' });
-  }
 
   const sb = admin();
+
+  // As referências vêm do banco, não do corpo da requisição.
+  //
+  // Mandá-las pelo corpo estourava o limite de 4,5 MB da Vercel: doze fotos
+  // viram data URLs base64 e somam uns 6 MB, então toda geração morria em 413.
+  // Aqui elas já estão salvas, e ler pelo id do token também impede que
+  // alguém gere retratos com o rosto de outra pessoa.
+  const { data: refs, error: erroRefs } = await sb
+    .from('referencias').select('url').eq('user_id', usuario.id).limit(12);
+
+  if (erroRefs) {
+    console.error('[generate] referencias', erroRefs);
+    return res.status(500).json({ erro: 'Não consegui ler suas fotos de referência.' });
+  }
+
+  const referencias = (refs || []).map(r => r.url).filter(Boolean);
+  if (referencias.length < 8) {
+    return res.status(400).json({ erro: 'Envie no mínimo 8 fotos de referência.' });
+  }
 
   // --- crédito e validade -------------------------------------------------
   const { data: perfil } = await sb
