@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050D18">
+<title>PRISMA — Você tem mais de um lado</title>
+<meta name="description" content="Retratos profissionais em todas as ocasiões da sua vida, com o seu rosto de verdade.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%25' stop-color='%23FF9160'/><stop offset='35%25' stop-color='%23FF5FA2'/><stop offset='65%25' stop-color='%23A96BFF'/><stop offset='100%25' stop-color='%236FE3C4'/></linearGradient></defs><polygon points='16,4 29,27 3,27' fill='none' stroke='url(%23g)' stroke-width='2.5' stroke-linejoin='round'/></svg>">
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+<style>
+:root{
+  --abyss:#050D18; --ink:#0A1A2F; --ink-2:#0F2540; --ink-3:#173456;
+  --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14);
+  --t-hi:#F2F6FB; --t-mid:#A9BCD2; --t-low:#63799A;
+  --sp1:#FF9160; --sp2:#FF5FA2; --sp3:#A96BFF; --sp4:#4FC9F5; --sp5:#6FE3C4;
+  --amber:#FF9160;
+  --spectrum:linear-gradient(90deg,var(--sp1),var(--sp2),var(--sp3),var(--sp4),var(--sp5));
+  --ok:#6FE3C4; --err:#FF6B6B;
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI","Helvetica Neue",sans-serif;
+  background:var(--abyss); color:var(--t-hi); font-feature-settings:"ss01","cv11";
+  overflow-x:hidden;
+}
+button{font-family:inherit;border:none;background:none;color:inherit;cursor:pointer}
+input,textarea{font-family:inherit;outline:none}
+a{color:inherit}
+
+/* ============ ESTRUTURA ============ */
+.app{min-height:100dvh;display:flex;flex-direction:column}
+.view{display:none;flex:1;flex-direction:column;animation:fade .38s ease-out}
+.view.on{display:flex}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.wrap{width:100%;max-width:460px;margin:0 auto;padding:0 22px;display:flex;flex-direction:column;flex:1}
+.wrap-wide{max-width:1080px}
+.pad-t{padding-top:calc(28px + var(--safe-t))}
+.pad-b{padding-bottom:calc(26px + var(--safe-b))}
+.spacer{flex:1;min-height:16px}
+
+/* ============ TIPOGRAFIA ============ */
+.h-xl{font-size:clamp(32px,8.4vw,42px);font-weight:600;letter-spacing:-.038em;line-height:1.05}
+.h-lg{font-size:27px;font-weight:600;letter-spacing:-.032em;line-height:1.12}
+.h-md{font-size:20px;font-weight:590;letter-spacing:-.024em;line-height:1.24}
+.ask{font-size:22px;font-weight:590;letter-spacing:-.028em;line-height:1.26}
+.p{font-size:14.5px;line-height:1.55;color:var(--t-mid);letter-spacing:-.008em}
+.p-sm{font-size:12.5px;line-height:1.5;color:var(--t-low)}
+.kicker{font-size:10.5px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--amber)}
+.wordmark{font-size:12px;font-weight:640;letter-spacing:.42em;
+  background:linear-gradient(90deg,#FFF 0%,#FFF 20%,var(--sp1) 40%,var(--sp3) 72%,var(--sp5) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.hl{background:var(--spectrum);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:640}
+.tabnum{font-variant-numeric:tabular-nums}
+
+/* ============ BOTÕES ============ */
+.btn{border-radius:100px;padding:16px 22px;width:100%;font-size:15px;font-weight:590;letter-spacing:-.015em;
+  background:var(--spectrum);color:#0B0714;box-shadow:0 10px 30px -12px rgba(169,107,255,.7);
+  transition:transform .16s ease,opacity .16s ease}
+.btn:active{transform:scale(.985)}
+.btn[disabled]{opacity:.4;box-shadow:none;pointer-events:none}
+.btn-ghost{background:rgba(255,255,255,.07);color:var(--t-hi);border:1px solid var(--line-2);box-shadow:none}
+.btn-amber{background:var(--amber);color:#1A0A02;box-shadow:0 10px 30px -12px rgba(255,145,96,.7)}
+.btn-sm{padding:12px 18px;font-size:13.5px;width:auto}
+.btn-row{display:flex;flex-direction:column;gap:10px}
+.link{font-size:13px;color:var(--t-low);text-align:center;padding:6px}
+.link b{color:var(--sp3);font-weight:590}
+
+/* ============ CAMPOS ============ */
+.field{margin-bottom:13px}
+.field label{display:block;font-size:10.5px;font-weight:590;letter-spacing:.09em;text-transform:uppercase;color:var(--t-low);margin-bottom:8px}
+.input,.textarea{
+  width:100%;border:1px solid var(--line-2);background:rgba(255,255,255,.04);border-radius:13px;
+  padding:15px 16px;font-size:15px;color:var(--t-hi);letter-spacing:-.01em;line-height:1.5;
+  transition:box-shadow .2s ease;
+}
+.input::placeholder,.textarea::placeholder{color:var(--t-low)}
+.input:focus,.textarea:focus{
+  border-color:transparent;
+  background:linear-gradient(var(--ink),var(--ink)) padding-box,var(--spectrum) border-box;
+  border:1px solid transparent;box-shadow:0 0 0 4px rgba(169,107,255,.13);
+}
+.textarea{min-height:200px;resize:vertical}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--t-low);font-size:12px}
+.divider::before,.divider::after{content:"";height:1px;flex:1;background:var(--line)}
+.spec-line{height:1.5px;border-radius:2px;background:var(--spectrum)}
+
+/* ============ MENSAGENS ============ */
+.msg{border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.45;margin-bottom:13px;display:none}
+.msg.on{display:block}
+.msg.err{background:rgba(255,107,107,.12);color:#FFB3B3;border:1px solid rgba(255,107,107,.3)}
+.msg.ok{background:rgba(111,227,196,.12);color:var(--ok);border:1px solid rgba(111,227,196,.3)}
+
+/* ============ LANDING ============ */
+.hero{position:relative;min-height:100dvh;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+.beam{position:absolute;inset:0;z-index:0}
+/* O feixe vive no terço superior, acima do título. */
+.beam .white{position:absolute;top:16%;left:-6%;width:46%;height:5px;border-radius:4px;
+  background:linear-gradient(90deg,transparent,#FFF 88%);filter:blur(1.8px);
+  box-shadow:0 0 26px 5px rgba(255,255,255,.32)}
+.beam .tri{position:absolute;top:calc(16% - 40px);left:41%;width:0;height:0;
+  border-left:34px solid transparent;border-right:34px solid transparent;
+  border-bottom:82px solid rgba(255,255,255,.16);
+  filter:drop-shadow(0 0 24px rgba(255,255,255,.3))}
+.beam .fan{position:absolute;top:-4%;right:-10%;width:76%;height:44%;
+  background:conic-gradient(from 94deg at 0% 46%,transparent 0deg,var(--sp1) 7deg,var(--sp2) 15deg,var(--sp3) 23deg,var(--sp4) 31deg,var(--sp5) 39deg,transparent 47deg);
+  filter:blur(22px);opacity:.95}
+.beam .veil{position:absolute;inset:0;
+  background:linear-gradient(to top,var(--abyss) 30%,rgba(5,13,24,.88) 44%,rgba(5,13,24,.18) 70%,rgba(5,13,24,0) 96%)}
+.hero-in{position:relative;z-index:2;padding-bottom:calc(38px + var(--safe-b))}
+.hero-meta{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:16px;font-size:11.5px;color:var(--t-low)}
+.dot{width:3px;height:3px;border-radius:50%;background:var(--t-low)}
+
+.sec{padding:72px 0}
+.sec-head{margin-bottom:26px}
+.oc-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.price-grid{display:grid;gap:12px}
+.price{border:1px solid var(--line-2);border-radius:20px;padding:22px;background:rgba(255,255,255,.03)}
+.price.best{border-color:transparent;
+  background:linear-gradient(var(--ink),var(--ink)) padding-box,var(--spectrum) border-box;border:1px solid transparent}
+.price .tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--spectrum);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:10px;display:block}
+.price .val{font-size:34px;font-weight:600;letter-spacing:-.04em;margin:6px 0 4px}
+.price .val small{font-size:14px;color:var(--t-low);font-weight:400;letter-spacing:0}
+.price ul{list-style:none;margin:16px 0 20px;display:flex;flex-direction:column;gap:9px}
+.price li{font-size:13.5px;color:var(--t-mid);padding-left:20px;position:relative;line-height:1.45}
+.price li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:var(--spectrum)}
+
+/* ============ RETRATOS / PLACEHOLDERS ============ */
+.shot{border-radius:12px;position:relative;overflow:hidden;background:var(--ink-2)}
+.shot img{width:100%;height:100%;object-fit:cover;display:block}
+.ph-exec{background:radial-gradient(85% 65% at 35% 12%,rgba(255,145,96,.5),transparent 62%),linear-gradient(155deg,#1D3E66,#0B1B2E)}
+.ph-noite{background:radial-gradient(80% 60% at 70% 18%,rgba(169,107,255,.55),transparent 62%),radial-gradient(70% 70% at 20% 85%,rgba(255,95,162,.4),transparent 60%),linear-gradient(160deg,#1A1436,#0A0E20)}
+.ph-praia{background:radial-gradient(90% 70% at 50% 10%,rgba(111,227,196,.5),transparent 64%),radial-gradient(70% 60% at 80% 85%,rgba(255,145,96,.42),transparent 60%),linear-gradient(180deg,#12405C,#08202E)}
+.ph-esporte{background:radial-gradient(85% 65% at 25% 20%,rgba(79,201,245,.5),transparent 62%),linear-gradient(150deg,#123A55,#08161F)}
+.ph-viagem{background:radial-gradient(90% 60% at 60% 15%,rgba(255,145,96,.45),transparent 60%),radial-gradient(60% 60% at 15% 80%,rgba(169,107,255,.35),transparent 62%),linear-gradient(165deg,#1E3358,#0A1526)}
+.ph-familia{background:radial-gradient(85% 70% at 45% 15%,rgba(255,145,96,.4),transparent 62%),radial-gradient(60% 60% at 85% 80%,rgba(255,95,162,.3),transparent 60%),linear-gradient(150deg,#2A3352,#0E1524)}
+.ph-editorial{background:radial-gradient(80% 60% at 65% 12%,rgba(255,95,162,.45),transparent 62%),linear-gradient(155deg,#24243F,#0A0C18)}
+.ph-campo{background:radial-gradient(85% 65% at 40% 15%,rgba(111,227,196,.42),transparent 62%),radial-gradient(60% 60% at 80% 82%,rgba(255,145,96,.3),transparent 60%),linear-gradient(160deg,#153A44,#08181C)}
+.ph-palco{background:radial-gradient(80% 60% at 50% 10%,rgba(255,95,162,.5),transparent 60%),radial-gradient(60% 60% at 20% 85%,rgba(169,107,255,.4),transparent 62%),linear-gradient(170deg,#2A1840,#0B0A1C)}
+.ph-casual{background:radial-gradient(85% 65% at 30% 15%,rgba(255,145,96,.38),transparent 62%),linear-gradient(155deg,#243B52,#0C1722)}
+.ph-inverno{background:radial-gradient(85% 60% at 55% 12%,rgba(79,201,245,.42),transparent 62%),linear-gradient(165deg,#1B3350,#080F1C)}
+.ph-gala{background:radial-gradient(80% 60% at 60% 14%,rgba(255,145,96,.4),transparent 60%),radial-gradient(60% 60% at 18% 82%,rgba(169,107,255,.42),transparent 62%),linear-gradient(158deg,#1E1A3A,#080A16)}
+
+/* ============ PROGRESSO QUIZ ============ */
+.prog{display:flex;gap:3px;margin-bottom:26px}
+.prog i{flex:1;height:2.5px;border-radius:2px;background:rgba(255,255,255,.12);transition:background .3s ease}
+.prog i.on{background:var(--spectrum)}
+.choice{width:100%;text-align:left;border:1px solid var(--line-2);border-radius:15px;padding:15px 16px;margin-bottom:10px;
+  display:flex;align-items:center;gap:13px;background:rgba(255,255,255,.025);transition:transform .14s ease}
+.choice:active{transform:scale(.99)}
+.choice.sel{border-color:transparent;
+  background:linear-gradient(var(--ink-2),var(--ink-2)) padding-box,var(--spectrum) border-box;border:1px solid transparent}
+.choice .k{width:23px;height:23px;border-radius:7px;flex:none;border:1px solid var(--line-2);
+  display:grid;place-items:center;font-size:10.5px;font-weight:640;color:var(--t-low)}
+.choice.sel .k{background:var(--spectrum);border-color:transparent;color:#0B0714}
+.choice p{font-size:14px;letter-spacing:-.012em;line-height:1.38;color:var(--t-hi)}
+
+/* ============ UPLOAD ============ */
+.counter{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--t-low);margin-bottom:11px}
+.counter b{font-size:16px;color:var(--t-hi);font-weight:600}
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:16px}
+.thumbs .cell{aspect-ratio:1;border-radius:9px;overflow:hidden;position:relative;background:var(--ink-2)}
+.thumbs .cell img{width:100%;height:100%;object-fit:cover}
+.thumbs .cell .x{position:absolute;top:3px;right:3px;width:19px;height:19px;border-radius:50%;
+  background:rgba(5,13,24,.72);backdrop-filter:blur(8px);display:grid;place-items:center;font-size:11px;color:#fff}
+.thumbs .add{aspect-ratio:1;border-radius:9px;border:1px solid var(--line-2);display:grid;place-items:center;
+  color:var(--t-low);font-size:20px;background:rgba(255,255,255,.02)}
+.drop{border:1px dashed rgba(169,107,255,.4);border-radius:19px;padding:26px 18px;text-align:center;
+  background:rgba(169,107,255,.05);margin-bottom:18px}
+.drop .ic{width:40px;height:40px;border-radius:13px;margin:0 auto 13px;background:var(--spectrum);
+  display:grid;place-items:center;color:#0B0714;font-size:18px;font-weight:700}
+.checks{display:flex;flex-direction:column;gap:10px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--t-mid);line-height:1.4}
+.check .tick{width:16px;height:16px;border-radius:50%;flex:none;margin-top:1px;background:rgba(111,227,196,.15);
+  color:var(--ok);display:grid;place-items:center;font-size:9px;font-weight:700}
+.check.no .tick{background:rgba(255,107,107,.14);color:#FF9B9B}
+
+/* ============ OCASIÕES ============ */
+.oc-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.oc{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:1/1.1;border:1px solid var(--line);
+  transition:transform .14s ease}
+.oc:active{transform:scale(.985)}
+.oc .bg{position:absolute;inset:0}
+.oc .scrim{position:absolute;inset:0;z-index:2;background:linear-gradient(to top,rgba(5,13,24,.88),transparent 58%)}
+.oc .lab{position:absolute;left:11px;bottom:11px;z-index:3;font-size:12.5px;font-weight:590;letter-spacing:-.01em}
+.oc .tickbox{position:absolute;right:9px;top:9px;z-index:3;width:21px;height:21px;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.5);background:rgba(5,13,24,.35);backdrop-filter:blur(8px);
+  display:grid;place-items:center;font-size:11px;font-weight:800;color:transparent}
+.oc.on{border-color:transparent;box-shadow:0 0 0 1.5px var(--sp3)}
+.oc.on .tickbox{background:var(--spectrum);border-color:transparent;color:#0B0714}
+.oc.locked{opacity:.45}
+.oc.locked .tickbox{border-style:dashed}
+
+/* ============ CONFIRMAÇÃO ============ */
+.reading{border:1px solid var(--line-2);border-radius:17px;padding:18px;background:rgba(255,255,255,.03);
+  font-size:14.5px;line-height:1.62;letter-spacing:-.012em}
+.reading .auto{margin-top:15px;padding-top:14px;border-top:1px solid var(--line)}
+.reading .auto b{display:block;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--t-low);margin-bottom:7px}
+.reading .auto p{font-size:12.5px;color:var(--t-low);line-height:1.5}
+.cost{display:flex;justify-content:space-between;align-items:baseline;padding:16px 2px 6px}
+.cost span{font-size:13px;color:var(--t-mid)}
+.cost b{font-size:14px;font-weight:590}
+
+/* ============ GERAÇÃO ============ */
+.gen-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.gen-grid .cell{aspect-ratio:9/16;border-radius:13px;position:relative;overflow:hidden}
+.cell.wait{background:rgba(255,255,255,.045);border:1px solid var(--line)}
+.cell.wait::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(100deg,transparent 26%,rgba(255,145,96,.16) 38%,rgba(255,95,162,.19) 46%,
+    rgba(169,107,255,.19) 54%,rgba(79,201,245,.16) 62%,transparent 74%);
+  animation:sweep 2.6s infinite}
+@keyframes sweep{0%{transform:translateX(-105%)}100%{transform:translateX(105%)}}
+.cell.done{animation:pop .5s ease-out}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.ring{width:56px;margin:0 auto 20px}
+
+/* ============ GALERIA ============ */
+.tabs{display:flex;gap:7px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:8px 14px;border-radius:100px;font-size:12px;font-weight:560;border:1px solid var(--line-2);
+  color:var(--t-mid);white-space:nowrap;flex:none}
+.tab.on{background:var(--spectrum);color:#0B0714;border-color:transparent;font-weight:640}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.grid2 .shot{aspect-ratio:9/16;cursor:pointer}
+.pill{position:absolute;bottom:8px;left:8px;z-index:3;background:rgba(5,13,24,.62);backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.14);padding:5px 10px;border-radius:100px;font-size:10px;font-weight:560}
+.empty{text-align:center;padding:60px 20px}
+.empty .ic{width:56px;height:56px;border-radius:18px;margin:0 auto 18px;border:1px solid var(--line-2);
+  display:grid;place-items:center;font-size:22px;color:var(--t-low)}
+
+/* ============ MODAL / SHEET ============ */
+.sheet-bg{position:fixed;inset:0;background:rgba(2,6,12,.72);backdrop-filter:blur(10px);z-index:80;
+  display:none;align-items:flex-end;justify-content:center}
+.sheet-bg.on{display:flex;animation:fade .24s ease-out}
+.sheet{width:100%;max-width:460px;background:var(--ink);border-radius:26px 26px 0 0;
+  border-top:1px solid var(--line-2);padding:10px 22px calc(26px + var(--safe-b));
+  max-height:92dvh;overflow-y:auto;animation:up .3s cubic-bezier(.2,.8,.25,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.grab{width:38px;height:4px;border-radius:2px;background:var(--line-2);margin:0 auto 20px}
+.dest{width:100%;display:flex;align-items:center;gap:15px;padding:14px;border-radius:15px;
+  border:1px solid var(--line-2);margin-bottom:10px;background:rgba(255,255,255,.025);text-align:left}
+.dest.on{border-color:transparent;
+  background:linear-gradient(var(--ink-2),var(--ink-2)) padding-box,var(--spectrum) border-box;border:1px solid transparent}
+.frame{flex:none;width:48px;display:grid;place-items:center}
+.frame .box{border:1.5px solid var(--t-low);border-radius:3px;overflow:hidden;position:relative}
+.dest.on .frame .box{border-color:var(--sp3)}
+.frame .box .in{position:absolute;inset:0}
+.dest .txt b{display:block;font-size:14px;font-weight:590;letter-spacing:-.014em;margin-bottom:2px}
+.dest .txt span{font-size:11.5px;color:var(--t-low)}
+.dest .rt{margin-left:auto;font-size:11px;color:var(--t-low)}
+
+/* ============ CONTA ============ */
+.card{border:1px solid var(--line-2);border-radius:19px;padding:19px;
+  background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));margin-bottom:13px}
+.card.spec{border-color:transparent;
+  background:linear-gradient(var(--ink-2),var(--ink-2)) padding-box,var(--spectrum) border-box;border:1px solid transparent}
+.meter{height:6px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden;margin:13px 0 9px}
+.meter i{display:block;height:100%;border-radius:3px;background:var(--spectrum);transition:width .6s ease}
+.meter.flat i{background:rgba(255,255,255,.28)}
+.row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border:none}
+.row span{font-size:14px;letter-spacing:-.012em}
+.row i{color:var(--t-low);font-style:normal;font-size:13.5px}
+.badge{display:inline-flex;align-items:center;padding:5px 12px;border-radius:100px;background:var(--spectrum);
+  color:#0B0714;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.badge.flat{background:rgba(255,255,255,.08);color:var(--t-mid)}
+.big{font-size:36px;font-weight:600;letter-spacing:-.04em;margin-top:9px}
+.big small{font-size:16px;color:var(--t-low);font-weight:400;letter-spacing:0}
+
+/* ============ TOPO ============ */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:calc(16px + var(--safe-t)) 0 18px}
+.back{width:36px;height:36px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;
+  font-size:16px;color:var(--t-mid);flex:none}
+
+/* ============ CARREGANDO ============ */
+.spin{width:17px;height:17px;border:2px solid rgba(11,7,20,.25);border-top-color:#0B0714;border-radius:50%;
+  animation:rot .7s linear infinite;display:inline-block;vertical-align:-3px}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+@media(min-width:768px){
+  .oc-grid{grid-template-columns:repeat(3,1fr)}
+  .grid2{grid-template-columns:repeat(3,1fr)}
+  .price-grid{grid-template-columns:1fr 1fr}
+  .wrap{max-width:520px}
+  .wrap.wide{max-width:1080px}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- ================= LANDING ================= -->
+<section class="view on" id="v-landing">
+  <div class="hero">
+    <div class="beam"><div class="white"></div><div class="tri"></div><div class="fan"></div><div class="veil"></div></div>
+    <div class="wrap hero-in">
+      <div class="wordmark" style="margin-bottom:18px">P R I S M A</div>
+      <h1 class="h-xl">Você tem mais<br>de um lado.<br>Mostre todos.</h1>
+      <p class="p" style="margin:16px 0 26px;max-width:330px">
+        Retratos profissionais em todas as ocasiões da sua vida. Com o seu rosto de verdade, não com um filtro.
+      </p>
+      <button class="btn" onclick="go('auth')">Começar</button>
+      <div class="hero-meta"><span>Pronto em 30 minutos</span><div class="dot"></div><span>Acesso por 1 ano</span></div>
+    </div>
+  </div>
+
+  <div class="wrap sec">
+    <div class="sec-head">
+      <div class="kicker" style="margin-bottom:12px">Ocasiões</div>
+      <h2 class="h-lg">Uma sessão não<br>cobre uma vida.</h2>
+      <p class="p" style="margin-top:12px">
+        Reunião, viagem, palestra, treino, jantar, praia. Cada momento pede uma imagem, e você não vai contratar
+        um fotógrafo para cada um.
+      </p>
+    </div>
+    <div class="oc-strip" id="landing-strip"></div>
+  </div>
+
+  <div class="wrap sec" style="padding-top:0">
+    <div class="sec-head">
+      <div class="kicker" style="margin-bottom:12px">Como funciona</div>
+      <h2 class="h-lg">Quatro passos.</h2>
+    </div>
+    <div id="steps"></div>
+  </div>
+
+  <div class="wrap sec" style="padding-top:0" id="planos">
+    <div class="sec-head">
+      <div class="kicker" style="margin-bottom:12px">Planos</div>
+      <h2 class="h-lg">Escolha o seu.</h2>
+    </div>
+    <div class="price-grid" id="landing-prices"></div>
+    <p class="p-sm" style="text-align:center;margin-top:18px">
+      Pagamento por Pix ou cartão, via Mercado Pago.
+    </p>
+  </div>
+
+  <div class="wrap pad-b" style="padding-top:20px;border-top:1px solid var(--line)">
+    <div class="spec-line" style="width:40px;margin-bottom:16px"></div>
+    <p class="p-sm">PRISMA · Retratos com o seu rosto de verdade.<br>Suas fotos de referência nunca são compartilhadas.</p>
+  </div>
+</section>
+
+<!-- ================= AUTENTICAÇÃO ================= -->
+<section class="view" id="v-auth">
+  <div class="wrap pad-t pad-b">
+    <div class="wordmark" style="margin-bottom:30px">P R I S M A</div>
+    <h2 class="h-lg" id="auth-title">Criar acesso</h2>
+    <p class="p" style="margin:8px 0 26px" id="auth-sub">Leva 40 segundos.</p>
+
+    <div class="msg err" id="auth-err"></div>
+    <div class="msg ok" id="auth-ok"></div>
+
+    <div class="field" id="f-name">
+      <label>Nome</label>
+      <input class="input" id="i-name" type="text" placeholder="Como você quer ser chamado" autocomplete="name">
+    </div>
+    <div class="field">
+      <label>E-mail</label>
+      <input class="input" id="i-email" type="email" placeholder="nome@empresa.com" autocomplete="email" inputmode="email">
+    </div>
+    <div class="field">
+      <label>Senha</label>
+      <input class="input" id="i-pass" type="password" placeholder="Mínimo de 8 caracteres" autocomplete="current-password">
+    </div>
+
+    <div class="spacer"></div>
+    <button class="btn" id="btn-auth" onclick="doAuth()">Criar acesso</button>
+    <div class="link" onclick="toggleAuth()" id="auth-toggle" style="margin-top:14px">
+      Já tem conta? <b>Entrar</b>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DIAGNÓSTICO ================= -->
+<section class="view" id="v-quiz">
+  <div class="wrap pad-t pad-b">
+    <div class="prog" id="quiz-prog"></div>
+    <div class="kicker" id="quiz-count" style="margin-bottom:14px"></div>
+    <div class="ask" id="quiz-q" style="margin-bottom:24px"></div>
+    <div id="quiz-opts"></div>
+    <div class="spacer"></div>
+    <button class="btn" id="quiz-next" onclick="quizNext()" disabled>Continuar</button>
+  </div>
+</section>
+
+<!-- ================= PERFIL PRONTO ================= -->
+<section class="view" id="v-profile">
+  <div class="wrap pad-t pad-b" style="justify-content:center">
+    <div style="text-align:center">
+      <div class="kicker" style="margin-bottom:16px">Seu perfil visual</div>
+      <h2 class="h-xl" id="prof-name"></h2>
+      <div class="spec-line" style="width:52px;margin:22px auto"></div>
+      <p class="p" id="prof-desc" style="max-width:330px;margin:0 auto"></p>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" onclick="go('upload')">Enviar minhas fotos</button>
+  </div>
+</section>
+
+<!-- ================= UPLOAD ================= -->
+<section class="view" id="v-upload">
+  <div class="wrap pad-t pad-b">
+    <div class="top" style="padding-top:0">
+      <button class="back" onclick="go('profile')">‹</button>
+      <div class="wordmark">P R I S M A</div>
+      <div style="width:36px"></div>
+    </div>
+    <h2 class="h-lg">Suas referências</h2>
+    <p class="p" style="margin:8px 0 20px">Quanto melhor o material, mais fiel o resultado.</p>
+
+    <div class="msg err" id="up-err"></div>
+
+    <div class="counter"><span>Enviadas</span><b id="up-count">0 <span style="color:var(--t-low);font-weight:400">/ 12</span></b></div>
+    <div class="thumbs" id="up-thumbs"></div>
+
+    <div class="drop" onclick="document.getElementById('i-files').click()">
+      <div class="ic">↑</div>
+      <div class="h-md" style="font-size:15px;margin-bottom:5px">Adicionar fotos</div>
+      <p class="p-sm">HEIC, JPG ou PNG · mínimo de 8</p>
+    </div>
+    <input type="file" id="i-files" accept="image/*,.heic,.heif" multiple hidden onchange="addFiles(this.files)">
+
+    <div class="checks">
+      <div class="check"><div class="tick">✓</div>Luz natural, de frente para a janela, sem contraluz</div>
+      <div class="check"><div class="tick">✓</div>Fundo branco ou neutro, sem textura nem quadros</div>
+      <div class="check"><div class="tick">✓</div>Seis de rosto: frontal, 3/4 dos dois lados e perfil</div>
+      <div class="check"><div class="tick">✓</div>Quatro do joelho para cima, para definir seu porte</div>
+      <div class="check no"><div class="tick">✕</div>Sem óculos escuros, boné, relógio ou filtro</div>
+    </div>
+
+    <div class="spacer"></div>
+    <button class="btn" id="btn-up" onclick="go('occasions')" disabled>Escolher ocasiões</button>
+  </div>
+</section>
+
+<!-- ================= OCASIÕES ================= -->
+<section class="view" id="v-occasions">
+  <div class="wrap pad-t pad-b">
+    <div class="top" style="padding-top:0">
+      <button class="back" onclick="go('upload')">‹</button>
+      <div class="wordmark">P R I S M A</div>
+      <div style="width:36px"></div>
+    </div>
+    <h2 class="h-lg">Onde você quer<br>ser visto</h2>
+    <p class="p" style="margin:10px 0 8px">Escolha uma para começar. Você volta e gera outras quando precisar.</p>
+    <div class="spec-line" style="width:44px;margin-bottom:20px"></div>
+    <div class="oc-grid" id="oc-grid"></div>
+    <div class="spacer"></div>
+    <button class="btn" id="btn-oc" onclick="go('direction')" disabled>Continuar</button>
+  </div>
+</section>
+
+<!-- ================= DIREÇÃO ================= -->
+<section class="view" id="v-direction">
+  <div class="wrap pad-t pad-b">
+    <div class="top" style="padding-top:0">
+      <button class="back" onclick="go('occasions')">‹</button>
+      <div class="wordmark">P R I S M A</div>
+      <div style="width:36px"></div>
+    </div>
+    <div class="kicker" id="dir-oc" style="margin-bottom:12px"></div>
+    <div class="ask">Como você imagina<br>essa foto?</div>
+    <div class="spec-line" style="width:44px;margin:16px 0 20px"></div>
+
+    <div class="msg err" id="dir-err"></div>
+
+    <textarea class="textarea" id="i-dir" placeholder="Escreva do seu jeito, com quantos detalhes quiser. Por exemplo: quero de vestido ciano, que é a cor da minha marca, num escritório envidraçado de fim de tarde, em pé, expressão serena, sem óculos."></textarea>
+    <div class="link" onclick="showExamples()" style="margin-top:14px"><b>Não sei o que escrever</b></div>
+
+    <div class="spacer"></div>
+    <button class="btn" id="btn-dir" onclick="buildPrompt()">Continuar</button>
+  </div>
+</section>
+
+<!-- ================= CONFIRMAÇÃO ================= -->
+<section class="view" id="v-confirm">
+  <div class="wrap pad-t pad-b">
+    <div class="top" style="padding-top:0">
+      <button class="back" onclick="go('direction')">‹</button>
+      <div class="wordmark">P R I S M A</div>
+      <div style="width:36px"></div>
+    </div>
+    <div class="kicker" id="conf-oc" style="margin-bottom:12px"></div>
+    <h2 class="h-lg">Entendi assim</h2>
+    <div style="height:20px"></div>
+
+    <div class="msg err" id="conf-err"></div>
+
+    <div class="reading">
+      <div id="conf-read"></div>
+      <div class="auto">
+        <b>Completei sozinho</b>
+        <p id="conf-auto"></p>
+      </div>
+    </div>
+
+    <div class="cost">
+      <span>Custo desta geração</span>
+      <b class="tabnum">4 retratos</b>
+    </div>
+
+    <div class="spacer"></div>
+    <div class="btn-row">
+      <button class="btn" id="btn-gen" onclick="startGeneration()">Gerar</button>
+      <button class="btn btn-ghost" onclick="go('direction')">Ajustar a descrição</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GERANDO ================= -->
+<section class="view" id="v-generating">
+  <div class="wrap pad-t pad-b" style="justify-content:center">
+    <div class="ring">
+      <svg width="56" height="56" viewBox="0 0 56 56">
+        <defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#FF9160"/><stop offset="30%" stop-color="#FF5FA2"/>
+          <stop offset="60%" stop-color="#A96BFF"/><stop offset="85%" stop-color="#4FC9F5"/>
+          <stop offset="100%" stop-color="#6FE3C4"/></linearGradient></defs>
+        <circle cx="28" cy="28" r="24" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="2.5"/>
+        <circle id="gen-ring" cx="28" cy="28" r="24" fill="none" stroke="url(#spg)" stroke-width="2.5"
+                stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="150.8"
+                transform="rotate(-90 28 28)" style="transition:stroke-dashoffset .6s ease"/>
+      </svg>
+    </div>
+    <div style="text-align:center;margin-bottom:26px">
+      <div class="h-md" style="font-size:15px;margin-bottom:6px" id="gen-title">Compondo</div>
+      <p class="p-sm" id="gen-sub">Preparando</p>
+    </div>
+    <div class="gen-grid" id="gen-grid"></div>
+    <p class="p-sm" style="text-align:center">Cada imagem aparece assim que fica pronta.<br>Você pode fechar o app, o trabalho continua.</p>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost" id="btn-gen-done" onclick="go('gallery')" style="display:none">Ver na galeria</button>
+  </div>
+</section>
+
+<!-- ================= GALERIA ================= -->
+<section class="view" id="v-gallery">
+  <div class="wrap pad-t pad-b">
+    <div class="top" style="padding-top:0">
+      <div>
+        <h2 class="h-lg">Seus retratos</h2>
+        <p class="p-sm" style="margin-top:5px" id="gal-sub"></p>
+      </div>
+      <button class="back" onclick="go('account')">☰</button>
+    </div>
+    <div class="tabs" id="gal-tabs"></div>
+    <div class="grid2" id="gal-grid"></div>
+    <div class="empty" id="gal-empty" style="display:none">
+      <div class="ic">◇</div>
+      <div class="h-md" style="font-size:16px;margin-bottom:8px">Nada aqui ainda</div>
+      <p class="p-sm">Escolha uma ocasião e gere seus primeiros quatro retratos.</p>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" onclick="go('occasions')">Gerar mais</button>
+  </div>
+</section>
+
+<!-- ================= CONTA ================= -->
+<section class="view" id="v-account">
+  <div class="wrap pad-t pad-b">
+    <div class="top" style="padding-top:0">
+      <button class="back" onclick="go('gallery')">‹</button>
+      <div class="wordmark">P R I S M A</div>
+      <div style="width:36px"></div>
+    </div>
+    <h2 class="h-lg" style="margin-bottom:20px">Conta</h2>
+
+    <div class="card" id="acc-balance"></div>
+    <div id="acc-upsell"></div>
+
+    <div class="card" style="padding:4px 19px">
+      <div class="row"><span>Meu perfil visual</span><i id="acc-arch">—</i></div>
+      <div class="row"><span>Referências</span><i id="acc-refs">—</i></div>
+      <div class="row"><span>Ocasiões usadas</span><i id="acc-oc">—</i></div>
+      <div class="row"><span>Pagamento</span><i id="acc-pay">—</i></div>
+    </div>
+
+    <div class="spacer"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="location.href='mailto:contato@casalimago.com.br?subject=Suporte%20PRISMA'">Suporte</button>
+      <button class="btn btn-ghost" onclick="signOut()">Sair</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PLANOS ================= -->
+<section class="view" id="v-plans">
+  <div class="wrap pad-t pad-b">
+    <div class="top" style="padding-top:0">
+      <button class="back" onclick="go('account')">‹</button>
+      <div class="wordmark">P R I S M A</div>
+      <div style="width:36px"></div>
+    </div>
+    <h2 class="h-lg">Escolha o seu</h2>
+    <p class="p" style="margin:8px 0 22px">Pagamento por Pix ou cartão, via Mercado Pago.</p>
+    <div class="msg err" id="plan-err"></div>
+    <div class="price-grid" id="plan-grid"></div>
+  </div>
+</section>
+
+</div>
+
+<!-- ================= SHEET: DOWNLOAD ================= -->
+<div class="sheet-bg" id="sheet-dl" onclick="if(event.target===this)closeSheet('sheet-dl')">
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="shot" id="dl-preview" style="aspect-ratio:9/16;max-height:34dvh;margin:0 auto 20px;width:auto"></div>
+    <div class="h-md" style="margin-bottom:15px">Onde você vai usar?</div>
+    <div id="dl-dests"></div>
+    <button class="btn" style="margin-top:8px" onclick="downloadCrop()">Baixar</button>
+    <p class="p-sm" style="text-align:center;margin-top:13px">Cortes não consomem crédito.</p>
+  </div>
+</div>
+
+<!-- ================= SHEET: EXEMPLOS ================= -->
+<div class="sheet-bg" id="sheet-ex" onclick="if(event.target===this)closeSheet('sheet-ex')">
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="h-md" style="margin-bottom:8px">Como outras pessoas escreveram</div>
+    <p class="p-sm" style="margin-bottom:18px">Toque para usar como ponto de partida e edite à vontade.</p>
+    <div id="ex-list"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   PRISMA — aplicativo
+   Configuração: preencha window.PRISMA_CONFIG no arquivo config.js
+   ========================================================================= */
+
+const CFG = window.PRISMA_CONFIG || {
+  SUPABASE_URL: '',
+  SUPABASE_ANON_KEY: ''
+};
+
+let sb = null;
+if (CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase) {
+  sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+}
+
+/* ---------- Estado ---------- */
+const S = {
+  user: null,
+  profile: null,
+  mode: 'signup',
+  quizIndex: 0,
+  quizAnswers: [],
+  scores: {},
+  archetype: null,
+  refs: [],
+  occasion: null,
+  direction: '',
+  prompt: null,
+  reading: null,
+  generationId: null,
+  photos: [],
+  filter: 'all',
+  dlPhoto: null,
+  dlRatio: '9:16'
+};
+
+/* ---------- Ocasiões ---------- */
+const OCCASIONS = [
+  { id:'executivo', nome:'Executivo',  ph:'ph-exec',      free:true,
+    base:'Editorial corporate portrait in a modern glass-walled office on a high floor, floor-to-ceiling windows, blurred city skyline. 85mm lens, f/2.0.' },
+  { id:'editorial', nome:'Editorial',  ph:'ph-editorial', free:true,
+    base:'High-end magazine editorial portrait, seamless studio backdrop, controlled key light with soft rim separation. 85mm lens, f/2.8.' },
+  { id:'viagem',    nome:'Viagem',     ph:'ph-viagem',    free:true,
+    base:'Travel lifestyle portrait, airport terminal or historic European street, natural available light, shallow depth of field. 50mm lens, f/1.8.' },
+  { id:'casual',    nome:'Casual',     ph:'ph-casual',    free:true,
+    base:'Relaxed lifestyle portrait in a bright specialty coffee shop, large window light, warm wood tones. 50mm lens, f/1.8.' },
+  { id:'noite',     nome:'Noite',      ph:'ph-noite',     free:false,
+    base:'Evening portrait at an upscale rooftop bar, city lights bokeh, warm practical lights, cinematic low-key lighting. 85mm lens, f/1.4.' },
+  { id:'esporte',   nome:'Esporte',    ph:'ph-esporte',   free:false,
+    base:'Athletic portrait, modern gym or outdoor track at sunrise, crisp directional light, dynamic but controlled posture. 70mm lens, f/2.8.' },
+  { id:'praia',     nome:'Praia',      ph:'ph-praia',     free:false,
+    base:'Coastal portrait at golden hour, ocean and soft sand behind, warm backlight with gentle fill. 85mm lens, f/2.0.' },
+  { id:'natureza',  nome:'Natureza',   ph:'ph-campo',     free:false,
+    base:'Outdoor portrait in open countryside or forest trail, overcast diffused daylight, earthy palette. 50mm lens, f/2.0.' },
+  { id:'familia',   nome:'Família',    ph:'ph-familia',   free:false,
+    base:'Warm domestic portrait in a bright, well-designed living room, soft window light, relaxed and approachable. 50mm lens, f/2.0.' },
+  { id:'palco',     nome:'Palco',      ph:'ph-palco',     free:false,
+    base:'Keynote speaker portrait on a conference stage, dark auditorium, stage wash with strong rim light, microphone. 85mm lens, f/2.0.' },
+  { id:'inverno',   nome:'Inverno',    ph:'ph-inverno',   free:false,
+    base:'Cold weather portrait, overcoat and scarf, snowy or grey urban street, soft flat winter daylight. 85mm lens, f/2.0.' },
+  { id:'gala',      nome:'Gala',       ph:'ph-gala',      free:false,
+    base:'Black tie event portrait, elegant venue interior, warm chandelier light with soft shadow falloff. 85mm lens, f/1.8.' }
+];
+
+/* ---------- Arquétipos ---------- */
+const ARCHETYPES = {
+  soberano:  { nome:'Soberano',  desc:'Você comanda o ambiente sem levantar a voz. Suas imagens vão trabalhar autoridade tranquila, postura firme e paleta contida.',
+    dir:'composed authoritative posture, shoulders back, chin level, restrained confident expression, cool controlled palette with a single warm light accent' },
+  sabio:     { nome:'Sábio',     desc:'Você é procurado quando a decisão é difícil. Suas imagens vão trabalhar serenidade, foco e uma sensação de profundidade.',
+    dir:'thoughtful composed presence, calm direct gaze, subtle asymmetric lighting, muted sophisticated palette, uncluttered background' },
+  heroi:     { nome:'Herói',     desc:'Você entra para resolver. Suas imagens vão trabalhar energia contida, prontidão e luz com contraste definido.',
+    dir:'upright determined stance, engaged forward energy, defined contrast lighting with clear highlight and shadow, strong clean lines' },
+  criador:   { nome:'Criador',   desc:'Você constrói o que ainda não existe. Suas imagens vão trabalhar originalidade, textura e composição menos óbvia.',
+    dir:'expressive natural gesture, unconventional but balanced framing, rich texture, layered depth, distinctive color accent' },
+  cuidador:  { nome:'Cuidador',  desc:'As pessoas confiam em você antes de entender por quê. Suas imagens vão trabalhar acolhimento, luz suave e proximidade.',
+    dir:'warm open expression, soft diffused lighting, close comfortable framing, gentle warm palette' },
+  explorador:{ nome:'Explorador',desc:'Você não fica parado. Suas imagens vão trabalhar movimento, ar e horizonte aberto.',
+    dir:'relaxed dynamic posture, sense of movement and space, natural available light, open airy background' },
+  amante:    { nome:'Amante',    desc:'Você cria conexão com presença. Suas imagens vão trabalhar sensualidade discreta, luz quente e olhar direto.',
+    dir:'refined magnetic presence, warm golden lighting, intimate framing, elegant tactile fabrics' },
+  mago:      { nome:'Mago',      desc:'Você transforma o cenário à sua volta. Suas imagens vão trabalhar mistério controlado e luz com intenção.',
+    dir:'enigmatic controlled presence, dramatic intentional lighting, deep shadows with precise highlights, refined dark palette' }
+};
+
+/* ---------- Diagnóstico: 12 perguntas ---------- */
+const QUIZ = [
+  { q:'Quando você entra numa sala cheia, o que acontece?', o:[
+    ['Puxo a conversa e conduzo o ritmo','soberano'],
+    ['Observo antes de falar','sabio'],
+    ['Procuro quem está sozinho','cuidador'],
+    ['Fico onde consigo ver tudo','mago']]},
+  { q:'O que faz você perder a noção do tempo?', o:[
+    ['Resolver um problema que ninguém resolveu','heroi'],
+    ['Construir algo do zero','criador'],
+    ['Entender a fundo como as coisas funcionam','sabio'],
+    ['Planejar a próxima viagem','explorador']]},
+  { q:'Como um cliente descreveria você para outro?', o:[
+    ['Sabe o que está fazendo','soberano'],
+    ['Cuida da gente de verdade','cuidador'],
+    ['Faz diferente de todo mundo','criador'],
+    ['Resolve rápido','heroi']]},
+  { q:'Qual elogio te deixa desconfortável?', o:[
+    ['Você é bonito','amante'],
+    ['Você é inteligente','sabio'],
+    ['Você é forte','heroi'],
+    ['Você é original','criador']]},
+  { q:'No fim de semana ideal, você está:', o:[
+    ['Num lugar que nunca fui','explorador'],
+    ['Em casa, com quem eu gosto','cuidador'],
+    ['Num jantar bom, boa conversa','amante'],
+    ['Terminando um projeto pessoal','criador']]},
+  { q:'O que mais te incomoda no trabalho de outra pessoa?', o:[
+    ['Falta de padrão','soberano'],
+    ['Falta de profundidade','sabio'],
+    ['Falta de coragem','heroi'],
+    ['Falta de alma','criador']]},
+  { q:'Como você toma uma decisão difícil?', o:[
+    ['Decido e assumo','soberano'],
+    ['Estudo até ter certeza','sabio'],
+    ['Sinto qual é o caminho','mago'],
+    ['Penso em quem será afetado','cuidador']]},
+  { q:'Qual dessas frases é mais sua?', o:[
+    ['Eu faço acontecer','heroi'],
+    ['Eu mostro o caminho','sabio'],
+    ['Eu cuido dos meus','cuidador'],
+    ['Eu vou primeiro','explorador']]},
+  { q:'Que tipo de roupa te representa?', o:[
+    ['Alfaiataria impecável','soberano'],
+    ['Confortável e bem escolhida','cuidador'],
+    ['Uma peça que ninguém tem','criador'],
+    ['O que me deixa livre para andar','explorador']]},
+  { q:'O que você quer que sintam ao ver sua foto?', o:[
+    ['Respeito','soberano'],
+    ['Confiança','cuidador'],
+    ['Desejo','amante'],
+    ['Curiosidade','mago']]},
+  { q:'Qual erro você comete com mais frequência?', o:[
+    ['Assumo mais do que consigo','heroi'],
+    ['Analiso demais e demoro','sabio'],
+    ['Me importo demais com os outros','cuidador'],
+    ['Começo coisas que não termino','criador']]},
+  { q:'Daqui a cinco anos, o que precisa ser verdade?', o:[
+    ['Ser referência no que faço','soberano'],
+    ['Ter construído algo meu','criador'],
+    ['Ter liberdade de ir onde quiser','explorador'],
+    ['Ter feito diferença para alguém','cuidador']]}
+];
+
+/* ---------- Exemplos de direção ---------- */
+const EXAMPLES = [
+  'Quero de terno azul-marinho sem gravata, camisa branca aberta no primeiro botão, num escritório de vidro no fim da tarde, em pé, braços cruzados, expressão séria olhando para a câmera.',
+  'Vestido ciano, que é a cor da minha marca, sentada numa poltrona de couro claro, luz natural entrando pela lateral, expressão serena, sem óculos.',
+  'Camisa de linho bege, na varanda de frente para o mar no fim do dia, vento no cabelo, sorrindo de leve, olhando para o lado.',
+  'Blazer preto e camiseta preta por baixo, fundo cinza liso de estúdio, luz dura de um lado só, expressão fechada, bem sério.'
+];
+
+/* ---------- Planos ---------- */
+const PLANS = [
+  { id:'mensal', nome:'Mensal', preco:'R$ 149', sufixo:'/mês', best:false,
+    itens:['20 retratos por mês','4 ocasiões liberadas','Cortes para todas as redes','Cancele quando quiser'] },
+  { id:'anual', nome:'Anual', preco:'R$ 1.188', sufixo:'/ano', best:true,
+    itens:['180 retratos no ano','Todas as 12 ocasiões','Saldo não zera todo mês','Cortes para todas as redes'] },
+  { id:'pro', nome:'Pro', preco:'R$ 2.388', sufixo:'/ano', best:false,
+    itens:['600 retratos no ano','Todas as 12 ocasiões','Prioridade na fila','Suporte direto com o estúdio'] }
+];
+
+/* =========================================================================
+   NAVEGAÇÃO
+   ========================================================================= */
+function go(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+  const v = document.getElementById('v-' + name);
+  if (v) v.classList.add('on');
+  window.scrollTo(0,0);
+  if (name === 'quiz')      renderQuiz();
+  if (name === 'occasions') renderOccasions();
+  if (name === 'direction') renderDirection();
+  if (name === 'gallery')   renderGallery();
+  if (name === 'account')   renderAccount();
+  if (name === 'plans')     renderPlans();
+  if (name === 'upload')    renderThumbs();
+}
+function openSheet(id){ document.getElementById(id).classList.add('on'); }
+function closeSheet(id){ document.getElementById(id).classList.remove('on'); }
+function showMsg(id, text, kind){
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'msg ' + (kind || 'err') + (text ? ' on' : '');
+}
+
+/* =========================================================================
+   AUTENTICAÇÃO
+   ========================================================================= */
+function toggleAuth(){
+  S.mode = S.mode === 'signup' ? 'login' : 'signup';
+  const isSignup = S.mode === 'signup';
+  document.getElementById('auth-title').textContent = isSignup ? 'Criar acesso' : 'Entrar';
+  document.getElementById('auth-sub').textContent   = isSignup ? 'Leva 40 segundos.' : 'Bom te ver de volta.';
+  document.getElementById('btn-auth').textContent   = isSignup ? 'Criar acesso' : 'Entrar';
+  document.getElementById('f-name').style.display   = isSignup ? '' : 'none';
+  document.getElementById('auth-toggle').innerHTML  = isSignup
+    ? 'Já tem conta? <b>Entrar</b>' : 'Ainda não tem conta? <b>Criar acesso</b>';
+  showMsg('auth-err','');
+}
+
+async function doAuth(){
+  const name  = document.getElementById('i-name').value.trim();
+  const email = document.getElementById('i-email').value.trim();
+  const pass  = document.getElementById('i-pass').value;
+  const btn   = document.getElementById('btn-auth');
+
+  showMsg('auth-err','');
+  if (!email || !pass) return showMsg('auth-err','Preencha e-mail e senha.');
+  if (pass.length < 8)  return showMsg('auth-err','A senha precisa de no mínimo 8 caracteres.');
+  if (S.mode === 'signup' && !name) return showMsg('auth-err','Diga como quer ser chamado.');
+
+  if (!sb) return showMsg('auth-err','Conexão com o servidor ainda não configurada.');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>';
+
+  try {
+    if (S.mode === 'signup'){
+      const { data, error } = await sb.auth.signUp({
+        email, password: pass, options:{ data:{ nome: name } }
+      });
+      if (error) throw error;
+      S.user = data.user;
+      await ensureProfile(name);
+      go('quiz');
+    } else {
+      const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+      if (error) throw error;
+      S.user = data.user;
+      await loadProfile();
+      routeAfterLogin();
+    }
+  } catch (e){
+    showMsg('auth-err', translateAuthError(e.message));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = S.mode === 'signup' ? 'Criar acesso' : 'Entrar';
+  }
+}
+
+function translateAuthError(m){
+  if (!m) return 'Não consegui completar. Tente de novo.';
+  if (m.includes('already registered')) return 'Esse e-mail já tem conta. Toque em Entrar.';
+  if (m.includes('Invalid login'))      return 'E-mail ou senha incorretos.';
+  if (m.includes('Email not confirmed'))return 'Confirme o e-mail que enviamos antes de entrar.';
+  return 'Não consegui completar. Tente de novo.';
+}
+
+async function signOut(){
+  if (sb) await sb.auth.signOut();
+  S.user = null; S.profile = null;
+  go('landing');
+}
+
+async function ensureProfile(nome){
+  if (!sb || !S.user) return;
+  const { data } = await sb.from('perfis').select('*').eq('id', S.user.id).maybeSingle();
+  if (data){ S.profile = data; return; }
+  const { data: novo } = await sb.from('perfis').insert({
+    id: S.user.id, nome: nome || '', plano: 'nenhum', creditos: 0
+  }).select().single();
+  S.profile = novo;
+}
+
+async function loadProfile(){
+  if (!sb || !S.user) return;
+  const { data } = await sb.from('perfis').select('*').eq('id', S.user.id).maybeSingle();
+  S.profile = data;
+  if (data?.arquetipo) S.archetype = data.arquetipo;
+  const { data: fotos } = await sb.from('retratos').select('*')
+    .eq('user_id', S.user.id).order('criado_em', { ascending:false });
+  S.photos = fotos || [];
+  const { data: refs } = await sb.from('referencias').select('*').eq('user_id', S.user.id);
+  S.refs = (refs || []).map(r => ({ url:r.url, saved:true }));
+}
+
+function routeAfterLogin(){
+  if (!S.profile?.arquetipo)  return go('quiz');
+  if (!S.refs.length)         return go('upload');
+  if (!S.photos.length)       return go('occasions');
+  go('gallery');
+}
+
+/* =========================================================================
+   DIAGNÓSTICO
+   ========================================================================= */
+function renderQuiz(){
+  const i = S.quizIndex, item = QUIZ[i];
+  document.getElementById('quiz-prog').innerHTML =
+    QUIZ.map((_,n) => `<i class="${n < i ? 'on' : ''}"></i>`).join('');
+  document.getElementById('quiz-count').textContent =
+    String(i+1).padStart(2,'0') + ' de ' + QUIZ.length;
+  document.getElementById('quiz-q').textContent = item.q;
+  document.getElementById('quiz-opts').innerHTML = item.o.map((op,n) => `
+    <button class="choice" data-arch="${op[1]}" onclick="pickChoice(this)">
+      <div class="k">${'ABCD'[n]}</div><p>${op[0]}</p>
+    </button>`).join('');
+  document.getElementById('quiz-next').disabled = true;
+}
+
+function pickChoice(el){
+  document.querySelectorAll('#quiz-opts .choice').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  S.quizAnswers[S.quizIndex] = el.dataset.arch;
+  document.getElementById('quiz-next').disabled = false;
+}
+
+function quizNext(){
+  const arch = S.quizAnswers[S.quizIndex];
+  S.scores[arch] = (S.scores[arch] || 0) + 1;
+  S.quizIndex++;
+  if (S.quizIndex < QUIZ.length) return renderQuiz();
+  finishQuiz();
+}
+
+async function finishQuiz(){
+  let best = 'soberano', top = -1;
+  for (const k in S.scores){ if (S.scores[k] > top){ top = S.scores[k]; best = k; } }
+  S.archetype = best;
+  const a = ARCHETYPES[best];
+  document.getElementById('prof-name').textContent = a.nome;
+  document.getElementById('prof-desc').textContent = a.desc;
+  if (sb && S.user){
+    await sb.from('perfis').update({ arquetipo: best }).eq('id', S.user.id);
+    if (S.profile) S.profile.arquetipo = best;
+  }
+  go('profile');
+}
+
+/* =========================================================================
+   UPLOAD DE REFERÊNCIAS
+   ========================================================================= */
+async function addFiles(list){
+  showMsg('up-err','');
+  const files = Array.from(list);
+  for (const f of files){
+    if (S.refs.length >= 12){ showMsg('up-err','Doze fotos é o limite. Escolha as melhores.'); break; }
+    if (f.size > 10 * 1024 * 1024){ showMsg('up-err','Cada foto precisa ter menos de 10 MB.'); continue; }
+    try {
+      const url = await toDataUrl(f);
+      S.refs.push({ url, file:f });
+    } catch {
+      showMsg('up-err','Não consegui ler uma das fotos. Tente outra.');
+    }
+  }
+  renderThumbs();
+  if (sb && S.user) uploadPending();
+}
+
+async function toDataUrl(file){
+  let blob = file;
+  const isHeic = /heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
+  if (isHeic && window.heic2any){
+    blob = await window.heic2any({ blob:file, toType:'image/jpeg', quality:0.92 });
+  }
+  return await shrink(blob, 1400);
+}
+
+function shrink(blob, max){
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const s = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width  = Math.round(img.width  * s);
+      c.height = Math.round(img.height * s);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      res(c.toDataURL('image/jpeg', 0.9));
+    };
+    img.onerror = rej;
+    img.src = URL.createObjectURL(blob);
+  });
+}
+
+function renderThumbs(){
+  const el = document.getElementById('up-thumbs');
+  el.innerHTML = S.refs.map((r,i) => `
+    <div class="cell"><img src="${r.url}" alt=""><div class="x" onclick="removeRef(${i})">✕</div></div>
+  `).join('') + (S.refs.length < 12
+    ? `<div class="add" onclick="document.getElementById('i-files').click()">+</div>` : '');
+  document.getElementById('up-count').innerHTML =
+    `${S.refs.length} <span style="color:var(--t-low);font-weight:400">/ 12</span>`;
+  document.getElementById('btn-up').disabled = S.refs.length < 8;
+}
+
+function removeRef(i){ S.refs.splice(i,1); renderThumbs(); }
+
+async function uploadPending(){
+  for (const r of S.refs){
+    if (r.saved || r.saving) continue;
+    r.saving = true;
+    try {
+      await sb.from('referencias').insert({ user_id:S.user.id, url:r.url });
+      r.saved = true;
+    } catch { /* segue, tenta de novo depois */ }
+    r.saving = false;
+  }
+}
+
+/* =========================================================================
+   OCASIÕES
+   ========================================================================= */
+function planLevel(){
+  const p = S.profile?.plano || 'nenhum';
+  return p === 'mensal' ? 1 : (p === 'anual' || p === 'pro') ? 2 : 0;
+}
+
+function renderOccasions(){
+  const lvl = planLevel();
+  document.getElementById('oc-grid').innerHTML = OCCASIONS.map(o => {
+    const locked = !o.free && lvl < 2;
+    return `
+      <button class="oc ${S.occasion === o.id ? 'on' : ''} ${locked ? 'locked' : ''}"
+              onclick="${locked ? "go('plans')" : `pickOccasion('${o.id}')`}">
+        <div class="bg ${o.ph}"></div><div class="scrim"></div>
+        <div class="tickbox">${locked ? '' : '✓'}</div>
+        <div class="lab">${o.nome}</div>
+      </button>`;
+  }).join('');
+  document.getElementById('btn-oc').disabled = !S.occasion;
+}
+
+function pickOccasion(id){
+  S.occasion = id;
+  renderOccasions();
+}
+
+/* =========================================================================
+   DIREÇÃO E PROMPT
+   ========================================================================= */
+function renderDirection(){
+  const o = OCCASIONS.find(x => x.id === S.occasion);
+  document.getElementById('dir-oc').textContent = o ? o.nome : '';
+  document.getElementById('i-dir').value = S.direction || '';
+  showMsg('dir-err','');
+}
+
+function showExamples(){
+  document.getElementById('ex-list').innerHTML = EXAMPLES.map(e => `
+    <button class="choice" style="align-items:flex-start" onclick="useExample(${JSON.stringify(e).replace(/"/g,'&quot;')})">
+      <p style="font-size:13.5px">${e}</p>
+    </button>`).join('');
+  openSheet('sheet-ex');
+}
+
+function useExample(text){
+  document.getElementById('i-dir').value = text;
+  closeSheet('sheet-ex');
+}
+
+async function buildPrompt(){
+  const txt = document.getElementById('i-dir').value.trim();
+  const btn = document.getElementById('btn-dir');
+  showMsg('dir-err','');
+  if (txt.length < 10) return showMsg('dir-err','Escreva um pouco mais para eu entender o que você quer.');
+
+  S.direction = txt;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>';
+
+  try {
+    const r = await fetch('/api/prompt', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        texto: txt,
+        ocasiao: S.occasion,
+        ocasiaoBase: OCCASIONS.find(o => o.id === S.occasion)?.base || '',
+        arquetipo: S.archetype,
+        arquetipoDir: ARCHETYPES[S.archetype]?.dir || ''
+      })
+    });
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    S.prompt  = d.prompt;
+    S.reading = d.leitura;
+    document.getElementById('conf-oc').textContent =
+      OCCASIONS.find(o => o.id === S.occasion)?.nome || '';
+    document.getElementById('conf-read').innerHTML = d.leitura;
+    document.getElementById('conf-auto').textContent = d.completado;
+    go('confirm');
+  } catch {
+    showMsg('dir-err','Não consegui montar a direção agora. Tente de novo em instantes.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Continuar';
+  }
+}
+
+/* =========================================================================
+   GERAÇÃO
+   ========================================================================= */
+async function startGeneration(){
+  showMsg('conf-err','');
+  if ((S.profile?.creditos || 0) < 4){
+    showMsg('conf-err','Seus créditos acabaram. Veja os planos para continuar.');
+    setTimeout(() => go('plans'), 1400);
+    return;
+  }
+  go('generating');
+  renderGenSlots(0);
+  document.getElementById('gen-title').textContent = 'Compondo ' +
+    (OCCASIONS.find(o => o.id === S.occasion)?.nome || '');
+  document.getElementById('gen-sub').textContent = 'Enviando suas referências';
+  document.getElementById('btn-gen-done').style.display = 'none';
+
+  try {
+    const r = await fetch('/api/generate', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + (await token()) },
+      body: JSON.stringify({
+        prompt: S.prompt,
+        ocasiao: S.occasion,
+        referencias: S.refs.map(x => x.url).slice(0,12)
+      })
+    });
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    S.generationId = d.id;
+    pollGeneration();
+  } catch {
+    document.getElementById('gen-sub').textContent = 'Algo falhou. Volte e tente de novo.';
+  }
+}
+
+function renderGenSlots(done, urls){
+  const cells = [];
+  for (let i = 0; i < 4; i++){
+    if (urls && urls[i]) cells.push(`<div class="cell shot done"><img src="${urls[i]}" alt=""></div>`);
+    else cells.push('<div class="cell wait"></div>');
+  }
+  document.getElementById('gen-grid').innerHTML = cells.join('');
+  const ring = document.getElementById('gen-ring');
+  ring.style.strokeDashoffset = 150.8 - (150.8 * (done / 4));
+  document.getElementById('gen-sub').textContent =
+    done === 0 ? 'Preparando' : `${done} de 4 · cerca de ${Math.max(1,(4-done)*2)} minutos`;
+}
+
+async function token(){
+  if (!sb) return '';
+  const { data } = await sb.auth.getSession();
+  return data?.session?.access_token || '';
+}
+
+async function pollGeneration(){
+  if (!S.generationId) return;
+  try {
+    const r = await fetch('/api/status?id=' + encodeURIComponent(S.generationId), {
+      headers:{ 'Authorization':'Bearer ' + (await token()) }
+    });
+    const d = await r.json();
+    const urls = d.urls || [];
+    renderGenSlots(urls.length, urls);
+    if (d.status === 'pronto'){
+      urls.forEach(u => S.photos.unshift({ url:u, ocasiao:S.occasion, criado_em:new Date().toISOString() }));
+      if (S.profile) S.profile.creditos = Math.max(0, (S.profile.creditos||0) - 4);
+      document.getElementById('gen-title').textContent = 'Pronto';
+      document.getElementById('gen-sub').textContent = 'Quatro retratos novos';
+      document.getElementById('btn-gen-done').style.display = '';
+      return;
+    }
+    if (d.status === 'erro'){
+      document.getElementById('gen-sub').textContent = 'Algo falhou. Seus créditos não foram cobrados.';
+      return;
+    }
+    setTimeout(pollGeneration, 5000);
+  } catch {
+    setTimeout(pollGeneration, 8000);
+  }
+}
+
+/* =========================================================================
+   GALERIA
+   ========================================================================= */
+function renderGallery(){
+  const usadas = [...new Set(S.photos.map(p => p.ocasiao))];
+  document.getElementById('gal-sub').textContent =
+    `${S.photos.length} ${S.photos.length === 1 ? 'imagem' : 'imagens'} · ${usadas.length} ${usadas.length === 1 ? 'ocasião' : 'ocasiões'}`;
+
+  document.getElementById('gal-tabs').innerHTML =
+    [`<button class="tab ${S.filter==='all'?'on':''}" onclick="setFilter('all')">Todas</button>`]
+    .concat(usadas.map(id => {
+      const o = OCCASIONS.find(x => x.id === id);
+      return `<button class="tab ${S.filter===id?'on':''}" onclick="setFilter('${id}')">${o?o.nome:id}</button>`;
+    })).join('');
+
+  const lista = S.filter === 'all' ? S.photos : S.photos.filter(p => p.ocasiao === S.filter);
+  document.getElementById('gal-empty').style.display = lista.length ? 'none' : '';
+  document.getElementById('gal-grid').innerHTML = lista.map((p,i) => {
+    const o = OCCASIONS.find(x => x.id === p.ocasiao);
+    return `<div class="shot" onclick="openDownload(${i})">
+      <img src="${p.url}" alt="" loading="lazy">
+      <div class="pill">${o?o.nome:''}</div></div>`;
+  }).join('');
+}
+
+function setFilter(f){ S.filter = f; renderGallery(); }
+
+/* =========================================================================
+   DOWNLOAD POR DESTINO
+   ========================================================================= */
+const DESTS = [
+  { r:'9:16', w:18, h:32, nome:'Stories e Reels',    sub:'Instagram, TikTok' },
+  { r:'4:5',  w:26, h:32, nome:'Feed do Instagram',  sub:'Post no perfil' },
+  { r:'1:1',  w:30, h:30, nome:'Foto de perfil',     sub:'LinkedIn, WhatsApp' }
+];
+
+function openDownload(i){
+  const lista = S.filter === 'all' ? S.photos : S.photos.filter(p => p.ocasiao === S.filter);
+  S.dlPhoto = lista[i];
+  S.dlRatio = '9:16';
+  document.getElementById('dl-preview').innerHTML = `<img src="${S.dlPhoto.url}" alt="">`;
+  renderDests();
+  openSheet('sheet-dl');
+}
+
+function renderDests(){
+  document.getElementById('dl-dests').innerHTML = DESTS.map(d => `
+    <button class="dest ${S.dlRatio===d.r?'on':''}" onclick="S.dlRatio='${d.r}';renderDests()">
+      <div class="frame"><div class="box" style="width:${d.w}px;height:${d.h}px">
+        <div class="in"><img src="${S.dlPhoto.url}" style="width:100%;height:100%;object-fit:cover"></div>
+      </div></div>
+      <div class="txt"><b>${d.nome}</b><span>${d.sub}</span></div>
+      <div class="rt">${d.r}</div>
+    </button>`).join('');
+}
+
+async function downloadCrop(){
+  const [rw, rh] = S.dlRatio.split(':').map(Number);
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    const alvo = rw / rh;
+    let sw = img.width, sh = Math.round(img.width / alvo);
+    if (sh > img.height){ sh = img.height; sw = Math.round(img.height * alvo); }
+    const sx = Math.round((img.width - sw) / 2);
+    const sy = Math.round((img.height - sh) * 0.18); // preserva a cabeça
+    const c = document.createElement('canvas');
+    c.width = sw; c.height = sh;
+    c.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+    const a = document.createElement('a');
+    a.download = `prisma-${S.dlPhoto.ocasiao}-${S.dlRatio.replace(':','x')}.jpg`;
+    a.href = c.toDataURL('image/jpeg', 0.95);
+    a.click();
+    closeSheet('sheet-dl');
+  };
+  img.src = S.dlPhoto.url;
+}
+
+/* =========================================================================
+   CONTA
+   ========================================================================= */
+function renderAccount(){
+  const p = S.profile || {};
+  const plano = p.plano || 'nenhum';
+  const anual = plano === 'anual' || plano === 'pro';
+  const total = plano === 'pro' ? 600 : plano === 'anual' ? 180 : plano === 'mensal' ? 20 : 0;
+  const rest  = p.creditos || 0;
+  const pct   = total ? Math.round((rest/total)*100) : 0;
+
+  document.getElementById('acc-balance').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <div class="p-sm">${anual ? 'Retratos disponíveis' : 'Retratos deste mês'}</div>
+      <div class="badge ${anual?'':'flat'}">${plano === 'nenhum' ? 'Sem plano' : plano}</div>
+    </div>
+    <div class="big tabnum">${rest} <small>de ${total}</small></div>
+    <div class="meter ${anual?'':'flat'}"><i style="width:${pct}%"></i></div>
+    <p class="p-sm">${anual
+      ? 'Saldo válido até ' + (p.validade ? formatDate(p.validade) : 'o fim do período')
+      : plano === 'mensal' ? 'Zera e renova no dia ' + (p.renova_dia || '1') + ' de cada mês'
+      : 'Escolha um plano para começar a gerar'}</p>`;
+
+  document.getElementById('acc-upsell').innerHTML = (plano === 'mensal' || plano === 'nenhum') ? `
+    <div class="card spec">
+      <div class="h-md" style="font-size:16px;margin-bottom:6px">${plano === 'nenhum' ? 'Escolha seu plano' : 'Passe para o anual'}</div>
+      <p class="p-sm" style="margin-bottom:15px">${plano === 'nenhum'
+        ? 'Quatro ocasiões liberadas já no plano mensal.'
+        : 'Todas as 12 ocasiões liberadas e saldo que não zera todo mês.'}</p>
+      <button class="btn" style="padding:12px 18px;font-size:14px" onclick="go('plans')">Ver planos</button>
+    </div>` : '';
+
+  document.getElementById('acc-arch').textContent = ARCHETYPES[S.archetype]?.nome || '—';
+  document.getElementById('acc-refs').textContent = S.refs.length ? S.refs.length + ' fotos' : '—';
+  const usadas = [...new Set(S.photos.map(x => x.ocasiao))].length;
+  document.getElementById('acc-oc').textContent = usadas + ' de 12';
+  document.getElementById('acc-pay').textContent = p.metodo || '—';
+}
+
+function formatDate(d){
+  try {
+    return new Date(d).toLocaleDateString('pt-BR', { day:'numeric', month:'long', year:'numeric' });
+  } catch { return '—'; }
+}
+
+/* =========================================================================
+   PLANOS E PAGAMENTO
+   ========================================================================= */
+function priceCard(p, ctx){
+  return `
+    <div class="price ${p.best?'best':''}">
+      ${p.best ? '<span class="tag">Mais escolhido</span>' : ''}
+      <div class="h-md">${p.nome}</div>
+      <div class="val">${p.preco}<small>${p.sufixo}</small></div>
+      <ul>${p.itens.map(i => `<li>${i}</li>`).join('')}</ul>
+      <button class="btn ${p.best?'':'btn-ghost'}" onclick="${ctx === 'landing' ? "go('auth')" : `checkout('${p.id}')`}">
+        ${ctx === 'landing' ? 'Começar' : 'Assinar'}
+      </button>
+    </div>`;
+}
+
+function renderPlans(){
+  document.getElementById('plan-grid').innerHTML = PLANS.map(p => priceCard(p,'app')).join('');
+}
+
+async function checkout(planId){
+  showMsg('plan-err','');
+  try {
+    const r = await fetch('/api/checkout', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + (await token()) },
+      body: JSON.stringify({ plano: planId })
+    });
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    location.href = d.url;
+  } catch {
+    showMsg('plan-err','Não consegui abrir o pagamento. Tente de novo.');
+  }
+}
+
+/* =========================================================================
+   LANDING DINÂMICA
+   ========================================================================= */
+function renderLanding(){
+  document.getElementById('landing-strip').innerHTML = OCCASIONS.slice(0,9).map(o => `
+    <div class="shot ${o.ph}" style="aspect-ratio:9/16">
+      <div class="pill">${o.nome}</div>
+    </div>`).join('');
+
+  const passos = [
+    ['Responda 12 perguntas','Rápidas, sobre você. É o que define o estilo das suas imagens.'],
+    ['Envie de 8 a 12 fotos','Selfies simples, com luz natural. Um guia aparece na tela.'],
+    ['Diga como imagina a foto','Escreva do seu jeito. Nós montamos a direção técnica.'],
+    ['Receba em 30 minutos','Quatro retratos por vez, prontos para todas as redes.']
+  ];
+  document.getElementById('steps').innerHTML = passos.map((p,i) => `
+    <div style="display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--line)">
+      <div style="flex:none;width:26px;height:26px;border-radius:9px;background:var(--spectrum);
+                  color:#0B0714;display:grid;place-items:center;font-size:12px;font-weight:700">${i+1}</div>
+      <div><div style="font-size:15px;font-weight:590;letter-spacing:-.018em;margin-bottom:4px">${p[0]}</div>
+      <p class="p-sm">${p[1]}</p></div>
+    </div>`).join('');
+
+  document.getElementById('landing-prices').innerHTML = PLANS.map(p => priceCard(p,'landing')).join('');
+}
+
+/* =========================================================================
+   INÍCIO
+   ========================================================================= */
+(async function init(){
+  renderLanding();
+
+  const params = new URLSearchParams(location.search);
+  if (params.get('pagamento') === 'aprovado'){
+    history.replaceState({}, '', location.pathname);
+  }
+
+  if (sb){
+    const { data } = await sb.auth.getSession();
+    if (data?.session?.user){
+      S.user = data.session.user;
+      await loadProfile();
+      routeAfterLogin();
+    }
+  }
+})();
+</script>
+</body>
+</html>

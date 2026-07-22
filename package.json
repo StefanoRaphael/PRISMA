@@ -1,0 +1,14 @@
+{
+  "name": "prisma",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "PRISMA — Você tem mais de um lado. Mostre todos.",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.70.0",
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}
