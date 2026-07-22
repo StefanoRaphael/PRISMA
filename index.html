@@ -115,36 +115,42 @@ a{color:inherit}
   background:radial-gradient(circle at 70% 20%,rgba(79,201,245,.06) 0%,transparent 45%),
     radial-gradient(circle at 30% 80%,rgba(255,95,162,.05) 0%,transparent 40%);
   animation:float 10s ease-in-out infinite reverse}
-.beam{position:absolute;inset:0;z-index:0}
-/* O feixe vive no terço superior, acima do título. */
-.beam .white{position:absolute;top:16%;left:-6%;width:46%;height:5px;border-radius:4px;
-  background:linear-gradient(90deg,transparent,#FFF 88%);filter:blur(1.8px);
-  box-shadow:0 0 26px 5px rgba(255,255,255,.32)}
-.beam .tri{position:absolute;top:calc(16% - 40px);left:41%;width:0;height:0;
-  border-left:34px solid transparent;border-right:34px solid transparent;
-  border-bottom:82px solid rgba(255,255,255,.16);
-  filter:drop-shadow(0 0 24px rgba(255,255,255,.3))}
-.beam .fan{position:absolute;top:-4%;right:-10%;width:76%;height:44%;
-  background:conic-gradient(from 94deg at 0% 46%,transparent 0deg,var(--sp1) 7deg,var(--sp2) 15deg,var(--sp3) 23deg,var(--sp4) 31deg,var(--sp5) 39deg,transparent 47deg);
-  filter:blur(22px);opacity:.95}
-.beam .veil{position:absolute;inset:0;
-  background:linear-gradient(to top,var(--abyss) 30%,rgba(5,13,24,.88) 44%,rgba(5,13,24,.18) 70%,rgba(5,13,24,0) 96%)}
+/* Prisma de vidro real: feixe branco entra, luz sai dividida em espectro */
+.prism-wrap{position:absolute;top:3%;left:50%;transform:translateX(-50%);
+  width:min(760px,90vw);z-index:0;pointer-events:none}
+.prism-wrap svg{width:100%;height:auto;display:block;overflow:visible}
+.prism-beam{animation:beamPulse 3.4s ease-in-out infinite}
+.prism-ray{animation:rayPulse 4s ease-in-out infinite}
+.prism-glint{animation:glintPulse 3s ease-in-out infinite}
+@keyframes beamPulse{0%,100%{opacity:.7}50%{opacity:1}}
+@keyframes rayPulse{0%,100%{opacity:.45}50%{opacity:.8}}
+@keyframes glintPulse{0%,100%{opacity:.2}50%{opacity:.6}}
+.hero-veil{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(to top,var(--abyss) 20%,rgba(5,13,24,.65) 38%,rgba(5,13,24,.08) 64%,transparent 88%)}
 
-/* Clones flutuando ao fundo, decorativos */
+/* Clones flutuando ao fundo, decorativos, com fotos reais em movimento */
 .hero-clones{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none}
-.hero-clones .clone{position:absolute;border-radius:18px;overflow:hidden;opacity:.28;
-  filter:saturate(1.15);box-shadow:0 25px 55px -22px rgba(0,0,0,.75);
-  animation:drift 17s ease-in-out infinite}
-.hero-clones .clone i{display:block;width:100%;height:100%}
+.hero-clones .clone{position:absolute;border-radius:18px;overflow:hidden;opacity:.34;
+  filter:blur(.5px) saturate(.92) brightness(.88) contrast(1.06);
+  box-shadow:0 25px 55px -22px rgba(0,0,0,.75);
+  animation:drift ease-in-out infinite}
+.hero-clones .clone i{display:block;width:100%;height:100%;background-position:center;background-size:cover}
 @keyframes drift{
-  0%,100%{transform:translate(0,0) scale(1)}
-  50%{transform:translate(var(--dx,12px),var(--dy,-16px)) scale(1.045)}
+  0%{transform:translate(0,0) scale(1) rotate(0deg)}
+  50%{transform:translate(var(--dx,26px),var(--dy,-30px)) scale(1.07) rotate(var(--rot,2deg))}
+  100%{transform:translate(0,0) scale(1) rotate(0deg)}
 }
-.hero-clones .c1{width:84px;aspect-ratio:3/4;top:9%;left:3%;--dx:8px;--dy:14px;animation-duration:15s}
-.hero-clones .c2{width:96px;aspect-ratio:3/4;top:60%;left:2%;--dx:-8px;--dy:-13px;animation-duration:19s;animation-delay:-5s}
-.hero-clones .c3{width:88px;aspect-ratio:3/4;top:7%;right:3%;--dx:-10px;--dy:13px;animation-duration:17s;animation-delay:-2s}
-.hero-clones .c4{width:100px;aspect-ratio:3/4;top:58%;right:2%;--dx:9px;--dy:-15px;animation-duration:21s;animation-delay:-9s}
+.hero-clones .c1{width:90px;aspect-ratio:3/4;top:8%;left:3%;--dx:22px;--dy:26px;--rot:-2deg;animation-duration:11s}
+.hero-clones .c2{width:104px;aspect-ratio:3/4;top:59%;left:2%;--dx:-20px;--dy:-24px;--rot:2deg;animation-duration:13s;animation-delay:-4s}
+.hero-clones .c3{width:94px;aspect-ratio:3/4;top:6%;right:3%;--dx:-24px;--dy:22px;--rot:2deg;animation-duration:12s;animation-delay:-2s}
+.hero-clones .c4{width:108px;aspect-ratio:3/4;top:57%;right:2%;--dx:22px;--dy:-26px;--rot:-2deg;animation-duration:14s;animation-delay:-7s}
 .hero-clones .c5,.hero-clones .c6{display:none}
+.hero-clones .c1 i{background-image:url('assets/hero/clone-exec.jpg')}
+.hero-clones .c2 i{background-image:url('assets/hero/clone-praia.jpg')}
+.hero-clones .c3 i{background-image:url('assets/hero/clone-gala.jpg')}
+.hero-clones .c4 i{background-image:url('assets/hero/clone-viagem.jpg')}
+.hero-clones .c5 i{background-image:url('assets/hero/clone-editorial.jpg')}
+.hero-clones .c6 i{background-image:url('assets/hero/clone-noite.jpg')}
 .hero-vignette{position:absolute;inset:0;z-index:2;pointer-events:none;
   background:radial-gradient(ellipse 62% 48% at 50% 50%,rgba(5,13,24,.6) 0%,rgba(5,13,24,.25) 55%,transparent 78%)}
 
@@ -327,13 +333,13 @@ a{color:inherit}
   .wrap{max-width:520px}
   .wrap.wide{max-width:1080px}
   .hero-in{max-width:640px}
-  .hero-clones .clone{opacity:.4}
-  .hero-clones .c1{width:180px;top:12%;left:9%}
-  .hero-clones .c2{width:200px;top:56%;left:6%}
-  .hero-clones .c3{width:180px;top:10%;right:9%}
-  .hero-clones .c4{width:210px;top:54%;right:6%}
-  .hero-clones .c5{display:block;width:150px;aspect-ratio:3/4;top:36%;left:19%;--dx:8px;--dy:10px;animation-duration:18s;animation-delay:-6s}
-  .hero-clones .c6{display:block;width:160px;aspect-ratio:3/4;top:34%;right:18%;--dx:-8px;--dy:12px;animation-duration:22s;animation-delay:-11s}
+  .hero-clones .clone{opacity:.48}
+  .hero-clones .c1{width:180px;top:12%;left:9%;--dx:26px;--dy:28px;animation-duration:12s}
+  .hero-clones .c2{width:200px;top:56%;left:6%;--dx:-24px;--dy:-26px;animation-duration:15s}
+  .hero-clones .c3{width:180px;top:10%;right:9%;--dx:-28px;--dy:24px;animation-duration:13s}
+  .hero-clones .c4{width:210px;top:54%;right:6%;--dx:24px;--dy:-28px;animation-duration:16s}
+  .hero-clones .c5{display:block;width:150px;aspect-ratio:3/4;top:36%;left:19%;--dx:18px;--dy:20px;--rot:2deg;animation-duration:14s;animation-delay:-6s}
+  .hero-clones .c6{display:block;width:160px;aspect-ratio:3/4;top:34%;right:18%;--dx:-18px;--dy:22px;--rot:-2deg;animation-duration:17s;animation-delay:-11s}
 }
 </style>
 </head>
@@ -343,15 +349,47 @@ a{color:inherit}
 <!-- ================= LANDING ================= -->
 <section class="view on" id="v-landing">
   <div class="hero">
-    <div class="beam"><div class="white"></div><div class="tri"></div><div class="fan"></div><div class="veil"></div></div>
-    <div class="hero-clones">
-      <div class="clone c1"><i class="ph-exec"></i></div>
-      <div class="clone c2"><i class="ph-praia"></i></div>
-      <div class="clone c3"><i class="ph-gala"></i></div>
-      <div class="clone c4"><i class="ph-viagem"></i></div>
-      <div class="clone c5"><i class="ph-editorial"></i></div>
-      <div class="clone c6"><i class="ph-noite"></i></div>
+    <div class="prism-wrap">
+      <svg viewBox="0 0 760 260" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="glassGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity=".4"/>
+            <stop offset="55%" stop-color="#CFE8FF" stop-opacity=".16"/>
+            <stop offset="100%" stop-color="#A96BFF" stop-opacity=".10"/>
+          </linearGradient>
+          <filter id="prismGlow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="4" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="prismBlur" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="11"/>
+          </filter>
+        </defs>
+        <!-- feixe branco entrando -->
+        <line class="prism-beam" x1="0" y1="130" x2="298" y2="130" stroke="#FFFFFF" stroke-width="4.5"
+              stroke-linecap="round" filter="url(#prismGlow)"/>
+        <!-- prisma de vidro -->
+        <polygon points="300,36 300,224 468,130" fill="url(#glassGrad)"
+                 stroke="rgba(255,255,255,.55)" stroke-width="1.5"/>
+        <line class="prism-glint" x1="316" y1="70" x2="338" y2="104" stroke="#FFFFFF" stroke-width="3"
+              stroke-linecap="round" opacity=".4"/>
+        <!-- espectro se abrindo -->
+        <line class="prism-ray" x1="468" y1="130" x2="758" y2="36"  style="stroke:var(--sp1);animation-delay:0s"   stroke-width="13" stroke-linecap="round" opacity=".6" filter="url(#prismBlur)"/>
+        <line class="prism-ray" x1="468" y1="130" x2="758" y2="80"  style="stroke:var(--sp2);animation-delay:-.6s" stroke-width="13" stroke-linecap="round" opacity=".6" filter="url(#prismBlur)"/>
+        <line class="prism-ray" x1="468" y1="130" x2="758" y2="130" style="stroke:var(--sp3);animation-delay:-1.2s" stroke-width="13" stroke-linecap="round" opacity=".6" filter="url(#prismBlur)"/>
+        <line class="prism-ray" x1="468" y1="130" x2="758" y2="180" style="stroke:var(--sp4);animation-delay:-1.8s" stroke-width="13" stroke-linecap="round" opacity=".6" filter="url(#prismBlur)"/>
+        <line class="prism-ray" x1="468" y1="130" x2="758" y2="224" style="stroke:var(--sp5);animation-delay:-2.4s" stroke-width="13" stroke-linecap="round" opacity=".6" filter="url(#prismBlur)"/>
+      </svg>
     </div>
+    <div class="hero-clones">
+      <div class="clone c1"><i></i></div>
+      <div class="clone c2"><i></i></div>
+      <div class="clone c3"><i></i></div>
+      <div class="clone c4"><i></i></div>
+      <div class="clone c5"><i></i></div>
+      <div class="clone c6"><i></i></div>
+    </div>
+    <div class="hero-veil"></div>
     <div class="hero-vignette"></div>
     <div class="wrap hero-in">
       <div class="wordmark-hero"><span>PRISMA</span></div>
