@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   const chave = process.env.GEMINI_API_KEY;
   if (!chave) return res.status(500).json({ erro: 'sem chave' });
 
-  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${chave}`);
+  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${chave}&pageSize=200`);
   const texto = await r.text().catch(() => '');
-  return res.status(200).json({ status: r.status, resposta: texto.slice(0, 6000) });
+  return res.status(200).json({ status: r.status, resposta: texto });
 }
