@@ -107,9 +107,15 @@ export default async function handler(req, res) {
   } catch (e) {
     console.error('[prompt]', e.message || e);
     console.error('[prompt-stack]', e.stack);
-    return res.status(500).json({
-      erro: 'Não consegui montar a direção agora.',
-      debug: e.message || String(e)
+
+    // Fallback: se Claude falhar, monta um prompt básico
+    const promptBasico = `${ocasiaoBase || 'Retrato profissional'}. Cliente pediu: ${texto.trim()}. Aplicar direção do perfil: ${arquetipoDir || 'postura natural, luz equilibrada'}. 9:16 aspect ratio, respiro nas bordas.`;
+
+    return res.status(200).json({
+      prompt: promptBasico,
+      leitura: `Você pediu: <b>${texto.trim()}</b>. Vamos gerar nesse estilo.`,
+      completado: 'Ocasião base, perfil visual e enquadramento preenchidos automaticamente.',
+      conflito: ''
     });
   }
 }
