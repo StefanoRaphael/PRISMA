@@ -15,9 +15,11 @@
  * ou MP_ACCESS_TOKEN por aqui.
  */
 
+import { supabaseUrl } from '../lib/auth.js';
+
 export default function handler(req, res) {
   const cfg = {
-    SUPABASE_URL: process.env.SUPABASE_URL || '',
+    SUPABASE_URL: supabaseUrl(),
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || ''
   };
 
