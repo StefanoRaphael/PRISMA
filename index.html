@@ -55,9 +55,11 @@ a{color:inherit}
 .wordmark{font-size:12px;font-weight:640;letter-spacing:.42em;
   background:linear-gradient(90deg,#FFF 0%,#FFF 20%,var(--sp1) 40%,var(--sp3) 72%,var(--sp5) 100%);
   -webkit-background-clip:text;background-clip:text;color:transparent}
-.wordmark-hero{font-size:clamp(48px,12vw,96px);font-weight:800;letter-spacing:.08em;
+.wordmark-hero{margin-bottom:22px}
+.wordmark-hero span{font-size:clamp(46px,11vw,92px);font-weight:800;letter-spacing:.05em;margin-right:-.05em;
+  display:inline-block;line-height:1;
   background:linear-gradient(90deg,#FFF 0%,#FFF 15%,var(--sp1) 35%,var(--sp3) 70%,var(--sp5) 100%);
-  -webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:24px}
+  -webkit-background-clip:text;background-clip:text;color:transparent}
 .hl{background:var(--spectrum);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:640}
 .tabnum{font-variant-numeric:tabular-nums}
 
@@ -127,9 +129,27 @@ a{color:inherit}
   filter:blur(22px);opacity:.95}
 .beam .veil{position:absolute;inset:0;
   background:linear-gradient(to top,var(--abyss) 30%,rgba(5,13,24,.88) 44%,rgba(5,13,24,.18) 70%,rgba(5,13,24,0) 96%)}
-.hero-in{position:relative;z-index:3;text-align:center;max-width:580px;padding:40px 22px}
-.hero-meta{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:16px;font-size:11.5px;color:var(--t-low)}
-.dot{width:3px;height:3px;border-radius:50%;background:var(--t-low)}
+
+/* Clones flutuando ao fundo, decorativos */
+.hero-clones{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none}
+.hero-clones .clone{position:absolute;border-radius:18px;overflow:hidden;opacity:.28;
+  filter:saturate(1.15);box-shadow:0 25px 55px -22px rgba(0,0,0,.75);
+  animation:drift 17s ease-in-out infinite}
+.hero-clones .clone i{display:block;width:100%;height:100%}
+@keyframes drift{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(var(--dx,12px),var(--dy,-16px)) scale(1.045)}
+}
+.hero-clones .c1{width:84px;aspect-ratio:3/4;top:9%;left:3%;--dx:8px;--dy:14px;animation-duration:15s}
+.hero-clones .c2{width:96px;aspect-ratio:3/4;top:60%;left:2%;--dx:-8px;--dy:-13px;animation-duration:19s;animation-delay:-5s}
+.hero-clones .c3{width:88px;aspect-ratio:3/4;top:7%;right:3%;--dx:-10px;--dy:13px;animation-duration:17s;animation-delay:-2s}
+.hero-clones .c4{width:100px;aspect-ratio:3/4;top:58%;right:2%;--dx:9px;--dy:-15px;animation-duration:21s;animation-delay:-9s}
+.hero-clones .c5,.hero-clones .c6{display:none}
+.hero-vignette{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(ellipse 62% 48% at 50% 50%,rgba(5,13,24,.6) 0%,rgba(5,13,24,.25) 55%,transparent 78%)}
+
+.hero-in{position:relative;z-index:3;text-align:center;max-width:520px;padding:40px 22px;
+  display:flex;flex-direction:column;align-items:center}
 
 .sec{padding:72px 0}
 .sec-head{margin-bottom:26px}
@@ -306,6 +326,14 @@ a{color:inherit}
   .price-grid{grid-template-columns:1fr 1fr}
   .wrap{max-width:520px}
   .wrap.wide{max-width:1080px}
+  .hero-in{max-width:640px}
+  .hero-clones .clone{opacity:.4}
+  .hero-clones .c1{width:180px;top:12%;left:9%}
+  .hero-clones .c2{width:200px;top:56%;left:6%}
+  .hero-clones .c3{width:180px;top:10%;right:9%}
+  .hero-clones .c4{width:210px;top:54%;right:6%}
+  .hero-clones .c5{display:block;width:150px;aspect-ratio:3/4;top:36%;left:19%;--dx:8px;--dy:10px;animation-duration:18s;animation-delay:-6s}
+  .hero-clones .c6{display:block;width:160px;aspect-ratio:3/4;top:34%;right:18%;--dx:-8px;--dy:12px;animation-duration:22s;animation-delay:-11s}
 }
 </style>
 </head>
@@ -316,14 +344,22 @@ a{color:inherit}
 <section class="view on" id="v-landing">
   <div class="hero">
     <div class="beam"><div class="white"></div><div class="tri"></div><div class="fan"></div><div class="veil"></div></div>
+    <div class="hero-clones">
+      <div class="clone c1"><i class="ph-exec"></i></div>
+      <div class="clone c2"><i class="ph-praia"></i></div>
+      <div class="clone c3"><i class="ph-gala"></i></div>
+      <div class="clone c4"><i class="ph-viagem"></i></div>
+      <div class="clone c5"><i class="ph-editorial"></i></div>
+      <div class="clone c6"><i class="ph-noite"></i></div>
+    </div>
+    <div class="hero-vignette"></div>
     <div class="wrap hero-in">
-      <div class="wordmark-hero">P R I S M A</div>
-      <h1 class="h-xl" style="font-size:clamp(28px,6.5vw,42px);margin-bottom:24px">Fotógrafo 24 horas,<br>7 dias da semana.</h1>
-      <p class="p" style="margin:16px 0 26px;max-width:380px;font-size:15.5px;line-height:1.6">
+      <div class="wordmark-hero"><span>PRISMA</span></div>
+      <h1 class="h-xl" style="font-size:clamp(28px,6.5vw,42px);margin-bottom:22px;max-width:440px">Fotógrafo 24 horas,<br>7 dias da semana.</h1>
+      <p class="p" style="margin:0 0 28px;max-width:400px;font-size:15.5px;line-height:1.6">
         Sem agendamento. Sem atraso. Retratos profissionais em 12 contextos diferentes, com seu rosto de verdade.
       </p>
-      <button class="btn" onclick="go('auth')">Começar</button>
-      <div class="hero-meta"><span>Pronto em 30 minutos</span><div class="dot"></div><span>Acesso por 1 ano</span></div>
+      <button class="btn" style="max-width:320px" onclick="go('auth')">Começar</button>
     </div>
   </div>
 
