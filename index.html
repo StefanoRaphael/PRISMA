@@ -7,7 +7,7 @@
 <title>PRISMA — Você tem mais de um lado</title>
 <meta name="description" content="Retratos profissionais em todas as ocasiões da sua vida, com o seu rosto de verdade.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%25' stop-color='%23FF9160'/><stop offset='35%25' stop-color='%23FF5FA2'/><stop offset='65%25' stop-color='%23A96BFF'/><stop offset='100%25' stop-color='%236FE3C4'/></linearGradient></defs><polygon points='16,4 29,27 3,27' fill='none' stroke='url(%23g)' stroke-width='2.5' stroke-linejoin='round'/></svg>">
-<script src="config.js"></script>
+<script src="/api/config"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <style>
@@ -990,6 +990,7 @@ function toggleAuth(){
   document.getElementById('auth-toggle').innerHTML  = isSignup
     ? 'Já tem conta? <b>Entrar</b>' : 'Ainda não tem conta? <b>Criar acesso</b>';
   showMsg('auth-err','');
+  showMsg('auth-ok','','ok');
 }
 
 async function doAuth(){
@@ -1014,6 +1015,18 @@ async function doAuth(){
         email, password: pass, options:{ data:{ nome: name } }
       });
       if (error) throw error;
+
+      // Com "Confirm email" ligado no Supabase, o cadastro devolve o usuário
+      // mas NÃO devolve sessão. Sem sessão a RLS bloqueia toda escrita, e o
+      // cliente faria o diagnóstico e o envio de fotos sem nada ser gravado.
+      // Melhor parar aqui e pedir a confirmação.
+      if (!data.session){
+        toggleAuth();
+        showMsg('auth-ok','Enviamos um e-mail de confirmação para ' + email +
+          '. Confirme o endereço e entre para continuar.','ok');
+        return;
+      }
+
       S.user = data.user;
       await ensureProfile(name);
       go('quiz');
@@ -1034,6 +1047,7 @@ async function doAuth(){
 
 function translateAuthError(m){
   if (!m) return 'Não consegui completar. Tente de novo.';
+  if (m === 'perfil') return 'Sua conta foi criada, mas não consegui preparar seu perfil. Entre de novo para continuar.';
   if (m.includes('already registered')) return 'Esse e-mail já tem conta. Toque em Entrar.';
   if (m.includes('Invalid login'))      return 'E-mail ou senha incorretos.';
   if (m.includes('Email not confirmed'))return 'Confirme o e-mail que enviamos antes de entrar.';
@@ -1048,11 +1062,18 @@ async function signOut(){
 
 async function ensureProfile(nome){
   if (!sb || !S.user) return;
+  // O gatilho ao_criar_usuario já cria o perfil no banco. A inserção abaixo
+  // é rede de segurança para o caso de o gatilho não existir no projeto.
   const { data } = await sb.from('perfis').select('*').eq('id', S.user.id).maybeSingle();
   if (data){ S.profile = data; return; }
-  const { data: novo } = await sb.from('perfis').insert({
+
+  const { data: novo, error } = await sb.from('perfis').insert({
     id: S.user.id, nome: nome || '', plano: 'nenhum', creditos: 0
   }).select().single();
+
+  // Sem perfil nada é gravado depois: falhar visível é melhor do que deixar
+  // o cliente responder o diagnóstico e enviar fotos à toa.
+  if (error || !novo) throw new Error('perfil');
   S.profile = novo;
 }
 
