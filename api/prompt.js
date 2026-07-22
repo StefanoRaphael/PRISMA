@@ -77,14 +77,12 @@ export default async function handler(req, res) {
   try {
     const resposta = await client.messages.create({
       model: 'claude-opus-4-8',
-      max_tokens: 4000,
-      thinking: { type: 'adaptive' },
-      output_config: {
-        effort: 'medium',
-        format: { type: 'json_schema', schema: ESQUEMA }
-      },
+      max_tokens: 2000,
       system: SISTEMA,
-      messages: [{ role: 'user', content: entrada }]
+      messages: [{
+        role: 'user',
+        content: `${entrada}\n\nResponda APENAS em JSON válido, sem markdown, sem explicações. JSON:`
+      }]
     });
 
     if (resposta.stop_reason === 'refusal') {
