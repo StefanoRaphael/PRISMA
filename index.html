@@ -148,7 +148,7 @@ a{color:inherit}
 .hero-clones .c5,.hero-clones .c6{display:none}
 .hero-clones .c1 i{background-image:url('assets/hero/oc-executivo.jpg')}
 .hero-clones .c2 i{background-image:url('assets/hero/oc-praia.jpg')}
-.hero-clones .c3 i{background-image:url('assets/hero/oc-gala.jpg')}
+.hero-clones .c3 i{background-image:url('assets/hero/oc-glamour.jpg')}
 .hero-clones .c4 i{background-image:url('assets/hero/oc-casa.jpg')}
 .hero-clones .c5 i{background-image:url('assets/hero/oc-editorial.jpg')}
 .hero-clones .c6 i{background-image:url('assets/hero/oc-noite.jpg')}
@@ -209,10 +209,10 @@ a{color:inherit}
 .ph-familia{background:radial-gradient(85% 70% at 45% 15%,rgba(255,145,96,.4),transparent 62%),radial-gradient(60% 60% at 85% 80%,rgba(255,95,162,.3),transparent 60%),linear-gradient(150deg,#2A3352,#0E1524)}
 .ph-editorial{background:radial-gradient(80% 60% at 65% 12%,rgba(255,95,162,.45),transparent 62%),linear-gradient(155deg,#24243F,#0A0C18)}
 .ph-campo{background:radial-gradient(85% 65% at 40% 15%,rgba(111,227,196,.42),transparent 62%),radial-gradient(60% 60% at 80% 82%,rgba(255,145,96,.3),transparent 60%),linear-gradient(160deg,#153A44,#08181C)}
-.ph-palco{background:radial-gradient(80% 60% at 50% 10%,rgba(255,95,162,.5),transparent 60%),radial-gradient(60% 60% at 20% 85%,rgba(169,107,255,.4),transparent 62%),linear-gradient(170deg,#2A1840,#0B0A1C)}
+.ph-perfil{background:radial-gradient(70% 70% at 50% 50%,rgba(111,227,196,.35),transparent 70%),linear-gradient(135deg,#1A3A40,#0B1418)}
 .ph-casual{background:radial-gradient(85% 65% at 30% 15%,rgba(255,145,96,.38),transparent 62%),linear-gradient(155deg,#243B52,#0C1722)}
-.ph-inverno{background:radial-gradient(85% 60% at 55% 12%,rgba(79,201,245,.42),transparent 62%),linear-gradient(165deg,#1B3350,#080F1C)}
-.ph-gala{background:radial-gradient(80% 60% at 60% 14%,rgba(255,145,96,.4),transparent 60%),radial-gradient(60% 60% at 18% 82%,rgba(169,107,255,.42),transparent 62%),linear-gradient(158deg,#1E1A3A,#080A16)}
+.ph-apresentacao{background:radial-gradient(80% 60% at 50% 15%,rgba(255,145,96,.4),transparent 60%),linear-gradient(160deg,#2A2820,#0B0A1C)}
+.ph-glamour{background:radial-gradient(85% 70% at 50% 20%,rgba(255,145,96,.5),transparent 65%),radial-gradient(70% 70% at 15% 80%,rgba(169,107,255,.3),transparent 70%),linear-gradient(140deg,#3A1A30,#0B0A1C)}
 
 /* ============ PROGRESSO QUIZ ============ */
 .prog{display:flex;gap:3px;margin-bottom:26px}
@@ -838,12 +838,12 @@ const OCCASIONS = [
   // "Em casa", não "Família": o clone é individual, prometer família geraria rostos inventados.
   { id:'casa',      nome:'Em casa',    ph:'ph-familia',   free:false,
     base:'Warm domestic portrait in a bright, well-designed living room, soft window light, relaxed and approachable. 50mm lens, f/2.0.' },
-  { id:'palco',     nome:'Palco',      ph:'ph-palco',     free:false,
-    base:'Keynote speaker portrait on a conference stage, dark auditorium, stage wash with strong rim light, microphone. 85mm lens, f/2.0.' },
-  { id:'inverno',   nome:'Inverno',    ph:'ph-inverno',   free:false,
-    base:'Cold weather portrait, overcoat and scarf, snowy or grey urban street, soft flat winter daylight. 85mm lens, f/2.0.' },
-  { id:'gala',      nome:'Gala',       ph:'ph-gala',      free:false,
-    base:'Black tie event portrait, elegant venue interior, warm chandelier light with soft shadow falloff. 85mm lens, f/1.8.' }
+  { id:'perfil',    nome:'Foto de perfil', ph:'ph-perfil',    free:false,
+    base:'Clean profile headshot for social media, centered close-up on neutral smooth background, flattering key light with soft fill, confident expression. 50mm lens, f/2.8.' },
+  { id:'apresentacao', nome:'Reunião/Apresentação', ph:'ph-apresentacao', free:false,
+    base:'Professional speaker portrait during presentation, modern conference setting or auditorium, warm stage lighting, dynamic posture, authoritative yet approachable. 85mm lens, f/2.0.' },
+  { id:'glamour',   nome:'Glamour',    ph:'ph-glamour',   free:false,
+    base:'High-glamour portrait, studio lighting with contoured key light and separation, polished styling, cinematic color grading with warm golden tones. 85mm lens, f/1.8.' }
 ];
 
 // Foto de demonstração de cada ocasião. O id da ocasião é o nome do arquivo.
