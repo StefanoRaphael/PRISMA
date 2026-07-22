@@ -10,8 +10,8 @@
 
 import { admin } from '../lib/auth.js';
 
-const CREDITOS = { mensal: 20, anual: 180, pro: 600 };
-const VALORES  = { mensal: 149.00, anual: 1188.00, pro: 2388.00 };
+const CREDITOS = { basico: 20, pro: 60 };
+const VALORES  = { basico: 99.00, pro: 199.00 };
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -57,11 +57,10 @@ export default async function handler(req, res) {
       .update({ status: 'aprovado', mp_id: String(pg.id) })
       .eq('id', pagamentoId);
 
+    // Todos os planos são mensais por enquanto — recorrência renova o saldo, não acumula.
     const agora = new Date();
-    const anual = plano !== 'mensal';
     const validade = new Date(agora);
-    if (anual) validade.setFullYear(validade.getFullYear() + 1);
-    else validade.setMonth(validade.getMonth() + 1);
+    validade.setMonth(validade.getMonth() + 1);
 
     const metodo = pg.payment_type_id === 'bank_transfer' ? 'Pix' : 'Cartão';
 
@@ -69,8 +68,8 @@ export default async function handler(req, res) {
       plano,
       creditos: CREDITOS[plano],
       validade: validade.toISOString(),
-      renova_dia: anual ? null : agora.getDate(),
-      metodo: `${metodo} · ${anual ? 'anual' : 'mensal'}`
+      renova_dia: agora.getDate(),
+      metodo: `${metodo} · mensal`
     }).eq('id', userId);
 
     return res.status(200).end();

@@ -11,9 +11,8 @@
 import { admin, usuarioDaRequisicao } from '../lib/auth.js';
 
 const PLANOS = {
-  mensal: { nome: 'PRISMA Mensal', valor: 149.00,  creditos: 20,  ciclo: 'mensal' },
-  anual:  { nome: 'PRISMA Anual',  valor: 1188.00, creditos: 180, ciclo: 'anual'  },
-  pro:    { nome: 'PRISMA Pro',    valor: 2388.00, creditos: 600, ciclo: 'anual'  }
+  basico: { nome: 'PRISMA Básico', valor: 99.00,  creditos: 20, ciclo: 'mensal' },
+  pro:    { nome: 'PRISMA Pro',    valor: 199.00, creditos: 60, ciclo: 'mensal' }
 };
 
 export default async function handler(req, res) {

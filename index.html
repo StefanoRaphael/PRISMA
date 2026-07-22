@@ -353,7 +353,7 @@ a{color:inherit}
 @media(min-width:768px){
   .oc-grid{grid-template-columns:repeat(3,1fr)}
   .grid2{grid-template-columns:repeat(3,1fr)}
-  .price-grid{grid-template-columns:1fr 1fr}
+  .price-grid{grid-template-columns:repeat(3,1fr)}
   .wrap{max-width:520px}
   .wrap.wide{max-width:1080px}
   .hero-in{max-width:640px}
@@ -459,7 +459,7 @@ a{color:inherit}
     <div id="steps"></div>
   </div>
 
-  <div class="wrap sec" style="padding-top:0" id="planos">
+  <div class="wrap wide sec" style="padding-top:0" id="planos">
     <div class="sec-head">
       <div class="kicker" style="margin-bottom:12px">Planos</div>
       <h2 class="h-lg">Escolha o seu.</h2>
@@ -721,7 +721,7 @@ a{color:inherit}
 
 <!-- ================= PLANOS ================= -->
 <section class="view" id="v-plans">
-  <div class="wrap pad-t pad-b">
+  <div class="wrap wide pad-t pad-b">
     <div class="top" style="padding-top:0">
       <button class="back" onclick="go('account')">‹</button>
       <div class="wordmark">P R I S M A</div>
@@ -916,13 +916,16 @@ const EXAMPLES = [
 ];
 
 /* ---------- Planos ---------- */
+// Número real do WhatsApp de Stefano ainda não configurado — trocar antes de divulgar o link.
+const WHATSAPP_URL = 'https://wa.me/55SEUNUMERO?text=' + encodeURIComponent('Vim pelo PRISMA. Quero falar sobre um projeto personalizado.');
+
 const PLANS = [
-  { id:'mensal', nome:'Mensal', preco:'R$ 149', sufixo:'/mês', best:false,
+  { id:'basico', nome:'Básico', preco:'R$ 99', sufixo:'/mês', best:false,
     itens:['20 retratos por mês','4 ocasiões liberadas','Cortes para todas as redes','Cancele quando quiser'] },
-  { id:'anual', nome:'Anual', preco:'R$ 1.188', sufixo:'/ano', best:true,
-    itens:['180 retratos no ano','Todas as 12 ocasiões','Saldo não zera todo mês','Cortes para todas as redes'] },
-  { id:'pro', nome:'Pro', preco:'R$ 2.388', sufixo:'/ano', best:false,
-    itens:['600 retratos no ano','Todas as 12 ocasiões','Prioridade na fila','Suporte direto com o estúdio'] }
+  { id:'pro', nome:'Pro', preco:'R$ 199', sufixo:'/mês', best:true,
+    itens:['60 retratos por mês','Todas as 12 ocasiões','Prioridade na fila','Cancele quando quiser'] },
+  { id:'personalizado', nome:'Personalizado', preco:'Sob consulta', sufixo:'', best:false, contato:true,
+    itens:['Direção pessoal de Stefano Raphael','Volume e prazo sob medida','Para projetos grandes'] }
 ];
 
 /* =========================================================================
@@ -1169,7 +1172,7 @@ async function uploadPending(){
    ========================================================================= */
 function planLevel(){
   const p = S.profile?.plano || 'nenhum';
-  return p === 'mensal' ? 1 : (p === 'anual' || p === 'pro') ? 2 : 0;
+  return p === 'basico' ? 1 : p === 'pro' ? 2 : 0;
 }
 
 function renderOccasions(){
@@ -1419,31 +1422,41 @@ async function downloadCrop(){
 function renderAccount(){
   const p = S.profile || {};
   const plano = p.plano || 'nenhum';
-  const anual = plano === 'anual' || plano === 'pro';
-  const total = plano === 'pro' ? 600 : plano === 'anual' ? 180 : plano === 'mensal' ? 20 : 0;
+  const total = plano === 'pro' ? 60 : plano === 'basico' ? 20 : 0;
   const rest  = p.creditos || 0;
   const pct   = total ? Math.round((rest/total)*100) : 0;
 
   document.getElementById('acc-balance').innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:baseline">
-      <div class="p-sm">${anual ? 'Retratos disponíveis' : 'Retratos deste mês'}</div>
-      <div class="badge ${anual?'':'flat'}">${plano === 'nenhum' ? 'Sem plano' : plano}</div>
+      <div class="p-sm">Retratos deste mês</div>
+      <div class="badge ${plano==='nenhum'?'flat':''}">${plano === 'nenhum' ? 'Sem plano' : plano}</div>
     </div>
     <div class="big tabnum">${rest} <small>de ${total}</small></div>
-    <div class="meter ${anual?'':'flat'}"><i style="width:${pct}%"></i></div>
-    <p class="p-sm">${anual
-      ? 'Saldo válido até ' + (p.validade ? formatDate(p.validade) : 'o fim do período')
-      : plano === 'mensal' ? 'Zera e renova no dia ' + (p.renova_dia || '1') + ' de cada mês'
-      : 'Escolha um plano para começar a gerar'}</p>`;
+    <div class="meter ${plano==='nenhum'?'flat':''}"><i style="width:${pct}%"></i></div>
+    <p class="p-sm">${plano === 'nenhum'
+      ? 'Escolha um plano para começar a gerar'
+      : 'Zera e renova no dia ' + (p.renova_dia || '1') + ' de cada mês'}</p>`;
 
-  document.getElementById('acc-upsell').innerHTML = (plano === 'mensal' || plano === 'nenhum') ? `
-    <div class="card spec">
-      <div class="h-md" style="font-size:16px;margin-bottom:6px">${plano === 'nenhum' ? 'Escolha seu plano' : 'Passe para o anual'}</div>
-      <p class="p-sm" style="margin-bottom:15px">${plano === 'nenhum'
-        ? 'Quatro ocasiões liberadas já no plano mensal.'
-        : 'Todas as 12 ocasiões liberadas e saldo que não zera todo mês.'}</p>
-      <button class="btn" style="padding:12px 18px;font-size:14px" onclick="go('plans')">Ver planos</button>
-    </div>` : '';
+  document.getElementById('acc-upsell').innerHTML =
+    plano === 'nenhum' ? `
+      <div class="card spec">
+        <div class="h-md" style="font-size:16px;margin-bottom:6px">Escolha seu plano</div>
+        <p class="p-sm" style="margin-bottom:15px">Quatro ocasiões liberadas já no plano Básico.</p>
+        <button class="btn" style="padding:12px 18px;font-size:14px" onclick="go('plans')">Ver planos</button>
+      </div>`
+    : plano === 'basico' ? `
+      <div class="card spec">
+        <div class="h-md" style="font-size:16px;margin-bottom:6px">Passe para o Pro</div>
+        <p class="p-sm" style="margin-bottom:15px">Todas as 12 ocasiões liberadas e 60 retratos por mês.</p>
+        <button class="btn" style="padding:12px 18px;font-size:14px" onclick="go('plans')">Ver planos</button>
+      </div>`
+    : plano === 'pro' ? `
+      <div class="card spec">
+        <div class="h-md" style="font-size:16px;margin-bottom:6px">Precisa de mais volume?</div>
+        <p class="p-sm" style="margin-bottom:15px">Projetos grandes, com direção pessoal de Stefano Raphael.</p>
+        <button class="btn btn-ghost" style="padding:12px 18px;font-size:14px" onclick="window.open(WHATSAPP_URL,'_blank')">Falar no WhatsApp</button>
+      </div>`
+    : '';
 
   document.getElementById('acc-arch').textContent = ARCHETYPES[S.archetype]?.nome || '—';
   document.getElementById('acc-refs').textContent = S.refs.length ? S.refs.length + ' fotos' : '—';
@@ -1462,6 +1475,15 @@ function formatDate(d){
    PLANOS E PAGAMENTO
    ========================================================================= */
 function priceCard(p, ctx){
+  if (p.contato){
+    return `
+      <div class="price">
+        <div class="h-md">${p.nome}</div>
+        <div class="val">${p.preco}</div>
+        <ul>${p.itens.map(i => `<li>${i}</li>`).join('')}</ul>
+        <button class="btn btn-ghost" onclick="window.open('${WHATSAPP_URL}','_blank')">Falar no WhatsApp</button>
+      </div>`;
+  }
   return `
     <div class="price ${p.best?'best':''}">
       ${p.best ? '<span class="tag">Mais escolhido</span>' : ''}
