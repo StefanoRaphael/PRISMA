@@ -1089,11 +1089,18 @@ async function ensureProfile(nome){
  */
 async function syncEntitlement(){
   try {
-    await fetch('/api/me', {
+    const r = await fetch('/api/me', {
       method:'POST',
       headers:{ 'Authorization':'Bearer ' + (await token()) }
     });
-  } catch { /* sem rede: segue com o que o banco já tem */ }
+    console.log('[syncEntitlement] status:', r.status);
+    if (!r.ok) {
+      const err = await r.json();
+      console.error('[syncEntitlement] error:', err);
+    }
+  } catch(e) {
+    console.error('[syncEntitlement] exception:', e);
+  }
 }
 
 async function loadProfile(){
