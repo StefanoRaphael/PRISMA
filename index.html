@@ -1028,12 +1028,15 @@ async function doAuth(){
       }
 
       S.user = data.user;
+      // Sincroniza antes de ler o perfil, para a conta do estúdio já nascer liberada.
+      await syncEntitlement();
       await ensureProfile(name);
       go('quiz');
     } else {
       const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
       if (error) throw error;
       S.user = data.user;
+      await syncEntitlement();
       await loadProfile();
       routeAfterLogin();
     }
@@ -1075,6 +1078,20 @@ async function ensureProfile(nome){
   // o cliente responder o diagnóstico e enviar fotos à toa.
   if (error || !novo) throw new Error('perfil');
   S.profile = novo;
+}
+
+/**
+ * Pede ao servidor que confirme o direito de acesso da conta.
+ * As contas internas do estúdio são liberadas por lá, nunca por aqui: a
+ * lista de e-mails não entra em código que o navegador baixa.
+ */
+async function syncEntitlement(){
+  try {
+    await fetch('/api/me', {
+      method:'POST',
+      headers:{ 'Authorization':'Bearer ' + (await token()) }
+    });
+  } catch { /* sem rede: segue com o que o banco já tem */ }
 }
 
 async function loadProfile(){
@@ -1217,6 +1234,7 @@ async function uploadPending(){
    ========================================================================= */
 function planLevel(){
   const p = S.profile?.plano || 'nenhum';
+  if (p === 'ilimitado') return 2;
   return p === 'basico' ? 1 : p === 'pro' ? 2 : 0;
 }
 
@@ -1471,7 +1489,14 @@ function renderAccount(){
   const rest  = p.creditos || 0;
   const pct   = total ? Math.round((rest/total)*100) : 0;
 
-  document.getElementById('acc-balance').innerHTML = `
+  document.getElementById('acc-balance').innerHTML = plano === 'ilimitado' ? `
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <div class="p-sm">Retratos</div>
+      <div class="badge">Estúdio</div>
+    </div>
+    <div class="big">Ilimitado</div>
+    <div class="meter"><i style="width:100%"></i></div>
+    <p class="p-sm">Conta do estúdio. Todas as 12 ocasiões, sem consumo de crédito.</p>` : `
     <div style="display:flex;justify-content:space-between;align-items:baseline">
       <div class="p-sm">Retratos deste mês</div>
       <div class="badge ${plano==='nenhum'?'flat':''}">${plano === 'nenhum' ? 'Sem plano' : plano}</div>
@@ -1602,6 +1627,7 @@ function renderLanding(){
     const { data } = await sb.auth.getSession();
     if (data?.session?.user){
       S.user = data.session.user;
+      await syncEntitlement();
       await loadProfile();
       routeAfterLogin();
     }

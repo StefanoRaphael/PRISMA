@@ -7,6 +7,7 @@
  */
 
 import { admin, usuarioDaRequisicao } from '../lib/auth.js';
+import { ehIlimitada } from '../lib/contas.js';
 import { gerarRetratos } from '../lib/magnific.js';
 
 const CUSTO = 4; // 4 retratos por geração
@@ -30,27 +31,35 @@ export default async function handler(req, res) {
     .from('perfis').select('creditos, validade, plano').eq('id', usuario.id).single();
 
   if (!perfil) return res.status(400).json({ erro: 'Perfil não encontrado.' });
-  if (perfil.plano === 'nenhum') {
-    return res.status(402).json({ erro: 'Escolha um plano para começar a gerar.' });
-  }
-  if (perfil.validade && new Date(perfil.validade) < new Date()) {
-    return res.status(402).json({ erro: 'Seu acesso venceu. Renove para continuar.' });
-  }
-  if ((perfil.creditos || 0) < CUSTO) {
-    return res.status(402).json({ erro: 'Seus créditos acabaram.' });
-  }
 
-  // Débito otimista com trava: só desconta se o saldo ainda comportar.
-  const { data: debitado, error: erroDebito } = await sb
-    .from('perfis')
-    .update({ creditos: perfil.creditos - CUSTO })
-    .eq('id', usuario.id)
-    .gte('creditos', CUSTO)
-    .select('creditos')
-    .single();
+  // Contas internas do estúdio não passam por plano, validade nem crédito.
+  const ilimitado = ehIlimitada(usuario.email);
+  let saldo = null;
 
-  if (erroDebito || !debitado) {
-    return res.status(402).json({ erro: 'Seus créditos acabaram.' });
+  if (!ilimitado) {
+    if (perfil.plano === 'nenhum') {
+      return res.status(402).json({ erro: 'Escolha um plano para começar a gerar.' });
+    }
+    if (perfil.validade && new Date(perfil.validade) < new Date()) {
+      return res.status(402).json({ erro: 'Seu acesso venceu. Renove para continuar.' });
+    }
+    if ((perfil.creditos || 0) < CUSTO) {
+      return res.status(402).json({ erro: 'Seus créditos acabaram.' });
+    }
+
+    // Débito otimista com trava: só desconta se o saldo ainda comportar.
+    const { data: debitado, error: erroDebito } = await sb
+      .from('perfis')
+      .update({ creditos: perfil.creditos - CUSTO })
+      .eq('id', usuario.id)
+      .gte('creditos', CUSTO)
+      .select('creditos')
+      .single();
+
+    if (erroDebito || !debitado) {
+      return res.status(402).json({ erro: 'Seus créditos acabaram.' });
+    }
+    saldo = debitado.creditos;
   }
 
   // --- registro da geração ------------------------------------------------
@@ -70,11 +79,14 @@ export default async function handler(req, res) {
   try {
     const taskId = await gerarRetratos(prompt, referencias);
     await sb.from('geracoes').update({ externo_id: taskId }).eq('id', geracao.id);
-    return res.status(200).json({ id: geracao.id, creditos: debitado.creditos });
+    return res.status(200).json({ id: geracao.id, creditos: saldo });
   } catch (e) {
     console.error('[generate]', e);
     // Devolve o crédito: o cliente não paga por falha nossa.
-    await sb.from('perfis').update({ creditos: perfil.creditos }).eq('id', usuario.id);
+    // Conta ilimitada não teve débito, então não há o que devolver.
+    if (!ilimitado) {
+      await sb.from('perfis').update({ creditos: perfil.creditos }).eq('id', usuario.id);
+    }
     await sb.from('geracoes')
       .update({ status: 'erro', erro: String(e.message).slice(0, 500) })
       .eq('id', geracao.id);
