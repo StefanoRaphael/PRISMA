@@ -154,8 +154,10 @@ a{color:inherit}
 .hero-vignette{position:absolute;inset:0;z-index:2;pointer-events:none;
   background:radial-gradient(ellipse 62% 48% at 50% 50%,rgba(5,13,24,.6) 0%,rgba(5,13,24,.25) 55%,transparent 78%)}
 
-.hero-in{position:relative;z-index:3;text-align:center;max-width:520px;padding:clamp(40px,7vh,110px) 22px clamp(40px,6vh,90px);
-  display:flex;flex-direction:column;align-items:center}
+.hero-in{position:relative;z-index:3;text-align:center;max-width:520px;padding:clamp(36px,6vh,80px) 22px clamp(36px,6vh,80px);
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;min-height:0}
+.hero-top{display:flex;flex-direction:column;align-items:center;width:100%}
+.hero-cred{width:100%}
 .hero-meta{display:flex;align-items:center;gap:10px;justify-content:center;font-size:11.5px;color:var(--t-low)}
 .dot{width:3px;height:3px;border-radius:50%;background:var(--t-low);flex:none}
 
@@ -401,14 +403,16 @@ a{color:inherit}
     <div class="hero-veil"></div>
     <div class="hero-vignette"></div>
     <div class="wrap hero-in">
-      <div class="wordmark-hero"><span>PRISMA</span></div>
-      <h1 class="h-xl" style="font-size:clamp(28px,6.5vw,42px);margin-bottom:22px;max-width:440px">Fotógrafo 24 horas,<br>7 dias da semana.</h1>
-      <p class="p" style="margin:0 0 28px;max-width:400px;font-size:15.5px;line-height:1.6">
-        Sem agendamento. Sem atraso. Retratos profissionais em 12 contextos diferentes, com seu rosto de verdade.
-      </p>
-      <button class="btn" style="max-width:320px" onclick="go('auth')">Começar</button>
+      <div class="hero-top">
+        <div class="wordmark-hero"><span>PRISMA</span></div>
+        <h1 class="h-xl" style="font-size:clamp(28px,6.5vw,42px);margin-bottom:22px;max-width:440px">Fotógrafo 24 horas,<br>7 dias da semana.</h1>
+        <p class="p" style="margin:0 0 28px;max-width:400px;font-size:15.5px;line-height:1.6">
+          Sem agendamento. Sem atraso. Retratos profissionais em 12 contextos diferentes, com seu rosto de verdade.
+        </p>
+        <button class="btn" style="max-width:320px" onclick="go('auth')">Começar</button>
+      </div>
 
-      <div style="margin-top:clamp(48px,13vh,200px);max-width:560px">
+      <div class="hero-cred" style="max-width:560px">
         <p style="font-size:clamp(19px,2.6vw,25px);line-height:1.55;letter-spacing:-.015em;color:var(--t-hi);font-weight:500">
           Criado por <b class="hl">Stefano Raphael</b>, fotógrafo com 20 anos de carreira internacional em moda, editorial e retrato corporativo. O mesmo olhar treinado em produções pelo mundo, agora treinado para fotografar você.
         </p>
