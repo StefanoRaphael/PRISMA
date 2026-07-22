@@ -34,6 +34,7 @@ export default async function handler(req, res) {
 
   // Contas internas do estúdio não passam por plano, validade nem crédito.
   const ilimitado = ehIlimitada(usuario.email);
+  console.log('[generate] usuario.email:', usuario.email, 'ilimitado:', ilimitado);
   let saldo = null;
 
   if (!ilimitado) {
