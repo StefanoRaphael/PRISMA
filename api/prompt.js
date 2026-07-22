@@ -75,14 +75,17 @@ export default async function handler(req, res) {
   ].join('\n');
 
   try {
+    // O esquema é o que garante os quatro campos. Sem ele o modelo devolve
+    // só prompt e conflito, e a tela de confirmação fica sem a leitura.
     const resposta = await client.messages.create({
       model: 'claude-opus-4-8',
       max_tokens: 2000,
+      output_config: {
+        effort: 'medium',
+        format: { type: 'json_schema', schema: ESQUEMA }
+      },
       system: SISTEMA,
-      messages: [{
-        role: 'user',
-        content: `${entrada}\n\nResponda APENAS em JSON válido, sem markdown, sem explicações. JSON:`
-      }]
+      messages: [{ role: 'user', content: entrada }]
     });
 
     if (resposta.stop_reason === 'refusal') {
