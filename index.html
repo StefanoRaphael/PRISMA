@@ -1146,6 +1146,10 @@ function quizNext(){
 }
 
 async function finishQuiz(){
+  const btn = document.getElementById('quiz-next');
+  btn.disabled = true;
+  btn.textContent = 'Estou processando suas respostas...';
+
   let best = 'soberano', top = -1;
   for (const k in S.scores){ if (S.scores[k] > top){ top = S.scores[k]; best = k; } }
   S.archetype = best;
