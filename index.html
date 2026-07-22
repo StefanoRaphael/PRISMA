@@ -154,12 +154,25 @@ a{color:inherit}
 .hero-vignette{position:absolute;inset:0;z-index:2;pointer-events:none;
   background:radial-gradient(ellipse 62% 48% at 50% 50%,rgba(5,13,24,.6) 0%,rgba(5,13,24,.25) 55%,transparent 78%)}
 
-.hero-in{position:relative;z-index:3;text-align:center;max-width:520px;padding:clamp(36px,6vh,80px) 22px clamp(36px,6vh,80px);
+.hero-in{position:relative;z-index:3;text-align:center;max-width:520px;padding:clamp(36px,6vh,80px) 22px clamp(64px,8vh,110px);
   display:flex;flex-direction:column;align-items:center;justify-content:space-between;min-height:0}
 .hero-top{display:flex;flex-direction:column;align-items:center;width:100%}
 .hero-cred{width:100%}
 .hero-meta{display:flex;align-items:center;gap:10px;justify-content:center;font-size:11.5px;color:var(--t-low)}
 .dot{width:3px;height:3px;border-radius:50%;background:var(--t-low);flex:none}
+
+.scroll-hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:4;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:0;opacity:.5;transition:opacity .2s ease}
+.scroll-hint:hover{opacity:.9}
+.scroll-hint .mouse{width:20px;height:32px;border:1.5px solid rgba(255,255,255,.55);border-radius:11px;position:relative}
+.scroll-hint .mouse i{position:absolute;top:5px;left:50%;transform:translateX(-50%);width:3px;height:6px;
+  border-radius:2px;background:var(--spectrum);animation:scrollDot 1.7s ease-in-out infinite}
+@keyframes scrollDot{
+  0%{opacity:1;transform:translate(-50%,0)}
+  65%{opacity:0;transform:translate(-50%,13px)}
+  66%{opacity:0;transform:translate(-50%,0)}
+  100%{opacity:0;transform:translate(-50%,0)}
+}
 
 .sec{padding:72px 0}
 .sec-head{margin-bottom:26px}
@@ -420,6 +433,9 @@ a{color:inherit}
           <span>20 anos de carreira</span><div class="dot"></div><span>Moda & Editorial</span><div class="dot"></div><span>Corporativo</span>
         </div>
       </div>
+    </div>
+    <div class="scroll-hint" onclick="document.querySelector('.sec').scrollIntoView({behavior:'smooth'})">
+      <div class="mouse"><i></i></div>
     </div>
   </div>
 
@@ -1481,17 +1497,27 @@ async function checkout(planId){
 /* =========================================================================
    LANDING DINÂMICA
    ========================================================================= */
+const DEMO_IMG = {
+  executivo:'assets/hero/clone-exec.jpg', praia:'assets/hero/clone-praia.jpg',
+  gala:'assets/hero/clone-gala.jpg', viagem:'assets/hero/clone-viagem.jpg',
+  editorial:'assets/hero/clone-editorial.jpg', noite:'assets/hero/clone-noite.jpg'
+};
+
 function renderLanding(){
-  document.getElementById('landing-strip').innerHTML = OCCASIONS.slice(0,9).map(o => `
-    <div class="shot ${o.ph}" style="aspect-ratio:9/16">
+  document.getElementById('landing-strip').innerHTML = OCCASIONS.slice(0,9).map(o => {
+    const img = DEMO_IMG[o.id];
+    const bg  = img ? `background-image:url('${img}');background-size:cover;background-position:center` : '';
+    return `
+    <div class="shot ${img ? '' : o.ph}" style="aspect-ratio:9/16;${bg}">
       <div class="pill">${o.nome}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   const passos = [
     ['Responda 12 perguntas','Rápidas, sobre você. É o que define o estilo das suas imagens.'],
     ['Envie de 8 a 12 fotos','Selfies simples, com luz natural. Um guia aparece na tela.'],
     ['Diga como imagina a foto','Escreva do seu jeito. Nós montamos a direção técnica.'],
-    ['Receba em 30 minutos','Quatro retratos por vez, prontos para todas as redes.']
+    ['Receba em minutos, não semanas','Quatro retratos por vez, prontos para todas as redes.']
   ];
   document.getElementById('steps').innerHTML = passos.map((p,i) => `
     <div style="display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--line)">
