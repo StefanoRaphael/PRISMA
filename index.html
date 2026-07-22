@@ -1378,13 +1378,9 @@ async function buildPrompt(){
 /* =========================================================================
    GERAÇÃO
    ========================================================================= */
+// Quem decide se pode gerar é o servidor: só ele conhece as contas do estúdio.
 async function startGeneration(){
   showMsg('conf-err','');
-  if ((S.profile?.creditos || 0) < 4){
-    showMsg('conf-err','Seus créditos acabaram. Veja os planos para continuar.');
-    setTimeout(() => go('plans'), 1400);
-    return;
-  }
   go('generating');
   renderGenSlots(0);
   document.getElementById('gen-title').textContent = 'Compondo ' +
@@ -1402,8 +1398,13 @@ async function startGeneration(){
         referencias: S.refs.map(x => x.url).slice(0,12)
       })
     });
-    if (!r.ok) throw new Error();
     const d = await r.json();
+    if (!r.ok){
+      go('confirm');
+      showMsg('conf-err', d.erro || 'Algo falhou. Tente de novo.');
+      if (r.status === 402) setTimeout(() => go('plans'), 1600);
+      return;
+    }
     S.generationId = d.id;
     pollGeneration();
   } catch {
