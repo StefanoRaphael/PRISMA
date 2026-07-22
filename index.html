@@ -727,6 +727,7 @@ a{color:inherit}
     <div id="acc-upsell"></div>
 
     <div class="card" style="padding:4px 19px">
+      <div class="row"><span>E-mail da conta</span><i id="acc-email">—</i></div>
       <div class="row"><span>Meu perfil visual</span><i id="acc-arch">—</i></div>
       <div class="row"><span>Referências</span><i id="acc-refs">—</i></div>
       <div class="row"><span>Ocasiões usadas</span><i id="acc-oc">—</i></div>
@@ -1542,6 +1543,7 @@ async function downloadCrop(){
 function renderAccount(){
   const p = S.profile || {};
   const plano = p.plano || 'nenhum';
+  document.getElementById('acc-email').textContent = S.user?.email || '—';
   const total = plano === 'pro' ? 60 : plano === 'basico' ? 20 : 0;
   const rest  = p.creditos || 0;
   const pct   = total ? Math.round((rest/total)*100) : 0;
