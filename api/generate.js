@@ -1,14 +1,15 @@
 /**
  * PRISMA — POST /api/generate
  *
- * Debita 4 créditos, dispara a geração e devolve o id para o app acompanhar.
- * O débito acontece ANTES da chamada ao motor. Se o motor falhar, a rota
- * /api/status devolve os créditos.
+ * Debita 4 créditos e gera os retratos. Diferente da Magnific, o Gemini
+ * responde de forma síncrona — nesta mesma chamada já sabemos se deu certo,
+ * sem precisar de fila nem de /api/status consultando um motor externo.
+ * O débito acontece ANTES da chamada ao motor; se tudo falhar, devolve.
  */
 
 import { admin, usuarioDaRequisicao } from '../lib/auth.js';
 import { ehIlimitada } from '../lib/contas.js';
-import { gerarRetratos } from '../lib/magnific.js';
+import { gerarRetratos } from '../lib/gemini.js';
 
 const CUSTO = 4; // 4 retratos por geração
 
@@ -91,11 +92,26 @@ export default async function handler(req, res) {
     .select('id')
     .single();
 
-  // --- disparo ------------------------------------------------------------
+  // --- geração --------------------------------------------------------------
+  // O Gemini já devolve as imagens prontas nesta mesma chamada — não há
+  // task_id nem fila para /api/status acompanhar depois.
   try {
-    const taskId = await gerarRetratos(prompt, referencias);
-    await sb.from('geracoes').update({ externo_id: taskId }).eq('id', geracao.id);
-    return res.status(200).json({ id: geracao.id, creditos: saldo });
+    const { urls, parcial, erros } = await gerarRetratos(prompt, referencias);
+
+    await sb.from('geracoes')
+      .update({
+        status: 'pronto',
+        urls,
+        concluido_em: new Date().toISOString(),
+        erro: parcial ? `Parcial: ${erros.join(' | ')}`.slice(0, 500) : null
+      })
+      .eq('id', geracao.id);
+
+    await sb.from('retratos').insert(
+      urls.map(url => ({ user_id: usuario.id, geracao_id: geracao.id, ocasiao, url }))
+    );
+
+    return res.status(200).json({ id: geracao.id, creditos: saldo, urls, parcial });
   } catch (e) {
     console.error('[generate]', e);
     // Devolve o crédito: o cliente não paga por falha nossa.

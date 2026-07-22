@@ -1409,7 +1409,7 @@ async function startGeneration(){
   renderGenSlots(0);
   document.getElementById('gen-title').textContent = 'Compondo ' +
     (OCCASIONS.find(o => o.id === S.occasion)?.nome || '');
-  document.getElementById('gen-sub').textContent = 'Enviando suas referências';
+  document.getElementById('gen-sub').textContent = 'Isso leva um minuto ou dois';
   document.getElementById('btn-gen-done').style.display = 'none';
 
   try {
@@ -1444,6 +1444,21 @@ async function startGeneration(){
       return;
     }
     S.generationId = d.id;
+
+    // O Gemini já devolve as imagens prontas nesta mesma resposta — não
+    // precisa consultar /api/status para saber o que já veio.
+    if (d.urls){
+      renderGenSlots(d.urls.length, d.urls);
+      d.urls.forEach(u => S.photos.unshift({ url:u, ocasiao:S.occasion, criado_em:new Date().toISOString() }));
+      if (S.profile) S.profile.creditos = Math.max(0, (S.profile.creditos||0) - 4);
+      document.getElementById('gen-title').textContent = 'Pronto';
+      document.getElementById('gen-sub').textContent = d.parcial
+        ? `${d.urls.length} de 4 — algumas gerações falharam`
+        : 'Quatro retratos novos';
+      document.getElementById('btn-gen-done').style.display = '';
+      return;
+    }
+
     pollGeneration();
   } catch {
     document.getElementById('gen-sub').textContent = 'Algo falhou. Volte e tente de novo.';
