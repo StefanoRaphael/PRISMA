@@ -145,12 +145,12 @@ a{color:inherit}
 .hero-clones .c3{width:94px;aspect-ratio:3/4;top:6%;right:3%;--dx:-24px;--dy:22px;--rot:2deg;animation-duration:12s;animation-delay:-2s}
 .hero-clones .c4{width:108px;aspect-ratio:3/4;top:57%;right:2%;--dx:22px;--dy:-26px;--rot:-2deg;animation-duration:14s;animation-delay:-7s}
 .hero-clones .c5,.hero-clones .c6{display:none}
-.hero-clones .c1 i{background-image:url('assets/hero/clone-exec.jpg')}
-.hero-clones .c2 i{background-image:url('assets/hero/clone-praia.jpg')}
-.hero-clones .c3 i{background-image:url('assets/hero/clone-gala.jpg')}
-.hero-clones .c4 i{background-image:url('assets/hero/clone-viagem.jpg')}
-.hero-clones .c5 i{background-image:url('assets/hero/clone-editorial.jpg')}
-.hero-clones .c6 i{background-image:url('assets/hero/clone-noite.jpg')}
+.hero-clones .c1 i{background-image:url('assets/hero/oc-executivo.jpg')}
+.hero-clones .c2 i{background-image:url('assets/hero/oc-praia.jpg')}
+.hero-clones .c3 i{background-image:url('assets/hero/oc-gala.jpg')}
+.hero-clones .c4 i{background-image:url('assets/hero/oc-natureza.jpg')}
+.hero-clones .c5 i{background-image:url('assets/hero/oc-editorial.jpg')}
+.hero-clones .c6 i{background-image:url('assets/hero/oc-noite.jpg')}
 .hero-vignette{position:absolute;inset:0;z-index:2;pointer-events:none;
   background:radial-gradient(ellipse 62% 48% at 50% 50%,rgba(5,13,24,.6) 0%,rgba(5,13,24,.25) 55%,transparent 78%)}
 
@@ -813,7 +813,8 @@ const OCCASIONS = [
     base:'Coastal portrait at golden hour, ocean and soft sand behind, warm backlight with gentle fill. 85mm lens, f/2.0.' },
   { id:'natureza',  nome:'Natureza',   ph:'ph-campo',     free:false,
     base:'Outdoor portrait in open countryside or forest trail, overcast diffused daylight, earthy palette. 50mm lens, f/2.0.' },
-  { id:'familia',   nome:'Família',    ph:'ph-familia',   free:false,
+  // "Em casa", não "Família": o clone é individual, prometer família geraria rostos inventados.
+  { id:'casa',      nome:'Em casa',    ph:'ph-familia',   free:false,
     base:'Warm domestic portrait in a bright, well-designed living room, soft window light, relaxed and approachable. 50mm lens, f/2.0.' },
   { id:'palco',     nome:'Palco',      ph:'ph-palco',     free:false,
     base:'Keynote speaker portrait on a conference stage, dark auditorium, stage wash with strong rim light, microphone. 85mm lens, f/2.0.' },
@@ -822,6 +823,9 @@ const OCCASIONS = [
   { id:'gala',      nome:'Gala',       ph:'ph-gala',      free:false,
     base:'Black tie event portrait, elegant venue interior, warm chandelier light with soft shadow falloff. 85mm lens, f/1.8.' }
 ];
+
+// Foto de demonstração de cada ocasião. O id da ocasião é o nome do arquivo.
+const demoImg = id => `assets/hero/oc-${id}.jpg`;
 
 /* ---------- Arquétipos ---------- */
 const ARCHETYPES = {
@@ -1181,7 +1185,7 @@ function renderOccasions(){
     return `
       <button class="oc ${S.occasion === o.id ? 'on' : ''} ${locked ? 'locked' : ''}"
               onclick="${locked ? "go('plans')" : `pickOccasion('${o.id}')`}">
-        <div class="bg ${o.ph}"></div><div class="scrim"></div>
+        <div class="bg" style="background-image:url('${demoImg(o.id)}');background-size:cover;background-position:center"></div><div class="scrim"></div>
         <div class="tickbox">${locked ? '' : '✓'}</div>
         <div class="lab">${o.nome}</div>
       </button>`;
@@ -1518,21 +1522,11 @@ async function checkout(planId){
 /* =========================================================================
    LANDING DINÂMICA
    ========================================================================= */
-const DEMO_IMG = {
-  executivo:'assets/hero/clone-exec.jpg', praia:'assets/hero/clone-praia.jpg',
-  gala:'assets/hero/clone-gala.jpg', viagem:'assets/hero/clone-viagem.jpg',
-  editorial:'assets/hero/clone-editorial.jpg', noite:'assets/hero/clone-noite.jpg'
-};
-
 function renderLanding(){
-  document.getElementById('landing-strip').innerHTML = OCCASIONS.slice(0,9).map(o => {
-    const img = DEMO_IMG[o.id];
-    const bg  = img ? `background-image:url('${img}');background-size:cover;background-position:center` : '';
-    return `
-    <div class="shot ${img ? '' : o.ph}" style="aspect-ratio:9/16;${bg}">
+  document.getElementById('landing-strip').innerHTML = OCCASIONS.slice(0,9).map(o => `
+    <div class="shot" style="aspect-ratio:9/16;background-image:url('${demoImg(o.id)}');background-size:cover;background-position:center">
       <div class="pill">${o.nome}</div>
-    </div>`;
-  }).join('');
+    </div>`).join('');
 
   const passos = [
     ['Responda 12 perguntas','Rápidas, sobre você. É o que define o estilo das suas imagens.'],
