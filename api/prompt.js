@@ -105,7 +105,11 @@ export default async function handler(req, res) {
       conflito: d.conflito || ''
     });
   } catch (e) {
-    console.error('[prompt]', e);
-    return res.status(500).json({ erro: 'Não consegui montar a direção agora.' });
+    console.error('[prompt]', e.message || e);
+    console.error('[prompt-stack]', e.stack);
+    return res.status(500).json({
+      erro: 'Não consegui montar a direção agora.',
+      debug: e.message || String(e)
+    });
   }
 }
