@@ -1061,6 +1061,7 @@ function translateAuthError(m){
 async function signOut(){
   if (sb) await sb.auth.signOut();
   S.user = null; S.profile = null;
+  clearQuizState();
   go('landing');
 }
 
@@ -1108,7 +1109,9 @@ async function loadProfile(){
 }
 
 function routeAfterLogin(){
-  if (!S.profile?.arquetipo)  return go('quiz');
+  if (!S.profile?.arquetipo){
+    if (!loadQuizState()) return go('quiz');
+  }
   if (!S.refs.length)         return go('upload');
   if (!S.photos.length)       return go('occasions');
   go('gallery');
@@ -1157,11 +1160,42 @@ async function finishQuiz(){
   const a = ARCHETYPES[best];
   document.getElementById('prof-name').textContent = a.nome;
   document.getElementById('prof-desc').textContent = a.desc;
+
+  saveQuizState();
+
   if (sb && S.user){
     await sb.from('perfis').update({ arquetipo: best }).eq('id', S.user.id);
     if (S.profile) S.profile.arquetipo = best;
   }
   go('profile');
+}
+
+function saveQuizState(){
+  const state = {
+    archetype: S.archetype,
+    scores: S.scores
+  };
+  localStorage.setItem('prisma_quiz_state', JSON.stringify(state));
+}
+
+function loadQuizState(){
+  const saved = localStorage.getItem('prisma_quiz_state');
+  if (saved){
+    try {
+      const state = JSON.parse(saved);
+      S.archetype = state.archetype;
+      S.scores = state.scores;
+      return true;
+    } catch(e) {
+      console.error('[loadQuizState]', e);
+      return false;
+    }
+  }
+  return false;
+}
+
+function clearQuizState(){
+  localStorage.removeItem('prisma_quiz_state');
 }
 
 /* =========================================================================
