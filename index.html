@@ -326,6 +326,13 @@ a{color:inherit}
   animation:rot .7s linear infinite;display:inline-block;vertical-align:-3px}
 @keyframes rot{to{transform:rotate(360deg)}}
 
+@media(max-width:767px){
+  .hero-clones .c1,.hero-clones .c3{display:none}
+  .hero-clones .c2{top:64%;width:112px}
+  .hero-clones .c4{top:62%;width:118px}
+  .prism-wrap{width:96vw;top:1.5%}
+  .hero-vignette{background:radial-gradient(ellipse 78% 60% at 50% 40%,rgba(5,13,24,.68) 0%,rgba(5,13,24,.32) 55%,transparent 82%)}
+}
 @media(min-width:768px){
   .oc-grid{grid-template-columns:repeat(3,1fr)}
   .grid2{grid-template-columns:repeat(3,1fr)}
