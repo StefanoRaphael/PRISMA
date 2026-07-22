@@ -1185,6 +1185,7 @@ function loadQuizState(){
       const state = JSON.parse(saved);
       S.archetype = state.archetype;
       S.scores = state.scores;
+      if (S.profile) S.profile.arquetipo = state.archetype;
       return true;
     } catch(e) {
       console.error('[loadQuizState]', e);
