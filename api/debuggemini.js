@@ -28,15 +28,13 @@ export default async function handler(req, res) {
   const d = await r.json().catch(() => null);
   if (!d) return res.status(200).json({ status: r.status, resposta: 'resposta não era JSON' });
 
-  // Troca o base64 gigante por só o tamanho, pra caber na resposta
-  if (d.candidates) {
-    for (const c of d.candidates) {
-      for (const p of (c.content?.parts || [])) {
-        if (p.inlineData?.data) {
-          p.inlineData = { mimeType: p.inlineData.mimeType, tamanho: p.inlineData.data.length };
-        }
-      }
-    }
-  }
-  return res.status(200).json({ status: r.status, resposta: d });
+  // Resumo, sem o base64: quantos candidatos, quantas imagens por candidato
+  const resumo = (d.candidates || []).map(c => ({
+    partes: (c.content?.parts || []).map(p =>
+      p.inlineData ? { tipo: 'imagem', mimeType: p.inlineData.mimeType, tamanho: p.inlineData.data.length }
+      : p.text ? { tipo: 'texto', trecho: p.text.slice(0,80) }
+      : { tipo: 'outro' }
+    )
+  }));
+  return res.status(200).json({ status: r.status, numCandidatos: (d.candidates||[]).length, resumo, erro: d.error });
 }
