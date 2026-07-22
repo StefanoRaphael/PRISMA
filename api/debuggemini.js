@@ -24,6 +24,18 @@ export default async function handler(req, res) {
     `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${chave}`,
     { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) }
   );
-  const texto = await r.text().catch(() => '');
-  return res.status(200).json({ status: r.status, resposta: texto.slice(0, 4000) });
+  const d = await r.json().catch(() => null);
+  if (!d) return res.status(200).json({ status: r.status, resposta: 'resposta não era JSON' });
+
+  // Troca o base64 gigante por só o tamanho, pra caber na resposta
+  if (d.candidates) {
+    for (const c of d.candidates) {
+      for (const p of (c.content?.parts || [])) {
+        if (p.inlineData?.data) {
+          p.inlineData = { mimeType: p.inlineData.mimeType, tamanho: p.inlineData.data.length };
+        }
+      }
+    }
+  }
+  return res.status(200).json({ status: r.status, resposta: d });
 }
