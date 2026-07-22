@@ -1277,13 +1277,18 @@ function removeRef(i){ S.refs.splice(i,1); renderThumbs(); }
  * @returns {Promise<number>} quantas referências estão salvas de verdade
  */
 async function uploadPending(){
+  S.lastUploadError = '';
   for (const r of S.refs){
     if (r.saved || r.saving) continue;
     r.saving = true;
     const { error } = await sb.from('referencias')
       .insert({ user_id:S.user.id, url:r.url });
-    if (error) console.error('[uploadPending]', error);
-    else r.saved = true;
+    if (error) {
+      console.error('[uploadPending]', error);
+      S.lastUploadError = error.message || error.code || String(error);
+    } else {
+      r.saved = true;
+    }
     r.saving = false;
   }
   return S.refs.filter(r => r.saved).length;
@@ -1407,7 +1412,8 @@ async function startGeneration(){
       const salvas = await uploadPending();
       if (salvas < 8){
         go('upload');
-        showMsg('up-err', `Só ${salvas} das suas fotos foram salvas. Tente enviar de novo.`);
+        const motivo = S.lastUploadError ? ` (${S.lastUploadError})` : '';
+        showMsg('up-err', `Só ${salvas} das suas fotos foram salvas${motivo}. Tente enviar de novo.`);
         return;
       }
     }
