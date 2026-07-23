@@ -601,6 +601,7 @@ a{color:inherit}
       <div class="check"><div class="tick">✓</div>Quatro do joelho para cima, para definir seu porte</div>
       <div class="check no"><div class="tick">✕</div>Sem óculos escuros, boné, relógio ou filtro</div>
     </div>
+    <div class="link" onclick="openSheet('sheet-guia')" style="margin-top:2px"><b>Ver guia completo</b></div>
 
     <div class="spacer"></div>
     <button class="btn" id="btn-up" onclick="go('occasions')" disabled>Escolher ocasiões</button>
@@ -702,7 +703,7 @@ a{color:inherit}
       <p class="p-sm" id="gen-sub">Preparando</p>
     </div>
     <div class="gen-grid" id="gen-grid"></div>
-    <p class="p-sm" style="text-align:center">Cada imagem aparece assim que fica pronta.<br>Você pode fechar o app, o trabalho continua.</p>
+    <p class="p-sm" id="gen-tip" style="text-align:center">Cada imagem aparece assim que fica pronta.<br>Você pode fechar o app, o trabalho continua.</p>
     <div class="spacer"></div>
     <button class="btn btn-ghost" id="btn-gen-done" onclick="go('gallery')" style="display:none">Ver na galeria</button>
   </div>
@@ -787,6 +788,29 @@ a{color:inherit}
     <div id="dl-dests"></div>
     <button class="btn" style="margin-top:8px" onclick="downloadCrop()">Baixar</button>
     <p class="p-sm" style="text-align:center;margin-top:13px">Cortes não consomem crédito.</p>
+  </div>
+</div>
+
+<!-- ================= SHEET: GUIA DE REFERÊNCIAS ================= -->
+<div class="sheet-bg" id="sheet-guia" onclick="if(event.target===this)closeSheet('sheet-guia')">
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="h-md" style="margin-bottom:6px">Por que isso importa</div>
+    <p class="p-sm" style="margin-bottom:20px">O motor usa as suas fotos como referência real do seu rosto. Quanto melhor elas forem, mais fiel sai o retrato final. Fotos ruins geram retratos parecidos, não idênticos.</p>
+
+    <div class="kicker" style="margin-bottom:6px">Luz</div>
+    <p class="p-sm" style="margin-bottom:16px">Sempre luz natural, de frente para uma janela. Contraluz (janela atrás de você) esconde o rosto em sombra e é a causa mais comum de resultado ruim.</p>
+
+    <div class="kicker" style="margin-bottom:6px">Fundo</div>
+    <p class="p-sm" style="margin-bottom:16px">Branco ou neutro, sem quadro, textura ou objeto atrás de você. Fundo poluído confunde o motor sobre o que é você e o que é cenário.</p>
+
+    <div class="kicker" style="margin-bottom:6px">Roupas e acessórios</div>
+    <p class="p-sm" style="margin-bottom:16px">Peças básicas, sem estampa nem logo. Sem óculos escuros, boné ou relógio: eles cobrem referências do seu rosto e das suas mãos que o motor precisa ver.</p>
+
+    <div class="kicker" style="margin-bottom:6px">Ângulos e expressões</div>
+    <p class="p-sm" style="margin-bottom:16px">Frontal, 3/4 dos dois lados, perfil, e ao menos quatro fotos do joelho para cima. Varie a expressão entre as fotos: só sorrindo ou só sério faz o resultado ficar repetitivo.</p>
+
+    <div class="check" style="margin-top:4px"><div class="tick">✓</div>8 a 12 fotos bem-feitas valem mais que 30 fotos ruins. Qualidade decide a fidelidade, não quantidade.</div>
   </div>
 </div>
 
@@ -1539,6 +1563,7 @@ async function startGeneration(){
   document.getElementById('gen-title').textContent = 'Compondo ' +
     (OCCASIONS.find(o => o.id === S.occasion)?.nome || '');
   document.getElementById('gen-sub').textContent = 'Isso leva um minuto ou dois';
+  document.getElementById('gen-tip').innerHTML = 'Cada imagem aparece assim que fica pronta.<br>Você pode fechar o app, o trabalho continua.';
   document.getElementById('btn-gen-done').style.display = 'none';
 
   try {
@@ -1585,6 +1610,7 @@ async function startGeneration(){
       document.getElementById('gen-sub').textContent = d.parcial
         ? `${d.urls.length} de 4 — algumas gerações falharam`
         : 'Quatro retratos novos';
+      document.getElementById('gen-tip').textContent = 'Alguma saiu ruim ou diferente do que você pediu? A primeira refação de cada foto é grátis, toque no ↻ na galeria.';
       document.getElementById('btn-gen-done').style.display = '';
       return;
     }
@@ -1629,6 +1655,7 @@ async function pollGeneration(){
       if (S.profile) S.profile.creditos = Math.max(0, (S.profile.creditos||0) - 4);
       document.getElementById('gen-title').textContent = 'Pronto';
       document.getElementById('gen-sub').textContent = 'Quatro retratos novos';
+      document.getElementById('gen-tip').textContent = 'Alguma saiu ruim ou diferente do que você pediu? A primeira refação de cada foto é grátis, toque no ↻ na galeria.';
       document.getElementById('btn-gen-done').style.display = '';
       return;
     }
@@ -1663,7 +1690,7 @@ function renderGallery(){
     const o = OCCASIONS.find(x => x.id === p.ocasiao);
     const podeAbrir = !p.refazendo;
     const podeRefazer = !!p.id && !p.refazendo;
-    const tagGratis = p.id ? (p.refeita_gratis ? '<div class="redo-tag">1 crédito</div>' : '<div class="redo-tag">Grátis</div>') : '';
+    const tagGratis = p.id ? (p.refeita_gratis ? '<div class="redo-tag">Refazer: 1 crédito</div>' : '<div class="redo-tag">Refazer grátis</div>') : '';
     return `<div class="shot" onclick="${podeAbrir ? `openDownload(${i})` : ''}">
       <img src="${p.url}" alt="" loading="lazy">
       ${tagGratis}
