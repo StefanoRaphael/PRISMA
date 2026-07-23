@@ -591,7 +591,7 @@ a{color:inherit}
       <p class="p" id="prof-desc" style="max-width:330px;margin:0 auto"></p>
     </div>
     <div class="spacer"></div>
-    <button class="btn" id="prof-btn" onclick="go('upload')">Enviar minhas fotos</button>
+    <button class="btn" id="prof-btn" onclick="S.uploadFrom='profile';go('upload')">Enviar minhas fotos</button>
   </div>
 </section>
 
@@ -599,7 +599,7 @@ a{color:inherit}
 <section class="view" id="v-upload">
   <div class="wrap pad-t pad-b">
     <div class="top" style="padding-top:0">
-      <button class="back" onclick="go('profile')">‹</button>
+      <button class="back" onclick="voltarDoUpload()">‹</button>
       <div class="wordmark">P R I S M A</div>
       <div style="width:36px"></div>
     </div>
@@ -782,9 +782,9 @@ a{color:inherit}
 
     <div class="spacer"></div>
     <div class="btn-row">
-      <button class="btn btn-ghost" onclick="go('upload')">Gerenciar referências</button>
+      <button class="btn btn-ghost" onclick="S.uploadFrom='account';go('upload')">Gerenciar referências</button>
       <button class="btn btn-ghost" onclick="refazerDiagnostico()">Refazer diagnóstico</button>
-      <button class="btn btn-ghost" onclick="location.href='mailto:contato@casalimago.com.br?subject=Suporte%20PRISMA'">Suporte</button>
+      <button class="btn btn-ghost" onclick="location.href='mailto:stefanoraphael@gmail.com?subject=Suporte%20PRISMA'">Suporte</button>
       <button class="btn btn-ghost" onclick="signOut()">Sair</button>
     </div>
   </div>
@@ -877,6 +877,7 @@ const S = {
   quizAnswers: [],
   scores: {},
   archetype: null,
+  uploadFrom: 'profile',
   refs: [],
   occasion: null,
   direction: '',
@@ -1248,6 +1249,7 @@ function routeAfterLogin(){
   if (!S.profile?.arquetipo){
     if (!loadQuizState()) return go('quiz');
   }
+  syncPerfilText(); // já tem arquétipo salvo: garante que a tela de perfil não fique em branco se o cliente voltar até ela
   if (!S.refs.length)         return go('upload');
   if (!S.photos.length)       return go('occasions');
   go('gallery');
@@ -1293,9 +1295,7 @@ async function finishQuiz(){
   let best = 'soberano', top = -1;
   for (const k in S.scores){ if (S.scores[k] > top){ top = S.scores[k]; best = k; } }
   S.archetype = best;
-  const a = ARCHETYPES[best];
-  document.getElementById('prof-name').textContent = a.nome;
-  document.getElementById('prof-desc').textContent = a.desc;
+  syncPerfilText();
   document.getElementById('prof-top').style.display = 'none';
   document.getElementById('prof-btn').style.display = '';
 
@@ -1342,14 +1342,25 @@ function clearQuizState(){
  * Reabre a tela de resultado do diagnóstico pra consulta, sem empurrar o
  * cliente de volta pro upload — isso só faz sentido logo após o quiz.
  */
-function verPerfil(){
+/**
+ * Escreve nome e descrição do arquétipo na tela de perfil sempre que ele
+ * for conhecido — chamado de todo canto que pode levar pra lá (fim do
+ * questionário, revisão manual, e o roteamento de quem já tem arquétipo
+ * salvo mas ainda não subiu fotos), pra tela nunca aparecer em branco.
+ */
+function syncPerfilText(){
   const a = ARCHETYPES[S.archetype];
-  if (!a){
+  if (!a) return false;
+  document.getElementById('prof-name').textContent = a.nome;
+  document.getElementById('prof-desc').textContent = a.desc;
+  return true;
+}
+
+function verPerfil(){
+  if (!syncPerfilText()){
     alert('Ainda não fizemos seu diagnóstico. Vamos fazer agora.');
     return refazerDiagnostico();
   }
-  document.getElementById('prof-name').textContent = a.nome;
-  document.getElementById('prof-desc').textContent = a.desc;
   document.getElementById('prof-top').style.display = '';
   document.getElementById('prof-btn').style.display = 'none';
   go('profile');
@@ -1371,6 +1382,17 @@ function refazerDiagnostico(){
 /* =========================================================================
    UPLOAD DE REFERÊNCIAS
    ========================================================================= */
+/**
+ * O upload tem duas entradas possíveis: recém-saído do diagnóstico
+ * (S.uploadFrom='profile', fluxo original) ou "Gerenciar referências" na
+ * Conta (S.uploadFrom='account'). Sem isso, o botão de voltar sempre
+ * levava pra tela de perfil, que fica em branco quando ela nunca foi
+ * preenchida nesta sessão (ninguém rodou o diagnóstico agora).
+ */
+function voltarDoUpload(){
+  go(S.uploadFrom === 'account' ? 'account' : 'profile');
+}
+
 async function addFiles(list){
   showMsg('up-err','');
   const files = Array.from(list);
