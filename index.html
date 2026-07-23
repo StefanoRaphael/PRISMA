@@ -1857,10 +1857,16 @@ async function refazerFoto(id){
 async function apagarFoto(id){
   if (!id) return;
   if (!confirm('Apagar esta foto? Não dá pra desfazer.')) return;
-  const { error } = await sb.from('retratos').delete().eq('id', id);
+  console.log('[apagarFoto] sb:', sb, 'id:', id);
+  if (!sb) {
+    alert('Supabase não inicializado.');
+    return;
+  }
+  const { error, data } = await sb.from('retratos').delete().eq('id', id);
+  console.log('[apagarFoto] response:', { error, data });
   if (error){
-    console.error('[apagarFoto]', error);
-    alert('Não consegui apagar. Tente de novo.');
+    console.error('[apagarFoto] ERROR:', error);
+    alert('Erro: ' + (error.message || error));
     return;
   }
   S.photos = S.photos.filter(p => p.id !== id);
