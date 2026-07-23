@@ -88,6 +88,12 @@ a{color:inherit}
 .pass-wrap{position:relative}
 .pass-toggle{position:absolute;right:6px;top:0;bottom:0;padding:0 12px;font-size:12.5px;
   font-weight:600;color:var(--t-mid)}
+.consent{display:flex;gap:11px;align-items:flex-start;margin:2px 0 4px;cursor:pointer}
+.consent-box{width:20px;height:20px;border-radius:6px;border:1px solid var(--line-2);flex:none;margin-top:1px;
+  display:grid;place-items:center;font-size:11px;font-weight:700;color:#0B0714}
+.consent-box.on{background:var(--spectrum);border-color:transparent}
+.consent p{margin:0}
+.consent a{color:var(--sp4)}
 .input:focus,.textarea:focus{
   border-color:transparent;
   background:linear-gradient(var(--ink),var(--ink)) padding-box,var(--spectrum) border-box;
@@ -526,7 +532,7 @@ a{color:inherit}
 
   <div class="wrap pad-b" style="padding-top:20px;border-top:1px solid var(--line)">
     <div class="spec-line" style="width:40px;margin-bottom:16px"></div>
-    <p class="p-sm">PRISMA · Retratos com o seu rosto de verdade.<br>Suas fotos de referência nunca são compartilhadas.</p>
+    <p class="p-sm">PRISMA · Retratos com o seu rosto de verdade.<br>Suas fotos nunca são publicadas nem compartilhadas publicamente.</p>
   </div>
 </section>
 
@@ -554,6 +560,11 @@ a{color:inherit}
         <input class="input" id="i-pass" type="password" placeholder="Mínimo de 8 caracteres" autocomplete="current-password" style="padding-right:56px">
         <button type="button" class="pass-toggle" id="pass-toggle-btn" onclick="togglePass()">Ver</button>
       </div>
+    </div>
+
+    <div class="consent" id="f-consent" onclick="toggleConsent()">
+      <div class="consent-box" id="consent-box"></div>
+      <p class="p-sm">Li e concordo com a <a href="/privacidade.html" target="_blank" onclick="event.stopPropagation()">Política de Privacidade</a>, que explica como uso a foto do seu rosto.</p>
     </div>
 
     <div class="spacer"></div>
@@ -778,6 +789,7 @@ a{color:inherit}
       <div class="row"><span>Referências</span><i id="acc-refs">—</i></div>
       <div class="row"><span>Ocasiões usadas</span><i id="acc-oc">—</i></div>
       <div class="row"><span>Pagamento</span><i id="acc-pay">—</i></div>
+      <div class="row" onclick="window.open('/privacidade.html','_blank')" style="cursor:pointer"><span>Política de Privacidade</span><i>›</i></div>
     </div>
 
     <div class="spacer"></div>
@@ -839,6 +851,10 @@ a{color:inherit}
     <p class="p-sm" style="margin-bottom:16px">Frontal, 3/4 dos dois lados, perfil, e ao menos quatro fotos do joelho para cima. Varie a expressão entre as fotos: só sorrindo ou só sério faz o resultado ficar repetitivo.</p>
 
     <div class="check" style="margin-top:4px"><div class="tick">✓</div>8 a 12 fotos bem-feitas valem mais que 30 fotos ruins. Qualidade decide a fidelidade, não quantidade.</div>
+
+    <div class="kicker" style="margin:22px 0 6px">Segurança dos seus dados</div>
+    <p class="p-sm" style="margin-bottom:8px">Suas fotos nunca são publicadas nem compartilhadas publicamente. Elas passam só pelo motor de geração das suas imagens, e você pode apagá-las a qualquer momento, direto no app.</p>
+    <div class="link" onclick="window.open('/privacidade.html','_blank')" style="margin-top:2px"><b>Ver Política de Privacidade</b></div>
   </div>
 </div>
 
@@ -877,6 +893,7 @@ const S = {
   quizAnswers: [],
   scores: {},
   archetype: null,
+  consent: false,
   uploadFrom: 'profile',
   refs: [],
   occasion: null,
@@ -1107,10 +1124,18 @@ function toggleAuth(){
   document.getElementById('auth-sub').textContent   = isSignup ? 'Leva 40 segundos.' : 'Bom te ver de volta.';
   document.getElementById('btn-auth').textContent   = isSignup ? 'Criar acesso' : 'Entrar';
   document.getElementById('f-name').style.display   = isSignup ? '' : 'none';
+  document.getElementById('f-consent').style.display = isSignup ? '' : 'none';
   document.getElementById('auth-toggle').innerHTML  = isSignup
     ? 'Já tem conta? <b>Entrar</b>' : 'Ainda não tem conta? <b>Criar acesso</b>';
   showMsg('auth-err','');
   showMsg('auth-ok','','ok');
+}
+
+function toggleConsent(){
+  S.consent = !S.consent;
+  const box = document.getElementById('consent-box');
+  box.classList.toggle('on', S.consent);
+  box.textContent = S.consent ? '✓' : '';
 }
 
 function togglePass(){
@@ -1131,6 +1156,7 @@ async function doAuth(){
   if (!email || !pass) return showMsg('auth-err','Preencha e-mail e senha.');
   if (pass.length < 8)  return showMsg('auth-err','A senha precisa de no mínimo 8 caracteres.');
   if (S.mode === 'signup' && !name) return showMsg('auth-err','Diga como quer ser chamado.');
+  if (S.mode === 'signup' && !S.consent) return showMsg('auth-err','Para continuar, você precisa concordar com a Política de Privacidade.');
 
   if (!sb) return showMsg('auth-err','Conexão com o servidor ainda não configurada.');
 
