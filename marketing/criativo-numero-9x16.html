@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>PRISMA — Criativo Número 1080x1920</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#333;}
+:root{
+  --abyss:#050D18; --ink:#0A1A2F; --text:#F4F7FB; --muted:#93A3B8;
+  --amber:#FF9160; --magenta:#FF5FA2; --violet:#A96BFF; --cyan:#4FC9F5; --aurora:#6FE3C4;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+.canvas{
+  width:1080px;height:1920px;position:relative;overflow:hidden;margin:0 auto;
+  background:var(--abyss); font-family:var(--sans); color:var(--text);
+}
+.glow{
+  position:absolute; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 1100px 700px at 50% 20%, rgba(255,145,96,.16), transparent 60%),
+    radial-gradient(ellipse 900px 500px at 100% 100%, rgba(255,95,162,.14), transparent 60%);
+}
+
+.topo{position:relative;z-index:9;padding:280px 90px 0;text-align:center;}
+.eyebrow{font-size:19px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--amber);}
+
+.numero{
+  margin-top:8px;font-size:340px;font-weight:900;line-height:1;letter-spacing:-14px;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.numero-label{
+  margin-top:-6px;font-size:32px;font-weight:700;letter-spacing:-.6px;color:var(--text);
+}
+.sub{
+  margin:22px auto 0;max-width:760px;font-size:23px;line-height:1.5;color:var(--muted);font-weight:400;letter-spacing:-.2px;
+}
+.sub b{color:var(--text);font-weight:600;}
+
+.grid{
+  position:relative;z-index:9;margin:96px 70px 0;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+}
+.shot{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:3/4.6;}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:50% 15%;display:block;}
+.shot::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg, rgba(5,13,24,0) 55%, rgba(5,13,24,.7) 100%);}
+.shot-tag{
+  position:absolute;bottom:10px;left:0;right:0;z-index:3;text-align:center;
+  font-size:12.5px;font-weight:600;color:var(--text);
+}
+
+.rodape{position:relative;z-index:9;text-align:center;padding:130px 90px 0;}
+.cta{
+  display:inline-block;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  color:var(--abyss);font-weight:800;font-size:30px;letter-spacing:-.4px;
+  padding:26px 60px;border-radius:999px;
+  box-shadow:0 24px 50px rgba(255,145,96,.3);
+}
+.wordmark{
+  margin-top:36px;font-size:24px;font-weight:800;letter-spacing:7px;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+</style>
+</head>
+<body>
+  <div class="canvas">
+    <div class="glow"></div>
+
+    <div class="topo">
+      <div class="eyebrow">Contextos disponíveis</div>
+      <div class="numero">12</div>
+      <div class="numero-label">retratos prontos, sem sair de casa.</div>
+      <div class="sub">Executivo, editorial, esporte, viagem, noite <b>e mais 7 contextos.</b> Nenhum exige fotógrafo agendado.</div>
+    </div>
+
+    <div class="grid">
+      <div class="shot"><img src="assets/oc-executivo.jpg" alt=""><div class="shot-tag">Executivo</div></div>
+      <div class="shot"><img src="assets/oc-editorial.jpg" alt=""><div class="shot-tag">Editorial</div></div>
+      <div class="shot"><img src="assets/oc-esporte.jpg" alt=""><div class="shot-tag">Esporte</div></div>
+      <div class="shot"><img src="assets/oc-viagem.jpg" alt=""><div class="shot-tag">Viagem</div></div>
+    </div>
+
+    <div class="rodape">
+      <div class="cta">Acesse o PRISMA</div>
+      <div class="wordmark">P R I S M A</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -50,7 +50,8 @@ create table if not exists public.geracoes (
   urls        text[] not null default '{}',
   erro        text,
   criado_em   timestamptz not null default now(),
-  concluido_em timestamptz
+  concluido_em timestamptz,
+  aceitou_qualidade_baixa boolean not null default false  -- true se o cliente seguiu apesar do aviso de fidelidade
 );
 
 create index if not exists idx_geracoes_user on public.geracoes(user_id, criado_em desc);

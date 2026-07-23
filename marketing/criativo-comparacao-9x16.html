@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>PRISMA — Criativo Comparação 1080x1920</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#333;}
+:root{
+  --abyss:#050D18; --text:#F4F7FB; --muted:#93A3B8;
+  --amber:#FF9160; --magenta:#FF5FA2; --violet:#A96BFF; --cyan:#4FC9F5; --aurora:#6FE3C4;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+.canvas{
+  width:1080px;height:1920px;position:relative;overflow:hidden;margin:0 auto;
+  background:var(--abyss); font-family:var(--sans); color:var(--text);
+}
+.topo{position:relative;z-index:9;padding-top:150px;text-align:center;padding-left:80px;padding-right:80px;padding-bottom:44px;}
+.eyebrow{font-size:20px;font-weight:600;letter-spacing:5px;text-transform:uppercase;color:var(--amber);}
+.headline{
+  margin-top:22px;font-weight:700;font-size:54px;line-height:1.22;letter-spacing:-1.4px;color:var(--text);
+}
+.headline em{font-style:normal;font-weight:800;color:var(--cyan);}
+
+.comparacao{
+  position:relative;margin:0 44px;display:flex;align-items:stretch;
+  border-radius:26px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.5);
+}
+.foto-wrap{position:relative;width:50%;height:940px;overflow:hidden;background:#000;}
+.foto-wrap img{width:100%;height:100%;object-fit:cover;object-position:50% 12%;display:block;}
+.foto-wrap.antes img{filter:grayscale(.5) brightness(.75) contrast(.9) blur(.6px);}
+.tag{
+  position:absolute;top:20px;left:20px;z-index:3;
+  background:rgba(5,13,24,.7);backdrop-filter:blur(6px);
+  border:1px solid rgba(244,247,251,.2);color:var(--text);
+  font-size:15px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  padding:9px 16px;border-radius:999px;
+}
+.tag.depois{
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  border-color:transparent;color:var(--abyss);
+}
+
+.divisor{position:absolute;left:50%;top:0;bottom:0;width:0;transform:translateX(-50%);z-index:4;display:flex;align-items:center;justify-content:center;}
+.divisor::before{content:'';position:absolute;top:0;bottom:0;width:3px;background:rgba(244,247,251,.4);left:50%;transform:translateX(-50%);}
+.alca{
+  position:relative;width:60px;height:60px;border-radius:50%;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  display:flex;align-items:center;justify-content:center;z-index:5;
+  box-shadow:0 8px 22px rgba(0,0,0,.4);font-size:24px;color:var(--abyss);font-weight:700;
+}
+
+.citacao-wrap{padding:32px 70px 0;text-align:center;}
+.citacao{font-size:25px;color:var(--muted);line-height:1.5;letter-spacing:-.2px;}
+.citacao b{color:var(--text);font-weight:600;}
+
+.rodape{position:relative;z-index:9;text-align:center;padding:40px 90px 0;}
+.wordmark{
+  font-size:24px;font-weight:800;letter-spacing:7px;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.cta{
+  margin-top:30px;display:inline-block;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  color:var(--abyss);font-weight:700;font-size:30px;letter-spacing:-.3px;
+  padding:26px 64px;border-radius:999px;
+}
+</style>
+</head>
+<body>
+  <div class="canvas">
+
+    <div class="topo">
+      <div class="eyebrow">Antes de fechar negócio</div>
+      <div class="headline">O cliente pesquisa seu nome<br><em>antes de aceitar</em> sua proposta.</div>
+    </div>
+
+    <div class="comparacao">
+      <div class="foto-wrap antes">
+        <img src="assets/oc-executivo.jpg" alt="">
+        <div class="tag">foto comum</div>
+      </div>
+      <div class="foto-wrap">
+        <img src="assets/oc-executivo.jpg" alt="">
+        <div class="tag depois">retrato PRISMA</div>
+      </div>
+      <div class="divisor"><div class="alca">⇄</div></div>
+    </div>
+
+    <div class="citacao-wrap">
+      <div class="citacao">A primeira decisão dele é sobre <b>sua imagem,</b> não sobre seu preço.</div>
+    </div>
+
+    <div class="rodape">
+      <div class="wordmark">P R I S M A</div>
+      <div class="cta">Acesse o PRISMA</div>
+    </div>
+  </div>
+</body>
+</html>

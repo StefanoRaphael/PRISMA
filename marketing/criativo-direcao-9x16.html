@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>PRISMA — Criativo Direção (produto real) 1080x1920</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#333;}
+:root{
+  --abyss:#050D18; --ink:#0A1A2F; --ink2:#0F2540; --line:#1c3555; --text:#F4F7FB; --muted:#93A3B8;
+  --amber:#FF9160; --magenta:#FF5FA2; --violet:#A96BFF; --cyan:#4FC9F5; --aurora:#6FE3C4;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+.canvas{
+  width:1080px;height:1920px;position:relative;overflow:hidden;margin:0 auto;
+  background:var(--abyss); font-family:var(--sans); color:var(--text);
+}
+.glow{
+  position:absolute; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 900px 500px at 85% -5%, rgba(169,107,255,.18), transparent 60%),
+    radial-gradient(ellipse 900px 600px at 10% 105%, rgba(255,145,96,.14), transparent 60%);
+}
+
+.topo{position:relative;z-index:9;padding:96px 90px 0;text-align:center;}
+.eyebrow{font-size:20px;font-weight:600;letter-spacing:5px;text-transform:uppercase;color:var(--violet);}
+.headline{
+  margin-top:22px;font-weight:700;font-size:52px;line-height:1.22;
+  letter-spacing:-1.3px;color:var(--text);
+}
+.headline em{font-style:normal;font-weight:800;color:var(--aurora);}
+
+.stage{position:relative;margin:52px auto 0;width:640px;}
+.cta-overlap{
+  position:relative;z-index:9;margin:0 40px;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  border-radius:20px; padding:24px 20px; text-align:center;
+  box-shadow:0 20px 44px rgba(169,107,255,.35);
+}
+.cta-title{font-size:28px;font-weight:800;color:var(--abyss);letter-spacing:-.5px;}
+.cta-sub{margin-top:4px;font-size:16px;font-weight:500;color:rgba(5,13,24,.75);}
+
+.phone{
+  position:relative;margin:-26px auto 0;width:600px;height:1180px;
+  background:#04070d;border-radius:64px;padding:18px;
+  box-shadow:0 50px 100px rgba(0,0,0,.6), 0 0 0 2px rgba(255,255,255,.06);
+}
+.screen{
+  width:100%;height:100%;border-radius:48px;overflow:hidden;background:var(--abyss);
+  position:relative;padding:34px 26px 26px;
+}
+.notch{
+  position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  width:120px;height:22px;background:#04070d;border-radius:14px;z-index:5;
+}
+.kicker{margin-top:30px;font-size:14px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);}
+.app-h1{font-size:32px;font-weight:700;letter-spacing:-.6px;margin-top:10px;}
+
+.reading{
+  margin-top:26px;border:1px solid var(--line);border-radius:20px;padding:22px;
+  background:rgba(255,255,255,.03);
+}
+.reading p{font-size:18px;line-height:1.6;color:var(--text);}
+.reading b{color:var(--cyan);font-weight:700;}
+.auto{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);}
+.auto-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.auto p{margin-top:8px;font-size:15px;color:var(--muted);line-height:1.55;}
+
+.rodape{position:relative;z-index:9;text-align:center;padding:54px 90px 0;}
+.frase{font-size:23px;line-height:1.55;color:var(--muted);font-weight:400;letter-spacing:-.2px;}
+.frase b{color:var(--text);font-weight:600;}
+.wordmark{
+  margin-top:36px;font-size:24px;font-weight:800;letter-spacing:7px;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+</style>
+</head>
+<body>
+  <div class="canvas">
+    <div class="glow"></div>
+
+    <div class="topo">
+      <div class="eyebrow">Direção sob controle</div>
+      <div class="headline">Você escreve o contexto.<br>O PRISMA <em>entende exatamente</em><br>o que você quis dizer.</div>
+    </div>
+
+    <div class="stage">
+      <div class="cta-overlap">
+        <div class="cta-title">Acesse o PRISMA</div>
+        <div class="cta-sub">sem briefing, sem produtora</div>
+      </div>
+
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="kicker">Executivo</div>
+          <div class="app-h1">Entendi assim</div>
+
+          <div class="reading">
+            <p>Terno <b>cinza-escuro</b>, escritório com <b>vidro ao fundo</b>, luz de <b>fim de tarde</b>, postura ereta, <b>sem sorriso forçado</b>.</p>
+            <div class="auto">
+              <div class="auto-label">Completei sozinho</div>
+              <p>Enquadramento em plano médio, olhar direto pra câmera, fundo levemente desfocado pra manter o foco em você.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rodape">
+      <div class="frase">Sem sessão física. Sem agendamento.<br><b>Retrato pronto no contexto que você definiu.</b></div>
+      <div class="wordmark">P R I S M A</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   const usuario = await usuarioDaRequisicao(req);
   if (!usuario) return res.status(401).json({ erro: 'Faça login de novo.' });
 
-  const { prompt, ocasiao, direcao } = req.body || {};
+  const { prompt, ocasiao, direcao, aceitouQualidadeBaixa } = req.body || {};
   if (!prompt || !ocasiao) return res.status(400).json({ erro: 'Pedido incompleto.' });
 
   const sb = admin();
@@ -87,7 +87,8 @@ export default async function handler(req, res) {
       ocasiao,
       direcao: (direcao || '').slice(0, 4000),
       prompt,
-      status: 'processando'
+      status: 'processando',
+      aceitou_qualidade_baixa: !!aceitouQualidadeBaixa
     })
     .select('id')
     .single();

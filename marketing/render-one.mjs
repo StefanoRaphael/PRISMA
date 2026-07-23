@@ -1,0 +1,10 @@
+import { chromium } from 'playwright';
+import path from 'path';
+const name = process.argv[2];
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 2 });
+await page.goto(`file://${path.resolve('.', name + '.html')}`);
+await page.waitForTimeout(500);
+await page.screenshot({ path: `${name}.png` });
+console.log(`OK: ${name}.png`);
+await browser.close();

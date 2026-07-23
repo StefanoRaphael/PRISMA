@@ -266,6 +266,14 @@ a{color:inherit}
   background:var(--amber);display:grid;place-items:center;font-size:10px;font-weight:800;color:#0B0714;
   box-shadow:0 0 0 2px rgba(5,13,24,.55);cursor:help}
 .up-avisos{font-size:12.5px;color:var(--amber);margin:-6px 0 14px;line-height:1.4}
+.qcheck-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 20px}
+.qcheck-cell{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--ink-2)}
+.qcheck-cell img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) brightness(.7)}
+.qcheck-cell .xbadge{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;
+  background:#ef4444;display:grid;place-items:center;font-size:13px;font-weight:800;color:#fff;
+  box-shadow:0 0 0 2px rgba(5,13,24,.6)}
+.qcheck-cell .qmotivo{position:absolute;bottom:0;left:0;right:0;padding:5px 6px;font-size:10px;
+  font-weight:600;line-height:1.25;color:#fff;background:rgba(0,0,0,.55);text-align:center}
 .thumbs .add{aspect-ratio:1;border-radius:9px;border:1px solid var(--line-2);display:grid;place-items:center;
   color:var(--t-low);font-size:20px;background:rgba(255,255,255,.02)}
 .drop{border:1px dashed rgba(169,107,255,.4);border-radius:19px;padding:26px 18px;text-align:center;
@@ -864,6 +872,18 @@ a{color:inherit}
   </div>
 </div>
 
+<!-- ================= SHEET: CONFIRMAÇÃO DE QUALIDADE ================= -->
+<div class="sheet-bg" id="sheet-qualidade" onclick="if(event.target===this)closeSheet('sheet-qualidade')">
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="h-md" style="margin-bottom:6px">Algumas fotos podem reduzir a fidelidade</div>
+    <p class="p-sm" style="margin-bottom:16px">Essas fotos foram marcadas no envio. O retrato final pode sair menos parecido com você.</p>
+    <div class="qcheck-grid" id="qcheck-grid"></div>
+    <button class="btn" onclick="voltarTrocarFotos()">Voltar e trocar fotos</button>
+    <div class="link" style="text-align:center;margin-top:14px" onclick="confirmarGerarComAviso()"><b>Gerar mesmo assim</b></div>
+  </div>
+</div>
+
 <!-- ================= SHEET: EXEMPLOS ================= -->
 <div class="sheet-bg" id="sheet-ex" onclick="if(event.target===this)closeSheet('sheet-ex')">
   <div class="sheet">
@@ -910,7 +930,8 @@ const S = {
   photos: [],
   filter: 'all',
   dlPhoto: null,
-  dlRatio: '9:16'
+  dlRatio: '9:16',
+  aceitouQualidadeBaixa: false
 };
 
 /* ---------- Ocasiões ---------- */
@@ -1427,6 +1448,7 @@ function voltarDoUpload(){
 
 async function addFiles(list){
   showMsg('up-err','');
+  S.aceitouQualidadeBaixa = false;
   const files = Array.from(list);
   const novas = [];
   for (const f of files){
@@ -1528,6 +1550,7 @@ async function removeRef(i){
   const ref = S.refs[i];
   if (!ref) return;
   S.refs.splice(i,1);
+  S.aceitouQualidadeBaixa = false;
   renderThumbs();
   if (ref.saved && ref.id && sb){
     const { error } = await sb.from('referencias').delete().eq('id', ref.id);
@@ -1667,9 +1690,38 @@ async function buildPrompt(){
 /* =========================================================================
    GERAÇÃO
    ========================================================================= */
+function abrirCheckQualidade(comAviso){
+  document.getElementById('qcheck-grid').innerHTML = comAviso.map(r => `
+    <div class="qcheck-cell">
+      <img src="${r.url}" alt="">
+      <div class="xbadge">✕</div>
+      <div class="qmotivo">${r.aviso}</div>
+    </div>
+  `).join('');
+  openSheet('sheet-qualidade');
+}
+
+function voltarTrocarFotos(){
+  closeSheet('sheet-qualidade');
+  go('upload');
+}
+
+function confirmarGerarComAviso(){
+  S.aceitouQualidadeBaixa = true;
+  closeSheet('sheet-qualidade');
+  startGeneration();
+}
+
 // Quem decide se pode gerar é o servidor: só ele conhece as contas do estúdio.
 async function startGeneration(){
   showMsg('conf-err','');
+
+  const comAviso = S.refs.filter(r => r.aviso);
+  if (comAviso.length && !S.aceitouQualidadeBaixa){
+    abrirCheckQualidade(comAviso);
+    return;
+  }
+
   go('generating');
   renderGenSlots(0);
   document.getElementById('gen-title').textContent = 'Compondo ' +
@@ -1699,7 +1751,8 @@ async function startGeneration(){
       body: JSON.stringify({
         prompt: S.prompt,
         ocasiao: S.occasion,
-        direcao: S.direction
+        direcao: S.direction,
+        aceitouQualidadeBaixa: S.aceitouQualidadeBaixa
       })
     });
     const d = await r.json();
@@ -1718,6 +1771,7 @@ async function startGeneration(){
       const retratos = d.retratos && d.retratos.length === d.urls.length ? d.retratos : d.urls.map(u => ({ url:u }));
       retratos.forEach(rt => S.photos.unshift({ id:rt.id, url:rt.url, ocasiao:S.occasion, refeita_gratis:false, criado_em:new Date().toISOString() }));
       if (S.profile) S.profile.creditos = Math.max(0, (S.profile.creditos||0) - 4);
+      S.aceitouQualidadeBaixa = false;
       document.getElementById('gen-title').textContent = 'Pronto';
       document.getElementById('gen-sub').textContent = d.parcial
         ? `${d.urls.length} de 4 — algumas gerações falharam`

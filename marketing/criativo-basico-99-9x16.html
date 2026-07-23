@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>PRISMA — Criativo Básico R$99 1080x1920</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#333;}
+:root{
+  --abyss:#050D18; --ink:#0A1A2F; --ink2:#0F2540; --text:#F4F7FB; --muted:#93A3B8;
+  --amber:#FF9160; --magenta:#FF5FA2; --violet:#A96BFF; --cyan:#4FC9F5; --aurora:#6FE3C4;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+.canvas{
+  width:1080px;height:1920px;position:relative;overflow:hidden;margin:0 auto;
+  background:var(--abyss); font-family:var(--sans); color:var(--text);
+}
+.glow{
+  position:absolute; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 900px 500px at -10% -5%, rgba(79,201,245,.16), transparent 60%),
+    radial-gradient(ellipse 900px 600px at 110% 105%, rgba(169,107,255,.16), transparent 60%);
+}
+
+.topo{position:relative;z-index:9;padding:96px 90px 0;text-align:center;}
+.eyebrow{font-size:20px;font-weight:600;letter-spacing:5px;text-transform:uppercase;color:var(--cyan);}
+.headline{
+  margin-top:22px;font-weight:700;font-size:52px;line-height:1.22;letter-spacing:-1.3px;color:var(--text);
+}
+.headline em{font-style:normal;font-weight:800;color:var(--amber);}
+
+.stage{position:relative;margin:52px auto 0;width:640px;}
+.cta-overlap{
+  position:relative;z-index:9;margin:0 40px;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  border-radius:20px; padding:22px 20px; text-align:center;
+  box-shadow:0 20px 44px rgba(79,201,245,.35);
+}
+.cta-title{font-size:26px;font-weight:800;color:var(--abyss);letter-spacing:-.3px;}
+.cta-price{margin-top:2px;font-size:17px;font-weight:600;color:rgba(5,13,24,.75);}
+
+.phone{
+  position:relative;margin:-24px auto 0;width:600px;height:1160px;
+  background:#04070d;border-radius:64px;padding:18px;
+  box-shadow:0 50px 100px rgba(0,0,0,.6), 0 0 0 2px rgba(255,255,255,.06);
+}
+.screen{
+  width:100%;height:100%;border-radius:48px;overflow:hidden;background:var(--abyss);
+  position:relative;padding:34px 26px 26px;
+}
+.notch{
+  position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  width:120px;height:22px;background:#04070d;border-radius:14px;z-index:5;
+}
+.app-h1{font-size:32px;font-weight:700;letter-spacing:-.6px;margin-top:26px;}
+.app-sub{margin-top:6px;font-size:15px;color:var(--muted);}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px;}
+.shot{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:3/4;background:var(--ink);}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:50% 15%;display:block;}
+.pill{
+  position:absolute;bottom:10px;left:10px;z-index:2;
+  background:rgba(5,13,24,.6);backdrop-filter:blur(6px);
+  font-size:12px;font-weight:600;color:var(--text);padding:5px 12px;border-radius:999px;
+}
+.plano-card{
+  margin-top:24px;border:1px solid var(--cyan);border-radius:18px;padding:20px;
+  background:rgba(79,201,245,.08);
+}
+.plano-nome{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);}
+.plano-preco{margin-top:8px;font-size:38px;font-weight:800;letter-spacing:-1px;}
+.plano-preco span{font-size:17px;font-weight:500;color:var(--muted);}
+.plano-detalhe{margin-top:6px;font-size:14px;color:var(--muted);}
+
+.rodape{position:relative;z-index:9;text-align:center;padding:50px 90px 0;}
+.frase{font-size:22px;line-height:1.55;color:var(--muted);font-weight:400;}
+.frase b{color:var(--text);font-weight:600;}
+.wordmark{
+  margin-top:32px;font-size:24px;font-weight:800;letter-spacing:7px;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+</style>
+</head>
+<body>
+  <div class="canvas">
+    <div class="glow"></div>
+
+    <div class="topo">
+      <div class="eyebrow">Plano básico</div>
+      <div class="headline">Você tem mais de um lado.<br><em>Comece mostrando o principal.</em></div>
+    </div>
+
+    <div class="stage">
+      <div class="cta-overlap">
+        <div class="cta-title">Acesse o PRISMA</div>
+        <div class="cta-price">a partir de R$ 99/mês</div>
+      </div>
+
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="app-h1">Seus retratos</div>
+          <div class="app-sub">4 ocasiões inclusas</div>
+          <div class="grid">
+            <div class="shot"><img src="assets/oc-executivo.jpg" alt=""><div class="pill">Executivo</div></div>
+            <div class="shot"><img src="assets/oc-editorial.jpg" alt=""><div class="pill">Editorial</div></div>
+            <div class="shot"><img src="assets/oc-casual.jpg" alt=""><div class="pill">Casual</div></div>
+            <div class="shot"><img src="assets/oc-viagem.jpg" alt=""><div class="pill">Viagem</div></div>
+          </div>
+          <div class="plano-card">
+            <div class="plano-nome">Básico</div>
+            <div class="plano-preco">R$ 99<span>/mês</span></div>
+            <div class="plano-detalhe">20 retratos · 4 ocasiões</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rodape">
+      <div class="frase">Sem agendamento. Sem sessão física.<br><b>Retratos prontos quando você precisar.</b></div>
+      <div class="wordmark">P R I S M A</div>
+    </div>
+  </div>
+</body>
+</html>
