@@ -1,4 +1,4 @@
 window.PRISMA_CONFIG = {
   SUPABASE_URL: 'https://gycmyz2bfhyltytgypttg.supabase.co',
-  SUPABASE_ANON_KEY: 'sb_publishable_CDMKPcmh67TyIKEAETp_lw_x8rC37Dn'
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5Y215emJmbnlsaXl0Z3lwdGZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2Nzg5MDYsImV4cCI6MjEwMDI1NDkwNn0.IWmvPOBLDxWGycEtOkcGKqfBtKIyD8evszKMfx5XUxE'
 };
