@@ -417,8 +417,17 @@ a{color:inherit}
 <body>
 <div class="app" id="app">
 
+<!-- ================= BOOT (splash neutra enquanto resolve sessão) ================= -->
+<section class="view on" id="v-boot">
+  <div class="wrap" style="justify-content:center;align-items:center;gap:16px">
+    <div class="wordmark">P R I S M A</div>
+    <div class="ring" style="width:22px;height:22px;border:2.5px solid rgba(255,255,255,.14);
+      border-top-color:var(--t-mid);border-radius:50%;animation:rot .7s linear infinite"></div>
+  </div>
+</section>
+
 <!-- ================= LANDING ================= -->
-<section class="view on" id="v-landing">
+<section class="view" id="v-landing">
   <div class="hero">
     <div class="prism-wrap">
       <svg viewBox="0 0 760 260" preserveAspectRatio="xMidYMid meet">
@@ -1222,13 +1231,16 @@ async function syncEntitlement(){
 
 async function loadProfile(){
   if (!sb || !S.user) return;
-  const { data } = await sb.from('perfis').select('*').eq('id', S.user.id).maybeSingle();
+  // As três consultas não dependem uma da outra — em paralelo, em vez de
+  // em sequência, o carregamento inicial fica bem mais rápido.
+  const [{ data }, { data: fotos }, { data: refs }] = await Promise.all([
+    sb.from('perfis').select('*').eq('id', S.user.id).maybeSingle(),
+    sb.from('retratos').select('*').eq('user_id', S.user.id).order('criado_em', { ascending:false }),
+    sb.from('referencias').select('*').eq('user_id', S.user.id)
+  ]);
   S.profile = data;
   if (data?.arquetipo) S.archetype = data.arquetipo;
-  const { data: fotos } = await sb.from('retratos').select('*')
-    .eq('user_id', S.user.id).order('criado_em', { ascending:false });
   S.photos = fotos || [];
-  const { data: refs } = await sb.from('referencias').select('*').eq('user_id', S.user.id);
   S.refs = (refs || []).map(r => ({ id:r.id, url:r.url, saved:true }));
 }
 
@@ -1332,7 +1344,10 @@ function clearQuizState(){
  */
 function verPerfil(){
   const a = ARCHETYPES[S.archetype];
-  if (!a) return;
+  if (!a){
+    alert('Ainda não fizemos seu diagnóstico. Vamos fazer agora.');
+    return refazerDiagnostico();
+  }
   document.getElementById('prof-name').textContent = a.nome;
   document.getElementById('prof-desc').textContent = a.desc;
   document.getElementById('prof-top').style.display = '';
@@ -2028,6 +2043,9 @@ function renderLanding(){
     history.replaceState({}, '', location.pathname);
   }
 
+  // Enquanto resolve a sessão, fica na splash neutra (v-boot) — mostrar a
+  // LP completa e trocar sozinho pra galeria alguns segundos depois parecia
+  // bug pra quem já tinha conta.
   if (sb){
     const { data } = await sb.auth.getSession();
     if (data?.session?.user){
@@ -2035,8 +2053,10 @@ function renderLanding(){
       await syncEntitlement();
       await loadProfile();
       routeAfterLogin();
+      return;
     }
   }
+  go('landing');
 })();
 </script>
 </body>
