@@ -32,9 +32,19 @@ export default async function handler(req, res) {
     return res.status(404).json({ erro: 'Geração não encontrada.' });
   }
 
+  // Ids dos retratos: sem eles, o botão de "refazer" na galeria não teria
+  // como identificar qual regenerar antes do cliente recarregar a página.
+  let retratos = [];
+  if (geracao.status === 'pronto') {
+    const { data } = await sb
+      .from('retratos').select('id, url').eq('geracao_id', geracao.id);
+    retratos = data || [];
+  }
+
   return res.status(200).json({
     status: geracao.status,
     urls: geracao.urls || [],
+    retratos,
     erro: geracao.status === 'erro' ? geracao.erro : undefined
   });
 }

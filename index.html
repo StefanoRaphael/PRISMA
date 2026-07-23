@@ -201,6 +201,15 @@ a{color:inherit}
 /* ============ RETRATOS / PLACEHOLDERS ============ */
 .shot{border-radius:12px;position:relative;overflow:hidden;background:var(--ink-2)}
 .shot img{width:100%;height:100%;object-fit:cover;display:block}
+.shot .redo{position:absolute;top:8px;right:8px;z-index:3;width:28px;height:28px;border-radius:50%;
+  background:rgba(5,13,24,.62);backdrop-filter:blur(12px);display:grid;place-items:center;
+  font-size:14px;color:var(--t-hi);border:1px solid var(--line-2)}
+.shot .redo:disabled{opacity:.5}
+.shot .del{position:absolute;bottom:8px;right:8px;z-index:3;width:28px;height:28px;border-radius:50%;
+  background:rgba(5,13,24,.62);backdrop-filter:blur(12px);display:grid;place-items:center;
+  font-size:13px;color:#FF9B9B;border:1px solid var(--line-2)}
+.shot .redo-tag{position:absolute;top:8px;left:8px;z-index:3;background:rgba(5,13,24,.62);
+  backdrop-filter:blur(12px);border-radius:20px;padding:3px 9px;font-size:10px;color:var(--t-mid)}
 .ph-exec{background:radial-gradient(85% 65% at 35% 12%,rgba(255,145,96,.5),transparent 62%),linear-gradient(155deg,#1D3E66,#0B1B2E)}
 .ph-noite{background:radial-gradient(80% 60% at 70% 18%,rgba(169,107,255,.55),transparent 62%),radial-gradient(70% 70% at 20% 85%,rgba(255,95,162,.4),transparent 60%),linear-gradient(160deg,#1A1436,#0A0E20)}
 .ph-praia{background:radial-gradient(90% 70% at 50% 10%,rgba(111,227,196,.5),transparent 64%),radial-gradient(70% 60% at 80% 85%,rgba(255,145,96,.42),transparent 60%),linear-gradient(180deg,#12405C,#08202E)}
@@ -239,6 +248,10 @@ a{color:inherit}
 .thumbs .cell .ok{position:absolute;bottom:3px;left:3px;width:17px;height:17px;border-radius:50%;
   background:#22c55e;display:grid;place-items:center;font-size:10px;font-weight:800;color:#fff;
   box-shadow:0 0 0 2px rgba(5,13,24,.55)}
+.thumbs .cell .warn{position:absolute;bottom:3px;left:3px;width:17px;height:17px;border-radius:50%;
+  background:var(--amber);display:grid;place-items:center;font-size:10px;font-weight:800;color:#0B0714;
+  box-shadow:0 0 0 2px rgba(5,13,24,.55);cursor:help}
+.up-avisos{font-size:12.5px;color:var(--amber);margin:-6px 0 14px;line-height:1.4}
 .thumbs .add{aspect-ratio:1;border-radius:9px;border:1px solid var(--line-2);display:grid;place-items:center;
   color:var(--t-low);font-size:20px;background:rgba(255,255,255,.02)}
 .drop{border:1px dashed rgba(169,107,255,.4);border-radius:19px;padding:26px 18px;text-align:center;
@@ -572,6 +585,7 @@ a{color:inherit}
 
     <div class="counter"><span>Enviadas</span><b id="up-count">0 <span style="color:var(--t-low);font-weight:400">/ 12</span></b></div>
     <div class="thumbs" id="up-thumbs"></div>
+    <div class="up-avisos" id="up-avisos"></div>
 
     <div class="drop" onclick="document.getElementById('i-files').click()">
       <div class="ic">↑</div>
@@ -739,6 +753,8 @@ a{color:inherit}
 
     <div class="spacer"></div>
     <div class="btn-row">
+      <button class="btn btn-ghost" onclick="go('upload')">Gerenciar referências</button>
+      <button class="btn btn-ghost" onclick="refazerDiagnostico()">Refazer diagnóstico</button>
       <button class="btn btn-ghost" onclick="location.href='mailto:contato@casalimago.com.br?subject=Suporte%20PRISMA'">Suporte</button>
       <button class="btn btn-ghost" onclick="signOut()">Sair</button>
     </div>
@@ -937,13 +953,59 @@ const QUIZ = [
     ['Ter feito diferença para alguém','cuidador']]}
 ];
 
-/* ---------- Exemplos de direção ---------- */
-const EXAMPLES = [
-  'Quero de terno azul-marinho sem gravata, camisa branca aberta no primeiro botão, num escritório de vidro no fim da tarde, em pé, braços cruzados, expressão séria olhando para a câmera.',
-  'Vestido ciano, que é a cor da minha marca, sentada numa poltrona de couro claro, luz natural entrando pela lateral, expressão serena, sem óculos.',
-  'Camisa de linho bege, na varanda de frente para o mar no fim do dia, vento no cabelo, sorrindo de leve, olhando para o lado.',
-  'Blazer preto e camiseta preta por baixo, fundo cinza liso de estúdio, luz dura de um lado só, expressão fechada, bem sério.'
-];
+/* ---------- Exemplos de direção, por ocasião ----------
+   Sugestão genérica de escritório não ajuda quando a ocasião escolhida
+   é natureza — cada ocasião tem os seus, alinhados ao "base" dela. */
+const EXAMPLES_POR_OCASIAO = {
+  executivo: [
+    'Quero de terno azul-marinho sem gravata, camisa branca aberta no primeiro botão, num escritório de vidro no fim da tarde, em pé, braços cruzados, expressão séria olhando para a câmera.',
+    'Camisa social branca impecável, sentado à mesa com notebook fechado ao lado, luz de janela alta, olhar direto e postura ereta, sem sorriso.'
+  ],
+  editorial: [
+    'Blazer preto e camiseta preta por baixo, fundo cinza liso de estúdio, luz dura de um lado só, expressão fechada, bem sério.',
+    'Camisa de seda numa cor da minha marca, fundo neutro de estúdio, luz lateral suave, meio corpo, olhar para o lado, expressão serena.'
+  ],
+  viagem: [
+    'Casaco de lã cor de areia, andando por uma rua de paralelepípedos numa cidade europeia, mala de couro na mão, luz de fim de tarde, olhando para frente.',
+    'Encostado numa parede antiga de pedra, óculos de sol na mão (não no rosto), camisa de linho aberta, luz quente lateral, expressão tranquila.'
+  ],
+  casual: [
+    'Suéter de tricô cor terra, sentado numa cafeteria com xícara na mesa, luz de janela grande, sorriso leve, olhando de lado.',
+    'Camisa xadrez aberta sobre camiseta lisa, em pé perto do balcão de uma cafeteria de madeira, luz natural quente, postura relaxada.'
+  ],
+  noite: [
+    'Terno preto sem gravata, taça na mão, luzes da cidade desfocadas ao fundo, expressão confiante, meio sorriso, luz quente pontual.',
+    'Camisa preta de seda, encostado no parapeito de um rooftop à noite, contraluz das luzes urbanas, olhar direto, seriedade elegante.'
+  ],
+  esporte: [
+    'Roupa de treino justa, numa pista ao ar livre no nascer do sol, postura ereta e determinada, luz direta lateral.',
+    'Regata e shorts de treino, numa academia moderna segurando uma toalha no ombro, expressão de foco, luz fria e definida.'
+  ],
+  praia: [
+    'Camisa de linho bege, na varanda de frente para o mar no fim do dia, vento no cabelo, sorrindo de leve, olhando para o lado.',
+    'Roupa leve e clara andando na areia molhada, mar ao fundo, luz dourada de fim de tarde, cabelo solto ao vento, olhar para o horizonte.'
+  ],
+  natureza: [
+    'Casaco de sarja verde-musgo, numa trilha entre árvores, luz difusa de dia nublado, mão apoiada num galho, expressão contemplativa.',
+    'Camisa de lã crua, sentado numa pedra num campo aberto, luz suave da manhã, olhando para longe, postura tranquila.'
+  ],
+  casa: [
+    'Suéter largo confortável, sentado no sofá de casa com um livro fechado no colo, luz de janela suave, expressão acolhedora, sorriso discreto.',
+    'Camisa básica clara, na cozinha apoiado no balcão com uma xícara, luz natural da manhã, postura relaxada, olhar direto e tranquilo.'
+  ],
+  perfil: [
+    'Camisa lisa numa cor sólida, fundo neutro liso, enquadramento de ombros para cima, luz frontal suave e uniforme, expressão confiante e aberta.',
+    'Blazer estruturado sem gravata, fundo cinza claro de estúdio, sorriso natural fechado, luz equilibrada dos dois lados.'
+  ],
+  apresentacao: [
+    'Terno cinza-chumbo, em pé num palco ou auditório, mão em gesto natural de fala, luz quente de palco, expressão de autoridade tranquila.',
+    'Camisa social azul-clara, atrás de um púlpito ou mesa de painel, postura ereta, olhando para um ponto fora da câmera como se falasse à plateia.'
+  ],
+  glamour: [
+    'Roupa de tecido nobre numa cor metálica ou profunda, fundo de estúdio escuro, luz de contorno marcada, expressão intensa e direta.',
+    'Camisa de seda desabotoada no colarinho, luz dourada de estúdio com sombra contornada, meio perfil, expressão contida e segura.'
+  ]
+};
 
 /* ---------- Planos ---------- */
 const WHATSAPP_URL = 'https://wa.me/5511986468081?text=' + encodeURIComponent('Vim pelo PRISMA. Quero falar sobre um projeto personalizado.');
@@ -1116,7 +1178,7 @@ async function loadProfile(){
     .eq('user_id', S.user.id).order('criado_em', { ascending:false });
   S.photos = fotos || [];
   const { data: refs } = await sb.from('referencias').select('*').eq('user_id', S.user.id);
-  S.refs = (refs || []).map(r => ({ url:r.url, saved:true }));
+  S.refs = (refs || []).map(r => ({ id:r.id, url:r.url, saved:true }));
 }
 
 function routeAfterLogin(){
@@ -1211,18 +1273,34 @@ function clearQuizState(){
   localStorage.removeItem('prisma_quiz_state');
 }
 
+/**
+ * O arquétipo salvo em perfis.arquetipo só é sobrescrito quando o cliente
+ * TERMINA o questionário de novo (finishQuiz) — então começar de novo aqui
+ * não apaga nada até lá, é seguro mesmo se ele desistir no meio.
+ */
+function refazerDiagnostico(){
+  clearQuizState();
+  S.quizIndex = 0;
+  S.quizAnswers = [];
+  S.scores = {};
+  go('quiz');
+}
+
 /* =========================================================================
    UPLOAD DE REFERÊNCIAS
    ========================================================================= */
 async function addFiles(list){
   showMsg('up-err','');
   const files = Array.from(list);
+  const novas = [];
   for (const f of files){
     if (S.refs.length >= 12){ showMsg('up-err','Doze fotos é o limite. Escolha as melhores.'); break; }
     if (f.size > 10 * 1024 * 1024){ showMsg('up-err','Cada foto precisa ter menos de 10 MB.'); continue; }
     try {
       const url = await toDataUrl(f);
-      S.refs.push({ url, file:f });
+      const ref = { url, file:f };
+      S.refs.push(ref);
+      novas.push(ref);
     } catch {
       showMsg('up-err','Não consegui ler uma das fotos. Tente outra.');
     }
@@ -1230,6 +1308,34 @@ async function addFiles(list){
   renderThumbs();
   if (sb && S.user) await uploadPending();
   renderThumbs();
+  novas.forEach(avaliarReferencia);
+}
+
+const AVISOS_REF = {
+  tremida: 'Parece tremida ou desfocada.',
+  escura: 'Iluminação fraca ou contraluz.',
+  rosto_oculto: 'Rosto não está bem visível.',
+  baixa_resolucao: 'Resolução baixa demais.'
+};
+
+/**
+ * Avisa, sem bloquear, quando uma referência corre risco de reduzir a
+ * fidelidade facial do resultado. A decisão de trocar a foto ou não
+ * continua do cliente.
+ */
+async function avaliarReferencia(ref){
+  try {
+    const r = await fetch('/api/avaliar-referencia', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + (await token()) },
+      body: JSON.stringify({ url: ref.url })
+    });
+    const d = await r.json();
+    ref.aviso = d.ok === false ? (AVISOS_REF[d.problema] || 'Pode reduzir a fidelidade do resultado.') : null;
+  } catch {
+    ref.aviso = null;
+  }
+  if (document.getElementById('up-thumbs')) renderThumbs();
 }
 
 async function toDataUrl(file){
@@ -1261,16 +1367,37 @@ function renderThumbs(){
   const el = document.getElementById('up-thumbs');
   el.innerHTML = S.refs.map((r,i) => `
     <div class="cell"><img src="${r.url}" alt="">
-      ${r.saved ? '<div class="ok">✓</div>' : ''}
+      ${r.aviso ? `<div class="warn" title="${r.aviso}">!</div>` : r.saved ? '<div class="ok">✓</div>' : ''}
       <div class="x" onclick="removeRef(${i})">✕</div></div>
   `).join('') + (S.refs.length < 12
     ? `<div class="add" onclick="document.getElementById('i-files').click()">+</div>` : '');
   document.getElementById('up-count').innerHTML =
     `${S.refs.length} <span style="color:var(--t-low);font-weight:400">/ 12</span>`;
   document.getElementById('btn-up').disabled = S.refs.length < 8;
+
+  const avisos = S.refs.filter(r => r.aviso).length;
+  const elAvisos = document.getElementById('up-avisos');
+  if (elAvisos) {
+    elAvisos.textContent = avisos
+      ? `⚠ ${avisos} ${avisos===1?'foto pode':'fotos podem'} reduzir a fidelidade do resultado. Toque no ! pra ver qual.`
+      : '';
+  }
 }
 
-function removeRef(i){ S.refs.splice(i,1); renderThumbs(); }
+/**
+ * Antes só tirava da lista local — se a foto já estivesse salva no banco,
+ * ela continuava lá e voltava na próxima vez que a tela recarregasse.
+ */
+async function removeRef(i){
+  const ref = S.refs[i];
+  if (!ref) return;
+  S.refs.splice(i,1);
+  renderThumbs();
+  if (ref.saved && ref.id && sb){
+    const { error } = await sb.from('referencias').delete().eq('id', ref.id);
+    if (error) console.error('[removeRef]', error);
+  }
+}
 
 /**
  * Salva no banco as referências que ainda não subiram.
@@ -1287,13 +1414,14 @@ async function uploadPending(){
   for (const r of S.refs){
     if (r.saved || r.saving) continue;
     r.saving = true;
-    const { error } = await sb.from('referencias')
-      .insert({ user_id:S.user.id, url:r.url });
+    const { data, error } = await sb.from('referencias')
+      .insert({ user_id:S.user.id, url:r.url }).select('id').single();
     if (error) {
       console.error('[uploadPending]', error);
       S.lastUploadError = error.message || error.code || String(error);
     } else {
       r.saved = true;
+      r.id = data?.id;
       if (document.getElementById('up-thumbs')) renderThumbs();
     }
     r.saving = false;
@@ -1349,7 +1477,8 @@ function renderDirection(){
 }
 
 function showExamples(){
-  document.getElementById('ex-list').innerHTML = EXAMPLES.map(e => `
+  const exemplos = EXAMPLES_POR_OCASIAO[S.occasion] || EXAMPLES_POR_OCASIAO.executivo;
+  document.getElementById('ex-list').innerHTML = exemplos.map(e => `
     <button class="choice" style="align-items:flex-start" onclick="useExample(${JSON.stringify(e).replace(/"/g,'&quot;')})">
       <p style="font-size:13.5px">${e}</p>
     </button>`).join('');
@@ -1449,7 +1578,8 @@ async function startGeneration(){
     // precisa consultar /api/status para saber o que já veio.
     if (d.urls){
       renderGenSlots(d.urls.length, d.urls);
-      d.urls.forEach(u => S.photos.unshift({ url:u, ocasiao:S.occasion, criado_em:new Date().toISOString() }));
+      const retratos = d.retratos && d.retratos.length === d.urls.length ? d.retratos : d.urls.map(u => ({ url:u }));
+      retratos.forEach(rt => S.photos.unshift({ id:rt.id, url:rt.url, ocasiao:S.occasion, refeita_gratis:false, criado_em:new Date().toISOString() }));
       if (S.profile) S.profile.creditos = Math.max(0, (S.profile.creditos||0) - 4);
       document.getElementById('gen-title').textContent = 'Pronto';
       document.getElementById('gen-sub').textContent = d.parcial
@@ -1494,7 +1624,8 @@ async function pollGeneration(){
     const urls = d.urls || [];
     renderGenSlots(urls.length, urls);
     if (d.status === 'pronto'){
-      urls.forEach(u => S.photos.unshift({ url:u, ocasiao:S.occasion, criado_em:new Date().toISOString() }));
+      const retratos = d.retratos && d.retratos.length === urls.length ? d.retratos : urls.map(u => ({ url:u }));
+      retratos.forEach(rt => S.photos.unshift({ id:rt.id, url:rt.url, ocasiao:S.occasion, refeita_gratis:false, criado_em:new Date().toISOString() }));
       if (S.profile) S.profile.creditos = Math.max(0, (S.profile.creditos||0) - 4);
       document.getElementById('gen-title').textContent = 'Pronto';
       document.getElementById('gen-sub').textContent = 'Quatro retratos novos';
@@ -1530,13 +1661,70 @@ function renderGallery(){
   document.getElementById('gal-empty').style.display = lista.length ? 'none' : '';
   document.getElementById('gal-grid').innerHTML = lista.map((p,i) => {
     const o = OCCASIONS.find(x => x.id === p.ocasiao);
-    return `<div class="shot" onclick="openDownload(${i})">
+    const podeAbrir = !p.refazendo;
+    const podeRefazer = !!p.id && !p.refazendo;
+    const tagGratis = p.id ? (p.refeita_gratis ? '<div class="redo-tag">1 crédito</div>' : '<div class="redo-tag">Grátis</div>') : '';
+    return `<div class="shot" onclick="${podeAbrir ? `openDownload(${i})` : ''}">
       <img src="${p.url}" alt="" loading="lazy">
+      ${tagGratis}
+      <button class="redo" title="Refazer esta foto" ${podeRefazer ? '' : 'disabled'}
+        onclick="event.stopPropagation();refazerFoto('${p.id||''}')">${p.refazendo ? '…' : '↻'}</button>
+      <button class="del" title="Apagar esta foto" ${p.id && !p.refazendo ? '' : 'disabled'}
+        onclick="event.stopPropagation();apagarFoto('${p.id||''}')">✕</button>
       <div class="pill">${o?o.nome:''}</div></div>`;
   }).join('');
 }
 
 function setFilter(f){ S.filter = f; renderGallery(); }
+
+/* =========================================================================
+   REFAZER UMA FOTO
+   ========================================================================= */
+async function refazerFoto(id){
+  if (!id) return;
+  const foto = S.photos.find(p => p.id === id);
+  if (!foto || foto.refazendo) return;
+
+  const gratis = !foto.refeita_gratis;
+  if (!gratis && !confirm('Essa foto já usou a refação grátis. Refazer de novo vai custar 1 crédito. Continuar?')) return;
+
+  foto.refazendo = true;
+  renderGallery();
+  try {
+    const r = await fetch('/api/regenerate', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + (await token()) },
+      body: JSON.stringify({ retratoId: id })
+    });
+    const d = await r.json();
+    if (!r.ok){
+      alert(d.erro || 'Não consegui refazer essa foto agora.');
+      if (r.status === 402) go('plans');
+      return;
+    }
+    foto.url = d.url;
+    foto.refeita_gratis = true;
+    if (!gratis && S.profile) S.profile.creditos = d.creditos;
+  } catch {
+    alert('Algo falhou. Tente de novo.');
+  } finally {
+    foto.refazendo = false;
+    renderGallery();
+  }
+}
+
+async function apagarFoto(id){
+  if (!id) return;
+  if (!confirm('Apagar esta foto? Não dá pra desfazer.')) return;
+  const { error } = await sb.from('retratos').delete().eq('id', id);
+  if (error){
+    console.error('[apagarFoto]', error);
+    alert('Não consegui apagar. Tente de novo.');
+    return;
+  }
+  S.photos = S.photos.filter(p => p.id !== id);
+  renderGallery();
+}
 
 /* =========================================================================
    DOWNLOAD POR DESTINO
@@ -1567,11 +1755,23 @@ function renderDests(){
     </button>`).join('');
 }
 
+/**
+ * Um <a download> com data URI não confia: no Safari do iPhone ele só abre
+ * a imagem numa aba nova, sem salvar em lugar nenhum — não existe forma de
+ * uma página web escrever direto no álbum de fotos do celular. O caminho
+ * confiável é o Web Share (nível 2, com files): abre a folha nativa do
+ * sistema, e "Salvar imagem" ali cai direto na galeria, tanto no iPhone
+ * quanto no Android. Mantém o <a download> como reserva só pra desktop.
+ */
 async function downloadCrop(){
-  const [rw, rh] = S.dlRatio.split(':').map(Number);
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.onload = () => {
+  const btn = document.querySelector('#sheet-dl .btn');
+  if (btn){ btn.disabled = true; btn.textContent = 'Preparando...'; }
+  try {
+    const [rw, rh] = S.dlRatio.split(':').map(Number);
+    const img = new Image();
+    img.src = S.dlPhoto.url;
+    await img.decode();
+
     const alvo = rw / rh;
     let sw = img.width, sh = Math.round(img.width / alvo);
     if (sh > img.height){ sh = img.height; sw = Math.round(img.height * alvo); }
@@ -1580,13 +1780,35 @@ async function downloadCrop(){
     const c = document.createElement('canvas');
     c.width = sw; c.height = sh;
     c.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+
+    const nomeArquivo = `prisma-${S.dlPhoto.ocasiao}-${S.dlRatio.replace(':','x')}.jpg`;
+    const blob = await new Promise(res => c.toBlob(res, 'image/jpeg', 0.95));
+
+    if (navigator.canShare && navigator.share){
+      const file = new File([blob], nomeArquivo, { type: 'image/jpeg' });
+      if (navigator.canShare({ files: [file] })){
+        try {
+          await navigator.share({ files: [file] });
+          closeSheet('sheet-dl');
+          return;
+        } catch (e) {
+          if (e?.name === 'AbortError') return; // usuário fechou a folha, sem erro
+          // qualquer outro erro: cai no download tradicional abaixo
+        }
+      }
+    }
+
     const a = document.createElement('a');
-    a.download = `prisma-${S.dlPhoto.ocasiao}-${S.dlRatio.replace(':','x')}.jpg`;
-    a.href = c.toDataURL('image/jpeg', 0.95);
+    a.download = nomeArquivo;
+    a.href = URL.createObjectURL(blob);
     a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     closeSheet('sheet-dl');
-  };
-  img.src = S.dlPhoto.url;
+  } catch {
+    alert('Não consegui preparar o download. Tente de novo.');
+  } finally {
+    if (btn){ btn.disabled = false; btn.textContent = 'Baixar'; }
+  }
 }
 
 /* =========================================================================

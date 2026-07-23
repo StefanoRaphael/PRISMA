@@ -1,11 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "api/prompt.js":   { "maxDuration": 60 },
-    "api/generate.js": { "maxDuration": 60 },
-    "api/status.js":   { "maxDuration": 30 },
-    "api/checkout.js": { "maxDuration": 30 },
-    "api/webhook.js":  { "maxDuration": 30 }
+    "api/prompt.js":     { "maxDuration": 60 },
+    "api/generate.js":   { "maxDuration": 60 },
+    "api/regenerate.js": { "maxDuration": 60 },
+    "api/status.js":     { "maxDuration": 30 },
+    "api/checkout.js":   { "maxDuration": 30 },
+    "api/webhook.js":    { "maxDuration": 30 },
+    "api/avaliar-referencia.js": { "maxDuration": 30 }
   },
   "headers": [
     {

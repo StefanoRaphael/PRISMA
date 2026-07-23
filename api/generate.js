@@ -107,11 +107,16 @@ export default async function handler(req, res) {
       })
       .eq('id', geracao.id);
 
-    await sb.from('retratos').insert(
+    // .select() devolve os ids gerados: sem eles, o botão de "refazer" na
+    // galeria não teria como identificar qual retrato regenerar antes do
+    // cliente recarregar a página.
+    const { data: retratosInseridos } = await sb.from('retratos').insert(
       urls.map(url => ({ user_id: usuario.id, geracao_id: geracao.id, ocasiao, url }))
-    );
+    ).select('id, url');
 
-    return res.status(200).json({ id: geracao.id, creditos: saldo, urls, parcial });
+    const retratos = (retratosInseridos || []).map(r => ({ id: r.id, url: r.url }));
+
+    return res.status(200).json({ id: geracao.id, creditos: saldo, urls, retratos, parcial });
   } catch (e) {
     console.error('[generate]', e);
     // Devolve o crédito: o cliente não paga por falha nossa.
