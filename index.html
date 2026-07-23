@@ -85,6 +85,9 @@ a{color:inherit}
   transition:box-shadow .2s ease;
 }
 .input::placeholder,.textarea::placeholder{color:var(--t-low)}
+.pass-wrap{position:relative}
+.pass-toggle{position:absolute;right:6px;top:0;bottom:0;padding:0 12px;font-size:12.5px;
+  font-weight:600;color:var(--t-mid)}
 .input:focus,.textarea:focus{
   border-color:transparent;
   background:linear-gradient(var(--ink),var(--ink)) padding-box,var(--spectrum) border-box;
@@ -533,7 +536,10 @@ a{color:inherit}
     </div>
     <div class="field">
       <label>Senha</label>
-      <input class="input" id="i-pass" type="password" placeholder="Mínimo de 8 caracteres" autocomplete="current-password">
+      <div class="pass-wrap">
+        <input class="input" id="i-pass" type="password" placeholder="Mínimo de 8 caracteres" autocomplete="current-password" style="padding-right:56px">
+        <button type="button" class="pass-toggle" id="pass-toggle-btn" onclick="togglePass()">Ver</button>
+      </div>
     </div>
 
     <div class="spacer"></div>
@@ -559,6 +565,11 @@ a{color:inherit}
 <!-- ================= PERFIL PRONTO ================= -->
 <section class="view" id="v-profile">
   <div class="wrap pad-t pad-b" style="justify-content:center">
+    <div class="top" id="prof-top" style="padding-top:0;display:none">
+      <button class="back" onclick="go('account')">‹</button>
+      <div class="wordmark">P R I S M A</div>
+      <div style="width:36px"></div>
+    </div>
     <div style="text-align:center">
       <div class="kicker" style="margin-bottom:16px">Seu perfil visual</div>
       <h2 class="h-xl" id="prof-name"></h2>
@@ -566,7 +577,7 @@ a{color:inherit}
       <p class="p" id="prof-desc" style="max-width:330px;margin:0 auto"></p>
     </div>
     <div class="spacer"></div>
-    <button class="btn" onclick="go('upload')">Enviar minhas fotos</button>
+    <button class="btn" id="prof-btn" onclick="go('upload')">Enviar minhas fotos</button>
   </div>
 </section>
 
@@ -717,7 +728,10 @@ a{color:inherit}
         <h2 class="h-lg">Seus retratos</h2>
         <p class="p-sm" style="margin-top:5px" id="gal-sub"></p>
       </div>
-      <button class="back" onclick="go('account')">☰</button>
+      <div style="display:flex;gap:8px">
+        <button class="back" title="Gerar mais" onclick="go('occasions')">+</button>
+        <button class="back" title="Menu" onclick="go('account')">☰</button>
+      </div>
     </div>
     <div class="tabs" id="gal-tabs"></div>
     <div class="grid2" id="gal-grid"></div>
@@ -746,7 +760,7 @@ a{color:inherit}
 
     <div class="card" style="padding:4px 19px">
       <div class="row"><span>E-mail da conta</span><i id="acc-email">—</i></div>
-      <div class="row"><span>Meu perfil visual</span><i id="acc-arch">—</i></div>
+      <div class="row" onclick="verPerfil()" style="cursor:pointer"><span>Meu perfil visual</span><i id="acc-arch">— ›</i></div>
       <div class="row"><span>Referências</span><i id="acc-refs">—</i></div>
       <div class="row"><span>Ocasiões usadas</span><i id="acc-oc">—</i></div>
       <div class="row"><span>Pagamento</span><i id="acc-pay">—</i></div>
@@ -1084,6 +1098,14 @@ function toggleAuth(){
   showMsg('auth-ok','','ok');
 }
 
+function togglePass(){
+  const inp = document.getElementById('i-pass');
+  const btn = document.getElementById('pass-toggle-btn');
+  const mostrar = inp.type === 'password';
+  inp.type = mostrar ? 'text' : 'password';
+  btn.textContent = mostrar ? 'Ocultar' : 'Ver';
+}
+
 async function doAuth(){
   const name  = document.getElementById('i-name').value.trim();
   const email = document.getElementById('i-email').value.trim();
@@ -1257,6 +1279,8 @@ async function finishQuiz(){
   const a = ARCHETYPES[best];
   document.getElementById('prof-name').textContent = a.nome;
   document.getElementById('prof-desc').textContent = a.desc;
+  document.getElementById('prof-top').style.display = 'none';
+  document.getElementById('prof-btn').style.display = '';
 
   saveQuizState();
 
@@ -1295,6 +1319,20 @@ function loadQuizState(){
 
 function clearQuizState(){
   localStorage.removeItem('prisma_quiz_state');
+}
+
+/**
+ * Reabre a tela de resultado do diagnóstico pra consulta, sem empurrar o
+ * cliente de volta pro upload — isso só faz sentido logo após o quiz.
+ */
+function verPerfil(){
+  const a = ARCHETYPES[S.archetype];
+  if (!a) return;
+  document.getElementById('prof-name').textContent = a.nome;
+  document.getElementById('prof-desc').textContent = a.desc;
+  document.getElementById('prof-top').style.display = '';
+  document.getElementById('prof-btn').style.display = 'none';
+  go('profile');
 }
 
 /**
@@ -1888,7 +1926,7 @@ function renderAccount(){
       </div>`
     : '';
 
-  document.getElementById('acc-arch').textContent = ARCHETYPES[S.archetype]?.nome || '—';
+  document.getElementById('acc-arch').textContent = (ARCHETYPES[S.archetype]?.nome || '—') + ' ›';
   document.getElementById('acc-refs').textContent = S.refs.length ? S.refs.length + ' fotos' : '—';
   const usadas = [...new Set(S.photos.map(x => x.ocasiao))].length;
   document.getElementById('acc-oc').textContent = usadas + ' de 12';
