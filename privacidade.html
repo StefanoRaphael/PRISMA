@@ -18,19 +18,25 @@
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",sans-serif;
     line-height:1.6;
   }
-  .wrap{max-width:640px;margin:0 auto;padding:48px 22px 80px}
+  .wrap{max-width:720px;margin:0 auto;padding:48px 22px 80px}
   .wordmark{font-size:12px;font-weight:640;letter-spacing:.42em;margin-bottom:36px}
   .wordmark b:nth-child(3){background:var(--spectrum);-webkit-background-clip:text;background-clip:text;color:transparent}
   h1{font-size:26px;letter-spacing:-.02em;margin:0 0 8px}
   .updated{font-size:13px;color:var(--t-low);margin-bottom:36px}
   .spec-line{width:44px;height:3px;border-radius:2px;background:var(--spectrum);margin-bottom:36px}
   h2{font-size:16px;letter-spacing:-.01em;margin:36px 0 10px;color:var(--t-hi)}
+  h3{font-size:14px;letter-spacing:-.01em;margin:18px 0 8px;color:var(--t-hi);font-weight:600}
   p,li{font-size:14.5px;color:var(--t-mid);letter-spacing:-.006em}
   ul{padding-left:20px;margin:8px 0}
   li{margin-bottom:6px}
   a{color:var(--sp4)}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+  table th{text-align:left;padding:10px;border-bottom:1px solid var(--line-2);color:var(--t-hi);font-weight:600}
+  table td{padding:10px;border-bottom:1px solid var(--line-2);color:var(--t-mid)}
   .card{border:1px solid var(--line-2);border-radius:16px;padding:18px 20px;background:rgba(255,255,255,.03);margin:20px 0}
   .card p{margin:0;color:var(--t-hi);font-size:14px}
+  .callout{border-left:4px solid var(--sp4);padding:12px;margin:16px 0;background:rgba(79,201,245,.05);border-radius:0 4px 4px 0}
+  .callout strong{color:var(--t-hi)}
   footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--t-low)}
 </style>
 </head>
@@ -41,64 +47,185 @@
   <p class="updated">Última atualização: 23 de julho de 2026</p>
   <div class="spec-line"></div>
 
-  <p>Esta política explica o que o PRISMA coleta, para quê, e o que você pode fazer a respeito. Se algum termo aqui não fizer sentido, escreva para <a href="mailto:stefanoraphael@gmail.com">stefanoraphael@gmail.com</a>.</p>
+  <p>A sua privacidade é prioridade no PRISMA. Esta política explica quais dados coletamos, por que coletamos, com quem compartilhamos e quais são os seus direitos. Se algum termo aqui não fizer sentido, escreva para <a href="mailto:stefanoraphael@gmail.com">stefanoraphael@gmail.com</a>.</p>
 
   <div class="card">
-    <p><b>Resumo:</b> usamos as fotos do seu rosto e corpo só para gerar seus retratos. Não publicamos, não vendemos e não compartilhamos suas fotos com ninguém além dos serviços técnicos necessários para o funcionamento do PRISMA, listados abaixo. Você pode apagar suas fotos e retratos a qualquer momento, direto no app.</p>
+    <p><b>Resumo executivo:</b> Usamos as fotos do seu rosto e corpo exclusivamente para gerar seus retratos personalizados. Não publicamos, não vendemos e não compartilhamos suas fotos com ninguém além dos fornecedores técnicos necessários ao funcionamento do PRISMA, listados abaixo. Você pode apagar suas fotos e retratos a qualquer momento direto no app, e pode solicitar a exclusão completa da sua conta a qualquer momento.</p>
   </div>
 
   <h2>1. Que dados coletamos</h2>
+  <p><b>Dados de cadastro:</b> nome, e-mail e senha (criptografada).</p>
+  <p><b>Fotos de referência:</b> as imagens do seu rosto e corpo que você envia voluntariamente para gerar os retratos. Estas são classificadas como <b>dados pessoais sensíveis</b> (dado biométrico, conforme Art. 5º, II, da LGPD).</p>
+  <p><b>Retratos gerados:</b> as imagens que o PRISMA cria a partir das suas fotos de referência.</p>
+  <p><b>Diagnóstico de perfil visual:</b> as respostas do questionário de perfil.</p>
+  <p><b>Dados de pagamento:</b> o PRISMA <b>não armazena</b> dados de cartão de crédito ou débito. O processamento é feito exclusivamente pelo <b>Mercado Pago</b>, que possui política de privacidade própria.</p>
+  <p><b>Dados de navegação:</b> endereço IP, tipo de navegador, páginas acessadas e tempo de sessão, coletados automaticamente para fins de segurança e melhoria do serviço.</p>
+
+  <h2>2. Base legal para o tratamento de dados</h2>
+  <p>O PRISMA trata seus dados pessoais com base nas seguintes hipóteses legais da LGPD (Lei 13.709/2018):</p>
+  <table>
+    <tr>
+      <th>Finalidade</th>
+      <th>Base legal</th>
+      <th>Dispositivo LGPD</th>
+    </tr>
+    <tr>
+      <td>Geração dos retratos a partir das fotos de referência</td>
+      <td>Execução do contrato de assinatura</td>
+      <td>Art. 7º, V e Art. 11, II, "a"</td>
+    </tr>
+    <tr>
+      <td>Fotos de rosto como dado biométrico sensível</td>
+      <td>Consentimento específico e destacado, atrelado ao contrato</td>
+      <td>Art. 11, I</td>
+    </tr>
+    <tr>
+      <td>Comunicação e suporte ao usuário</td>
+      <td>Execução do contrato / legítimo interesse</td>
+      <td>Art. 7º, V e Art. 10</td>
+    </tr>
+    <tr>
+      <td>Processamento de pagamentos</td>
+      <td>Execução do contrato</td>
+      <td>Art. 7º, V</td>
+    </tr>
+    <tr>
+      <td>Segurança e prevenção a fraudes</td>
+      <td>Legítimo interesse</td>
+      <td>Art. 10</td>
+    </tr>
+  </table>
+  <div class="callout">
+    <strong>Importante:</strong> seu consentimento para o tratamento de dados biométricos é solicitado no momento do cadastro, de forma específica e destacada. Você pode revogá-lo a qualquer momento, mas a revogação poderá implicar o encerramento do serviço, já que as fotos de referência são essenciais para a geração dos retratos contratados.
+  </div>
+
+  <h2>3. Para que usamos seus dados</h2>
   <ul>
-    <li><b>Cadastro:</b> nome, e-mail e senha.</li>
-    <li><b>Fotos de referência:</b> as fotos do seu rosto e corpo que você envia para gerar os retratos.</li>
-    <li><b>Retratos gerados:</b> as imagens que o PRISMA cria a partir das suas referências.</li>
-    <li><b>Diagnóstico de perfil visual:</b> as respostas do questionário que define seu perfil.</li>
-    <li><b>Pagamento:</b> o PRISMA não armazena dado de cartão. O pagamento é processado direto pelo Mercado Pago, que tem sua própria política de privacidade.</li>
+    <li>Gerar os retratos que você solicita a partir das suas fotos de referência</li>
+    <li>Manter sua conta, histórico de retratos e perfil visual</li>
+    <li>Processar pagamentos e liberar seu plano de assinatura</li>
+    <li>Responder a pedidos de suporte e comunicação operacional</li>
+    <li>Garantir a segurança da plataforma e prevenir usos indevidos</li>
+  </ul>
+  <p><b>O PRISMA não utiliza suas fotos ou retratos para:</b> reconhecimento facial, identificação em outras bases de dados, treinamento de modelos de IA próprios, publicidade ou qualquer finalidade não prevista nesta política.</p>
+
+  <h2>4. Compartilhamento com terceiros</h2>
+  <p>Nenhuma foto é publicada ou compartilhada publicamente. Para o funcionamento do PRISMA, alguns dados precisam ser processados por fornecedores de tecnologia contratados como <b>operadores</b> (nos termos do Art. 5º, VII, da LGPD):</p>
+  <table>
+    <tr>
+      <th>Fornecedor</th>
+      <th>Função</th>
+      <th>Dados acessados</th>
+      <th>APD</th>
+    </tr>
+    <tr>
+      <td><b>Google (Gemini)</b></td>
+      <td>Geração dos retratos a partir das fotos de referência</td>
+      <td>Fotos de referência</td>
+      <td>Sim</td>
+    </tr>
+    <tr>
+      <td><b>Anthropic (Claude)</b></td>
+      <td>Montagem do comando de geração baseado na descrição do usuário</td>
+      <td>Apenas texto descritivo (não recebe fotos)</td>
+      <td>Sim</td>
+    </tr>
+    <tr>
+      <td><b>Supabase</b></td>
+      <td>Armazenamento de dados de conta, fotos e retratos</td>
+      <td>Dados de cadastro e imagens</td>
+      <td>Sim</td>
+    </tr>
+    <tr>
+      <td><b>Mercado Pago</b></td>
+      <td>Processamento de pagamentos</td>
+      <td>Dados de transação (não vê fotos)</td>
+      <td>Sim</td>
+    </tr>
+    <tr>
+      <td><b>Vercel</b></td>
+      <td>Hospedagem do site e aplicação</td>
+      <td>Dados de navegação anonimizados</td>
+      <td>Sim</td>
+    </tr>
+  </table>
+  <p><b>Nenhum desses fornecedores está autorizado a usar seus dados para finalidades próprias</b>, incluindo treinamento de modelos de IA, salvo disposição contratual em contrário que será previamente comunicada.</p>
+  <h3>Transferência internacional de dados</h3>
+  <p>O Google (Gemini) e a Anthropic (Claude) são empresas sediadas nos Estados Unidos. Isso significa que seus dados podem ser processados em servidores fora do Brasil, sempre com base em cláusulas contratuais padrão adequadas à LGPD (Art. 33, II) e garantindo nível de proteção equivalente ao exigido pela legislação brasileira.</p>
+
+  <h2>5. Dado biométrico — tratamento especial</h2>
+  <p>Suas fotos de rosto e corpo são tratadas como <b>dado pessoal sensível</b> — categoria de dado biométrico prevista no Art. 5º, II, da LGPD. O tratamento desses dados segue regras mais rigorosas:</p>
+  <ul>
+    <li>Coletados <b>mediante consentimento específico e destacado</b> no cadastro</li>
+    <li>Utilizados <b>exclusivamente</b> para a finalidade declarada (geração de retratos)</li>
+    <li><b>Nunca</b> utilizados para reconhecimento facial, identificação biométrica em outras bases, ou qualquer finalidade não prevista</li>
+    <li>Armazenados com <b>criptografia em repouso e em trânsito</b></li>
+    <li>Acessíveis apenas por sistemas automatizados e por equipe técnica restrita e autorizada</li>
+    <li>Descartados de forma segura quando excluídos pelo usuário ou quando a conta é encerrada</li>
   </ul>
 
-  <h2>2. Dado biométrico: tratamento especial</h2>
-  <p>Suas fotos de rosto são tratadas como <b>dado pessoal sensível</b>, na categoria de dado biométrico prevista na LGPD (Lei 13.709/2018, Art. 5º, II). Por isso, coletamos essas fotos só com o seu consentimento explícito no cadastro, e usamos exclusivamente para gerar os retratos que você pediu — nunca para reconhecimento facial, identificação em outras bases, ou qualquer finalidade fora do PRISMA.</p>
+  <h2>6. Por quanto tempo guardamos seus dados</h2>
+  <table>
+    <tr>
+      <th>Tipo de dado</th>
+      <th>Prazo de retenção</th>
+    </tr>
+    <tr>
+      <td>Fotos de referência e retratos gerados</td>
+      <td>Durante a vigência da sua assinatura. Você pode apagar individualmente a qualquer momento pelo app</td>
+    </tr>
+    <tr>
+      <td>Dados de cadastro</td>
+      <td>Até o encerramento da conta</td>
+    </tr>
+    <tr>
+      <td>Dados de pagamento</td>
+      <td>Não armazenados pelo PRISMA (processados pelo Mercado Pago)</td>
+    </tr>
+    <tr>
+      <td>Logs de acesso e navegação</td>
+      <td>6 meses, conforme Marco Civil da Internet (Lei 12.965/2014, Art. 10, §3º)</td>
+    </tr>
+  </table>
+  <p><b>Cancelamento da assinatura:</b> Se você cancelar o plano mas não solicitar a exclusão da conta, seus dados serão mantidos por <b>30 dias</b> para permitir a reativação. Após esse período, os dados biométricos (fotos e retratos) serão excluídos permanentemente.</p>
+  <p><b>Exclusão definitiva:</b> Ao solicitar a exclusão da conta, todos os seus dados serão removidos em até <b>30 dias corridos</b>, salvo obrigação legal de retenção.</p>
 
-  <h2>3. Para quê usamos seus dados</h2>
+  <h2>7. Segurança da informação</h2>
+  <p>O PRISMA adota medidas técnicas e administrativas para proteger seus dados:</p>
   <ul>
-    <li>Gerar os retratos que você solicita, a partir das suas fotos de referência.</li>
-    <li>Manter sua conta, seu histórico de retratos e seu perfil visual.</li>
-    <li>Processar pagamentos e liberar seu plano.</li>
-    <li>Responder pedidos de suporte.</li>
+    <li><b>Criptografia em trânsito:</b> toda comunicação entre seu navegador e o PRISMA usa HTTPS (TLS 1.3)</li>
+    <li><b>Criptografia em repouso:</b> fotos de referência e retratos são armazenados criptografados no banco de dados</li>
+    <li><b>Controle de acesso:</b> cada conta só consegue ler e apagar os próprios dados. O acesso administrativo é restrito a pessoas autorizadas, com autenticação multifator (MFA)</li>
+    <li><b>Backup e recuperação:</b> backups criptografados são realizados periodicamente, com procedimento documentado de recuperação</li>
+    <li><b>Monitoramento:</b> logs de acesso são monitorados para detecção de atividades suspeitas</li>
+    <li><b>Notificação de incidentes:</b> em caso de violação de dados que possa causar risco ou dano aos titulares, o PRISMA comunicará a ANPD e os usuários afetados em até <b>48 horas</b>, conforme Art. 48 da LGPD</li>
   </ul>
 
-  <h2>4. Com quem seus dados são compartilhados</h2>
-  <p>Nenhuma foto é publicada ou compartilhada publicamente. Para o PRISMA funcionar, alguns dados passam por fornecedores de tecnologia, cada um com sua própria função:</p>
+  <h2>8. Seus direitos</h2>
+  <p>Conforme o Art. 18 da LGPD, você pode a qualquer momento:</p>
   <ul>
-    <li><b>Google (Gemini):</b> recebe suas fotos de referência para gerar os retratos. É o único fornecedor que processa suas imagens.</li>
-    <li><b>Anthropic (Claude):</b> recebe apenas o texto da sua direção (o que você escreveu sobre a foto desejada) para montar o comando de geração. Nunca recebe suas fotos.</li>
-    <li><b>Supabase:</b> armazena seus dados de conta, fotos e retratos, com controle de acesso restrito à sua própria conta.</li>
-    <li><b>Mercado Pago:</b> processa pagamentos. O PRISMA não vê nem guarda dado de cartão.</li>
+    <li><b>Confirmar</b> se tratamos seus dados e ter <b>acesso</b> a eles</li>
+    <li><b>Corrigir</b> dados incompletos, inexatos ou desatualizados</li>
+    <li><b>Excluir</b> seus dados pessoais (fotos, retratos, conta)</li>
+    <li><b>Saber</b> com quais entidades públicas ou privadas compartilhamos seus dados</li>
+    <li><b>Revogar</b> o consentimento para tratamento de dados sensíveis</li>
+    <li><b>Solicitar</b> portabilidade dos seus dados a outro fornecedor</li>
+    <li><b>Solicitar</b> revisão de decisões automatizadas (se aplicável)</li>
   </ul>
-  <p>Nenhum desses fornecedores tem autorização para usar seus dados fora do que é necessário para prestar o serviço ao PRISMA.</p>
+  <p>Para exercer qualquer direito, escreva para <a href="mailto:stefanoraphael@gmail.com">stefanoraphael@gmail.com</a>. Responderemos em até <b>15 dias úteis</b>, conforme Art. 19 da LGPD.</p>
 
-  <h2>5. Por quanto tempo guardamos seus dados</h2>
-  <p>Enquanto sua conta existir. Você pode apagar fotos de referência e retratos individualmente, a qualquer momento, direto no app. Para apagar a conta inteira, entre em contato pelo e-mail de suporte.</p>
+  <h2>9. Encarregado (DPO)</h2>
+  <p>O PRISMA designou um Encarregado pelo tratamento de dados pessoais, nos termos do Art. 41 da LGPD:</p>
+  <p><b>Stefano Raphael</b><br>E-mail: <a href="mailto:stefanoraphael@gmail.com">stefanoraphael@gmail.com</a></p>
 
-  <h2>6. Seus direitos</h2>
-  <p>Conforme a LGPD (Art. 18), você pode a qualquer momento pedir:</p>
-  <ul>
-    <li>Confirmação de que tratamos seus dados, e acesso a eles.</li>
-    <li>Correção de dado incompleto ou desatualizado.</li>
-    <li>Exclusão dos seus dados (fotos, retratos, conta).</li>
-    <li>Informação sobre com quem seus dados foram compartilhados.</li>
-    <li>Revogação do seu consentimento, a qualquer momento.</li>
-  </ul>
-  <p>Para exercer qualquer um desses direitos, escreva para <a href="mailto:stefanoraphael@gmail.com">stefanoraphael@gmail.com</a>.</p>
+  <h2>10. Menores de idade</h2>
+  <p>O PRISMA <b>não é direcionado a menores de 18 anos</b> e não coleta intencionalmente dados de pessoas menores de idade. Se identificarmos o cadastro de um menor, a conta será cancelada e os dados excluídos.</p>
 
-  <h2>7. Segurança</h2>
-  <p>A conexão entre seu navegador e o PRISMA é sempre criptografada (HTTPS). No banco de dados, cada conta só consegue ler e apagar os próprios dados — nunca os de outro cliente.</p>
+  <h2>11. Mudanças nesta política</h2>
+  <p>Se esta política for alterada, a data no topo da página será atualizada. Alterações significativas serão comunicadas por e-mail ou notificação no app.</p>
 
-  <h2>8. Menores de idade</h2>
-  <p>O PRISMA não é direcionado a menores de 18 anos.</p>
-
-  <h2>9. Mudanças nesta política</h2>
-  <p>Se esta política mudar, a data no topo desta página será atualizada.</p>
+  <h2>12. Lei aplicável e foro</h2>
+  <p>Esta política é regida pela Lei Geral de Proteção de Dados Pessoais (Lei 13.709/2018) e pelo Marco Civil da Internet (Lei 12.965/2014). Fica eleito o foro da comarca de <b>São Paulo/SP</b> para dirimir quaisquer controvérsias, sem prejuízo de outros foros competentes.</p>
 
   <footer>PRISMA · Retratos com o seu rosto de verdade.</footer>
 </div>
