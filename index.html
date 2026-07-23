@@ -1856,9 +1856,11 @@ async function refazerFoto(id){
 
 async function apagarFoto(id){
   if (!id || !confirm('Apagar esta foto? Não dá pra desfazer.')) return;
-  const { error } = await sb.from('retratos').delete().eq('id', id);
+  console.log('DEBUG:', { sb: !!sb, user: S.user?.id, id });
+  const { error, data, status } = await sb.from('retratos').delete().eq('id', id);
+  console.log('DELETE response:', { error, data, status });
   if (error) {
-    alert('Erro ao apagar: ' + error.message);
+    alert('Erro: ' + error.message + ' (code: ' + error.code + ')');
     return;
   }
   S.photos = S.photos.filter(p => p.id !== id);
