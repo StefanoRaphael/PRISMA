@@ -1,7 +1,7 @@
 /**
  * PRISMA — POST /api/generate
  *
- * Debita 4 créditos e gera os retratos. Diferente da Magnific, o Gemini
+ * Debita créditos (quantidade varia por plano) e gera os retratos. Diferente da Magnific, o Gemini
  * responde de forma síncrona — nesta mesma chamada já sabemos se deu certo,
  * sem precisar de fila nem de /api/status consultando um motor externo.
  * O débito acontece ANTES da chamada ao motor; se tudo falhar, devolve.
@@ -11,7 +11,9 @@ import { admin, usuarioDaRequisicao } from '../lib/auth.js';
 import { ehIlimitada } from '../lib/contas.js';
 import { gerarRetratos } from '../lib/gemini.js';
 
-const CUSTO = 4; // 4 retratos por geração
+// Retratos por chamada de geração: Básico/Pro geram em lote de 4, o Starter
+// avulso entrega 5 numa ocasião só, o Legacy gera 1 de cada vez (12/mês).
+const QUANTIDADE_POR_PLANO = { basico: 4, pro: 4, starter: 5, legacy: 1 };
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ erro: 'Use POST' });
@@ -51,6 +53,7 @@ export default async function handler(req, res) {
 
   // Contas internas do estúdio não passam por plano, validade nem crédito.
   const ilimitado = ehIlimitada(usuario.email);
+  const CUSTO = ilimitado ? 4 : (QUANTIDADE_POR_PLANO[perfil.plano] || 4);
   let saldo = null;
 
   if (!ilimitado) {
@@ -97,7 +100,7 @@ export default async function handler(req, res) {
   // O Gemini já devolve as imagens prontas nesta mesma chamada — não há
   // task_id nem fila para /api/status acompanhar depois.
   try {
-    const { urls, parcial, erros } = await gerarRetratos(prompt, referencias);
+    const { urls, parcial, erros } = await gerarRetratos(prompt, referencias, CUSTO);
 
     await sb.from('geracoes')
       .update({

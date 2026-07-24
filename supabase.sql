@@ -14,7 +14,7 @@ create table if not exists public.perfis (
   id            uuid primary key references auth.users(id) on delete cascade,
   nome          text,
   arquetipo     text,
-  plano         text        not null default 'nenhum',   -- nenhum | mensal | anual | pro
+  plano         text        not null default 'nenhum',   -- nenhum | starter | basico | pro | legacy | ilimitado
   creditos      int         not null default 0,          -- 1 crédito = 1 retrato
   validade      timestamptz,                             -- fim do acesso (planos anuais)
   renova_dia    int,                                     -- dia do mês (plano mensal)

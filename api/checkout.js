@@ -11,8 +11,10 @@
 import { admin, usuarioDaRequisicao } from '../lib/auth.js';
 
 const PLANOS = {
-  basico: { nome: 'PRISMA Básico', valor: 99.00,  creditos: 20, ciclo: 'mensal' },
-  pro:    { nome: 'PRISMA Pro',    valor: 199.00, creditos: 60, ciclo: 'mensal' }
+  starter: { nome: 'PRISMA Starter', valor: 39.00,  creditos: 5,  ciclo: 'unico'  },
+  basico:  { nome: 'PRISMA Básico',  valor: 99.00,  creditos: 20, ciclo: 'mensal' },
+  pro:     { nome: 'PRISMA Pro',     valor: 199.00, creditos: 60, ciclo: 'mensal' },
+  legacy:  { nome: 'PRISMA Legacy',  valor: 19.90,  creditos: 12, ciclo: 'mensal' }
 };
 
 export default async function handler(req, res) {
@@ -26,6 +28,22 @@ export default async function handler(req, res) {
 
   const site = process.env.SITE_URL || 'https://usarprisma.com.br';
   const sb = admin();
+
+  // Starter é avulso e só pode ser comprado uma vez por conta: se já existe
+  // um pagamento aprovado desse plano para esse usuário, barra aqui, antes
+  // de gerar uma nova preferência no Mercado Pago.
+  if (req.body.plano === 'starter') {
+    const { data: jaComprou } = await sb
+      .from('pagamentos')
+      .select('id')
+      .eq('user_id', usuario.id)
+      .eq('plano', 'starter')
+      .eq('status', 'aprovado')
+      .maybeSingle();
+    if (jaComprou) {
+      return res.status(400).json({ erro: 'Você já usou o Prisma Starter. Conheça o Básico ou o Pro.' });
+    }
+  }
 
   // Registra o pagamento como pendente antes de mandar para o checkout.
   const { data: pagamento } = await sb

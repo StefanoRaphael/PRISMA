@@ -10,8 +10,8 @@
 
 import { admin } from '../lib/auth.js';
 
-const CREDITOS = { basico: 20, pro: 60 };
-const VALORES  = { basico: 99.00, pro: 199.00 };
+const CREDITOS = { starter: 5, basico: 20, pro: 60, legacy: 12 };
+const VALORES  = { starter: 39.00, basico: 99.00, pro: 199.00, legacy: 19.90 };
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -57,19 +57,25 @@ export default async function handler(req, res) {
       .update({ status: 'aprovado', mp_id: String(pg.id) })
       .eq('id', pagamentoId);
 
-    // Todos os planos são mensais por enquanto — recorrência renova o saldo, não acumula.
+    // Starter é avulso: não renova, então dá uma janela generosa (90 dias)
+    // pra usar os 5 créditos sem depender do ciclo mensal dos outros planos.
     const agora = new Date();
     const validade = new Date(agora);
-    validade.setMonth(validade.getMonth() + 1);
+    if (plano === 'starter') {
+      validade.setDate(validade.getDate() + 90);
+    } else {
+      validade.setMonth(validade.getMonth() + 1);
+    }
 
     const metodo = pg.payment_type_id === 'bank_transfer' ? 'Pix' : 'Cartão';
+    const cicloTexto = plano === 'starter' ? 'avulso' : 'mensal';
 
     await sb.from('perfis').update({
       plano,
       creditos: CREDITOS[plano],
       validade: validade.toISOString(),
-      renova_dia: agora.getDate(),
-      metodo: `${metodo} · mensal`
+      renova_dia: plano === 'starter' ? null : agora.getDate(),
+      metodo: `${metodo} · ${cicloTexto}`
     }).eq('id', userId);
 
     return res.status(200).end();

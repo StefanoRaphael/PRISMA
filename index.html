@@ -749,6 +749,11 @@ a{color:inherit}
     <div class="gen-grid" id="gen-grid"></div>
     <p class="p-sm" id="gen-tip" style="text-align:center">Cada imagem aparece assim que fica pronta.<br>Você pode fechar o app, o trabalho continua.</p>
     <div class="spacer"></div>
+    <div class="card spec" id="gen-upsell-starter" style="display:none;margin-bottom:14px">
+      <div class="h-md" style="font-size:16px;margin-bottom:6px">Gostou do resultado?</div>
+      <p class="p-sm" style="margin-bottom:15px">Isso foi só 1 ocasião. O Básico libera 4 ocasiões e 20 retratos por mês, o Pro libera as 12 inteiras.</p>
+      <button class="btn" style="padding:12px 18px;font-size:14px" onclick="go('plans')">Ver planos</button>
+    </div>
     <button class="btn btn-ghost" id="btn-gen-done" onclick="go('gallery')" style="display:none">Ver na galeria</button>
   </div>
 </section>
@@ -869,6 +874,18 @@ a{color:inherit}
     <div class="kicker" style="margin:22px 0 6px">Segurança dos seus dados</div>
     <p class="p-sm" style="margin-bottom:8px">Suas fotos nunca são publicadas nem compartilhadas publicamente. Elas passam só pelo motor de geração das suas imagens, e você pode apagá-las a qualquer momento, direto no app.</p>
     <div class="link" onclick="window.open('/privacidade.html','_blank')" style="margin-top:2px"><b>Ver Política de Privacidade</b></div>
+  </div>
+</div>
+
+<!-- ================= SHEET: RETENÇÃO (acesso vencido) ================= -->
+<div class="sheet-bg" id="sheet-retencao" onclick="if(event.target===this)closeSheet('sheet-retencao')">
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="h-md" style="margin-bottom:6px">Seu acesso venceu</div>
+    <p class="p-sm" style="margin-bottom:20px" id="retencao-texto"></p>
+    <button class="btn" id="retencao-btn-principal" style="margin-bottom:10px">Renovar</button>
+    <div class="link" style="text-align:center" id="retencao-btn-legacy"><b>Prefiro o Legacy, R$ 19,90/mês</b></div>
+    <p class="p-sm" style="text-align:center;margin-top:8px;opacity:.7">1 retrato por ocasião, as 12 liberadas. Suas fotos continuam guardadas.</p>
   </div>
 </div>
 
@@ -1108,6 +1125,8 @@ const EXAMPLES_POR_OCASIAO = {
 const WHATSAPP_URL = 'https://wa.me/5511986468081?text=' + encodeURIComponent('Vim pelo PRISMA. Quero falar sobre um projeto personalizado.');
 
 const PLANS = [
+  { id:'starter', nome:'Starter', preco:'R$ 39', sufixo:'pagamento único', best:false, unico:true,
+    itens:['5 retratos em 1 ocasião à sua escolha','Sem assinatura, sem mensalidade','Ideal para conhecer a qualidade'] },
   { id:'basico', nome:'Básico', preco:'R$ 99', sufixo:'/mês', best:false,
     itens:['20 retratos por mês','4 ocasiões liberadas','Cortes para todas as redes','Cancele quando quiser'] },
   { id:'pro', nome:'Pro', preco:'R$ 199', sufixo:'/mês', best:true,
@@ -1593,7 +1612,9 @@ async function uploadPending(){
    ========================================================================= */
 function planLevel(){
   const p = S.profile?.plano || 'nenhum';
-  if (p === 'ilimitado') return 2;
+  // Starter (5 fotos avulsas) e Legacy (1 foto/ocasião) liberam as 12
+  // ocasiões pra escolha, o crédito é quem limita quantas gerações saem.
+  if (p === 'ilimitado' || p === 'starter' || p === 'legacy') return 2;
   return p === 'basico' ? 1 : p === 'pro' ? 2 : 0;
 }
 
@@ -1712,6 +1733,26 @@ function confirmarGerarComAviso(){
   startGeneration();
 }
 
+// O Legacy nunca aparece na tela pública de planos, só aqui: no momento
+// exato em que o acesso vence e o cliente estaria prestes a sair de vez.
+function abrirRetencao(){
+  const planoAnterior = S.profile?.plano;
+  const nomes = { basico: 'o Básico', pro: 'o Pro' };
+  document.getElementById('retencao-texto').textContent =
+    `Sua assinatura de ${nomes[planoAnterior] || 'seu plano'} não renovou. Você pode renovar do jeito que estava, ou trocar por uma opção mais enxuta.`;
+  document.getElementById('retencao-btn-principal').textContent =
+    planoAnterior === 'pro' ? 'Renovar o Pro' : 'Renovar o Básico';
+  document.getElementById('retencao-btn-principal').onclick = () => {
+    closeSheet('sheet-retencao');
+    checkout(planoAnterior === 'pro' ? 'pro' : 'basico');
+  };
+  document.getElementById('retencao-btn-legacy').onclick = () => {
+    closeSheet('sheet-retencao');
+    checkout('legacy');
+  };
+  openSheet('sheet-retencao');
+}
+
 // Quem decide se pode gerar é o servidor: só ele conhece as contas do estúdio.
 async function startGeneration(){
   showMsg('conf-err','');
@@ -1728,6 +1769,7 @@ async function startGeneration(){
     (OCCASIONS.find(o => o.id === S.occasion)?.nome || '');
   document.getElementById('gen-sub').textContent = 'Isso leva um minuto ou dois';
   document.getElementById('gen-tip').innerHTML = 'Cada imagem aparece assim que fica pronta.<br>Você pode fechar o app, o trabalho continua.';
+  document.getElementById('gen-upsell-starter').style.display = 'none';
   document.getElementById('btn-gen-done').style.display = 'none';
 
   try {
@@ -1759,7 +1801,18 @@ async function startGeneration(){
     if (!r.ok){
       go('confirm');
       showMsg('conf-err', d.erro || 'Algo falhou. Tente de novo.');
-      if (r.status === 402) setTimeout(() => go('plans'), 1600);
+      if (r.status === 402) {
+        // Só oferece o Legacy quando é o acesso que venceu num plano que
+        // paga mensalidade, não em falta de crédito no meio do ciclo nem
+        // pra quem nunca teve plano.
+        const vencido = /venceu/i.test(d.erro || '');
+        const planoAnterior = S.profile?.plano;
+        if (vencido && (planoAnterior === 'basico' || planoAnterior === 'pro')) {
+          setTimeout(() => abrirRetencao(), 1600);
+        } else {
+          setTimeout(() => go('plans'), 1600);
+        }
+      }
       return;
     }
     S.generationId = d.id;
@@ -1770,13 +1823,16 @@ async function startGeneration(){
       renderGenSlots(d.urls.length, d.urls);
       const retratos = d.retratos && d.retratos.length === d.urls.length ? d.retratos : d.urls.map(u => ({ url:u }));
       retratos.forEach(rt => S.photos.unshift({ id:rt.id, url:rt.url, ocasiao:S.occasion, refeita_gratis:false, criado_em:new Date().toISOString() }));
-      if (S.profile) S.profile.creditos = Math.max(0, (S.profile.creditos||0) - 4);
+      // Servidor devolve o saldo real após o débito — mais confiável do que
+      // recalcular no cliente, já que a quantidade debitada varia por plano.
+      if (S.profile) S.profile.creditos = d.creditos != null ? d.creditos : (S.profile.creditos || 0);
       S.aceitouQualidadeBaixa = false;
       document.getElementById('gen-title').textContent = 'Pronto';
       document.getElementById('gen-sub').textContent = d.parcial
-        ? `${d.urls.length} de 4 — algumas gerações falharam`
-        : 'Quatro retratos novos';
+        ? `${d.urls.length} retrato${d.urls.length===1?'':'s'} — algumas gerações falharam`
+        : `${d.urls.length} retrato${d.urls.length===1?'':'s'} novo${d.urls.length===1?'':'s'}`;
       document.getElementById('gen-tip').textContent = 'Alguma saiu ruim ou diferente do que você pediu? A primeira refação de cada foto é grátis, toque no ↻ na galeria.';
+      document.getElementById('gen-upsell-starter').style.display = S.profile?.plano === 'starter' ? '' : 'none';
       document.getElementById('btn-gen-done').style.display = '';
       return;
     }
@@ -2012,7 +2068,7 @@ function renderAccount(){
   const p = S.profile || {};
   const plano = p.plano || 'nenhum';
   document.getElementById('acc-email').textContent = S.user?.email || '—';
-  const total = plano === 'pro' ? 60 : plano === 'basico' ? 20 : 0;
+  const total = plano === 'pro' ? 60 : plano === 'basico' ? 20 : plano === 'starter' ? 5 : plano === 'legacy' ? 12 : 0;
   const rest  = p.creditos || 0;
   const pct   = total ? Math.round((rest/total)*100) : 0;
 
@@ -2032,13 +2088,21 @@ function renderAccount(){
     <div class="meter ${plano==='nenhum'?'flat':''}"><i style="width:${pct}%"></i></div>
     <p class="p-sm">${plano === 'nenhum'
       ? 'Escolha um plano para começar a gerar'
-      : 'Zera e renova no dia ' + (p.renova_dia || '1') + ' de cada mês'}</p>`;
+      : plano === 'starter'
+        ? 'Pagamento único, não renova. Use antes de ' + formatDate(p.validade)
+        : 'Zera e renova no dia ' + (p.renova_dia || '1') + ' de cada mês'}</p>`;
 
   document.getElementById('acc-upsell').innerHTML =
     plano === 'nenhum' ? `
       <div class="card spec">
         <div class="h-md" style="font-size:16px;margin-bottom:6px">Escolha seu plano</div>
         <p class="p-sm" style="margin-bottom:15px">Quatro ocasiões liberadas já no plano Básico.</p>
+        <button class="btn" style="padding:12px 18px;font-size:14px" onclick="go('plans')">Ver planos</button>
+      </div>`
+    : plano === 'starter' ? `
+      <div class="card spec">
+        <div class="h-md" style="font-size:16px;margin-bottom:6px">Gostou do resultado?</div>
+        <p class="p-sm" style="margin-bottom:15px">O Básico libera 4 ocasiões e 20 retratos por mês. O Pro libera as 12 ocasiões inteiras.</p>
         <button class="btn" style="padding:12px 18px;font-size:14px" onclick="go('plans')">Ver planos</button>
       </div>`
     : plano === 'basico' ? `
@@ -2088,7 +2152,7 @@ function priceCard(p, ctx){
       <div class="val">${p.preco}<small>${p.sufixo}</small></div>
       <ul>${p.itens.map(i => `<li>${i}</li>`).join('')}</ul>
       <button class="btn ${p.best?'':'btn-ghost'}" onclick="${ctx === 'landing' ? "go('auth')" : `checkout('${p.id}')`}">
-        ${ctx === 'landing' ? 'Começar' : 'Assinar'}
+        ${ctx === 'landing' ? 'Começar' : (p.unico ? 'Comprar' : 'Assinar')}
       </button>
     </div>`;
 }
