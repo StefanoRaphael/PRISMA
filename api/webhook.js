@@ -10,7 +10,7 @@
 
 import { admin } from '../lib/auth.js';
 
-const CREDITOS = { starter: 5, basico: 20, pro: 60, legacy: 12 };
+const CREDITOS = { starter: 5, basico: 20, pro: 60, legacy: 8 };
 const VALORES  = { starter: 39.00, basico: 99.00, pro: 199.00, legacy: 19.90 };
 
 export default async function handler(req, res) {

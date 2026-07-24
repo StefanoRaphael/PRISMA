@@ -14,7 +14,7 @@ const PLANOS = {
   starter: { nome: 'PRISMA Starter', valor: 39.00,  creditos: 5,  ciclo: 'unico'  },
   basico:  { nome: 'PRISMA Básico',  valor: 99.00,  creditos: 20, ciclo: 'mensal' },
   pro:     { nome: 'PRISMA Pro',     valor: 199.00, creditos: 60, ciclo: 'mensal' },
-  legacy:  { nome: 'PRISMA Legacy',  valor: 19.90,  creditos: 12, ciclo: 'mensal' }
+  legacy:  { nome: 'PRISMA Legacy',  valor: 19.90,  creditos: 8,  ciclo: 'mensal' }
 };
 
 export default async function handler(req, res) {

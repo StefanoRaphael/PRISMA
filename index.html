@@ -885,7 +885,7 @@ a{color:inherit}
     <p class="p-sm" style="margin-bottom:20px" id="retencao-texto"></p>
     <button class="btn" id="retencao-btn-principal" style="margin-bottom:10px">Renovar</button>
     <div class="link" style="text-align:center" id="retencao-btn-legacy"><b>Prefiro o Legacy, R$ 19,90/mês</b></div>
-    <p class="p-sm" style="text-align:center;margin-top:8px;opacity:.7">1 retrato por ocasião, as 12 liberadas. Suas fotos continuam guardadas.</p>
+    <p class="p-sm" style="text-align:center;margin-top:8px;opacity:.7">8 retratos por mês, em até 2 ocasiões à sua escolha. Suas fotos continuam guardadas.</p>
   </div>
 </div>
 
@@ -1612,8 +1612,8 @@ async function uploadPending(){
    ========================================================================= */
 function planLevel(){
   const p = S.profile?.plano || 'nenhum';
-  // Starter (5 fotos avulsas) e Legacy (1 foto/ocasião) liberam as 12
-  // ocasiões pra escolha, o crédito é quem limita quantas gerações saem.
+  // Starter (5 fotos avulsas, 1 ocasião) e Legacy (8 fotos, até 2 ocasiões)
+  // liberam as 12 ocasiões pra escolha, o crédito é quem limita o resto.
   if (p === 'ilimitado' || p === 'starter' || p === 'legacy') return 2;
   return p === 'basico' ? 1 : p === 'pro' ? 2 : 0;
 }
@@ -2068,7 +2068,7 @@ function renderAccount(){
   const p = S.profile || {};
   const plano = p.plano || 'nenhum';
   document.getElementById('acc-email').textContent = S.user?.email || '—';
-  const total = plano === 'pro' ? 60 : plano === 'basico' ? 20 : plano === 'starter' ? 5 : plano === 'legacy' ? 12 : 0;
+  const total = plano === 'pro' ? 60 : plano === 'basico' ? 20 : plano === 'starter' ? 5 : plano === 'legacy' ? 8 : 0;
   const rest  = p.creditos || 0;
   const pct   = total ? Math.round((rest/total)*100) : 0;
 
@@ -2210,7 +2210,8 @@ function renderLanding(){
   renderLanding();
 
   const params = new URLSearchParams(location.search);
-  if (params.get('pagamento') === 'aprovado'){
+  const pagamentoAprovado = params.get('pagamento') === 'aprovado';
+  if (pagamentoAprovado){
     history.replaceState({}, '', location.pathname);
   }
 
@@ -2223,6 +2224,15 @@ function renderLanding(){
       S.user = data.session.user;
       await syncEntitlement();
       await loadProfile();
+      // Reforça no momento exato do pagamento que o Starter é avulso —
+      // não tem "próxima cobrança" pra ninguém esquecer de cancelar.
+      if (pagamentoAprovado){
+        setTimeout(() => {
+          alert(S.profile?.plano === 'starter'
+            ? 'Pagamento aprovado! É uma compra única, sem mensalidade. Seus 5 retratos já estão liberados.'
+            : 'Pagamento aprovado! Seu plano já está ativo.');
+        }, 400);
+      }
       routeAfterLogin();
       return;
     }
