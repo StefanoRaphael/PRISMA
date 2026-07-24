@@ -12,9 +12,7 @@
  *   3. o que a cliente escreveu (manda em cima das outras duas)
  */
 
-import Anthropic from '@anthropic-ai/sdk';
-
-const client = new Anthropic();
+const MODELO = 'gemini-2.5-flash';
 
 const ESQUEMA = {
   type: 'object',
@@ -36,8 +34,7 @@ const ESQUEMA = {
       description: 'Se o pedido do cliente tiver contradição impossível (praia e escritório na mesma foto), descreva em uma frase em português. String vazia se não houver conflito.'
     }
   },
-  required: ['prompt', 'leitura', 'completado', 'conflito'],
-  additionalProperties: false
+  required: ['prompt', 'leitura', 'completado', 'conflito']
 };
 
 const SISTEMA = `Você monta prompts de fotografia para um estúdio brasileiro de retratos premium.
@@ -75,27 +72,39 @@ export default async function handler(req, res) {
   ].join('\n');
 
   try {
+    const chave = process.env.GEMINI_API_KEY;
+    if (!chave) throw new Error('GEMINI_API_KEY não configurada');
+
     // O esquema é o que garante os quatro campos. Sem ele o modelo devolve
     // só prompt e conflito, e a tela de confirmação fica sem a leitura.
-    const resposta = await client.messages.create({
-      model: 'claude-opus-4-8',
-      max_tokens: 2000,
-      output_config: {
-        effort: 'medium',
-        format: { type: 'json_schema', schema: ESQUEMA }
-      },
-      system: SISTEMA,
-      messages: [{ role: 'user', content: entrada }]
-    });
+    const r = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODELO}:generateContent?key=${chave}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `${SISTEMA}\n\n${entrada}` }] }],
+          generationConfig: {
+            responseMimeType: 'application/json',
+            responseSchema: ESQUEMA
+          }
+        })
+      }
+    );
 
-    if (resposta.stop_reason === 'refusal') {
+    if (!r.ok) throw new Error(`Gemini recusou (${r.status}): ${(await r.text()).slice(0, 300)}`);
+
+    const resposta = await r.json();
+    const candidato = resposta?.candidates?.[0];
+
+    if (candidato?.finishReason === 'SAFETY' || candidato?.finishReason === 'PROHIBITED_CONTENT') {
       return res.status(400).json({ erro: 'Não consigo gerar esse tipo de imagem.' });
     }
 
-    const bloco = resposta.content.find(b => b.type === 'text');
-    if (!bloco) throw new Error('resposta sem conteúdo');
+    const textoResposta = candidato?.content?.parts?.find(p => p.text)?.text;
+    if (!textoResposta) throw new Error('resposta sem conteúdo');
 
-    const d = JSON.parse(bloco.text);
+    const d = JSON.parse(textoResposta);
 
     if (!d.prompt) {
       return res.status(400).json({ erro: d.conflito || 'Não consigo gerar essa imagem.' });
@@ -111,7 +120,7 @@ export default async function handler(req, res) {
     console.error('[prompt]', e.message || e);
     console.error('[prompt-stack]', e.stack);
 
-    // Fallback: se Claude falhar, monta um prompt básico
+    // Fallback: se Gemini falhar, monta um prompt básico
     const promptBasico = `${ocasiaoBase || 'Retrato profissional'}. Cliente pediu: ${texto.trim()}. Aplicar direção do perfil: ${arquetipoDir || 'postura natural, luz equilibrada'}. 9:16 aspect ratio, respiro nas bordas.`;
 
     return res.status(200).json({
