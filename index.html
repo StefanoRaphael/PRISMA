@@ -1612,9 +1612,10 @@ async function uploadPending(){
    ========================================================================= */
 function planLevel(){
   const p = S.profile?.plano || 'nenhum';
-  // Starter (5 fotos avulsas, 1 ocasião) e Legacy (8 fotos, até 2 ocasiões)
-  // liberam as 12 ocasiões pra escolha, o crédito é quem limita o resto.
-  if (p === 'ilimitado' || p === 'starter' || p === 'legacy') return 2;
+  // Starter (5 fotos avulsas, 1 ocasião), Legacy (8 fotos, até 2 ocasiões) e
+  // Tester (3 fotos avulsas, liberado manualmente por e-mail) liberam as 12
+  // ocasiões pra escolha, o crédito é quem limita o resto.
+  if (p === 'ilimitado' || p === 'starter' || p === 'legacy' || p === 'tester') return 2;
   return p === 'basico' ? 1 : p === 'pro' ? 2 : 0;
 }
 
@@ -2068,7 +2069,7 @@ function renderAccount(){
   const p = S.profile || {};
   const plano = p.plano || 'nenhum';
   document.getElementById('acc-email').textContent = S.user?.email || '—';
-  const total = plano === 'pro' ? 60 : plano === 'basico' ? 20 : plano === 'starter' ? 5 : plano === 'legacy' ? 8 : 0;
+  const total = plano === 'pro' ? 60 : plano === 'basico' ? 20 : plano === 'starter' ? 5 : plano === 'legacy' ? 8 : plano === 'tester' ? 3 : 0;
   const rest  = p.creditos || 0;
   const pct   = total ? Math.round((rest/total)*100) : 0;
 

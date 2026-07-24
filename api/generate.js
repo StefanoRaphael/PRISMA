@@ -13,8 +13,8 @@ import { gerarRetratos } from '../lib/gemini.js';
 
 // Retratos por chamada de geração: Básico/Pro/Legacy geram em lote de 4
 // (o Legacy só tem 8 créditos, então dá pra até 2 gerações/ocasiões por mês).
-// O Starter avulso é o único caso especial, entrega 5 numa ocasião só.
-const QUANTIDADE_POR_PLANO = { basico: 4, pro: 4, legacy: 4, starter: 5 };
+// Starter e Tester são casos avulsos, entregam tudo numa geração só.
+const QUANTIDADE_POR_PLANO = { basico: 4, pro: 4, legacy: 4, starter: 5, tester: 3 };
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ erro: 'Use POST' });
