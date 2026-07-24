@@ -2169,8 +2169,13 @@ async function checkout(planId){
       headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + (await token()) },
       body: JSON.stringify({ plano: planId })
     });
-    if (!r.ok) throw new Error();
     const d = await r.json();
+    if (!r.ok) {
+      // Sem isso, o motivo real (ex: "já usou o Starter") era descartado e
+      // o cliente só via um erro genérico de falha técnica.
+      showMsg('plan-err', d.erro || 'Não consegui abrir o pagamento. Tente de novo.');
+      return;
+    }
     location.href = d.url;
   } catch {
     showMsg('plan-err','Não consegui abrir o pagamento. Tente de novo.');
