@@ -383,7 +383,7 @@ a{color:inherit}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:calc(16px + var(--safe-t)) 0 18px}
 .back{width:36px;height:36px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;
-  font-size:16px;color:var(--t-mid);flex:none}
+  font-size:16px;color:var(--t-mid);flex:none;background:rgba(5,13,24,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 
 /* ============ CARREGANDO ============ */
 .spin{width:17px;height:17px;border:2px solid rgba(11,7,20,.25);border-top-color:#0B0714;border-radius:50%;
@@ -972,8 +972,21 @@ const S = {
   dlRatio: '9:16',
   aceitouQualidadeBaixa: false,
   usarCoresMarca: false,
-  coresMarca: []
+  coresMarca: [],
+  genTipInterval: null
 };
+
+// Frases que giram embaixo de "Compondo" enquanto a geração roda (pode passar de 2 minutos).
+// Mantêm a sensação de "fotógrafo trabalhando" em vez de tela travada.
+const GEN_TIPS = [
+  'Isso leva um minuto ou dois',
+  'Ajustando a exposição da cena',
+  'Definindo profundidade de campo',
+  'Calibrando a luz do ambiente',
+  'Compondo o enquadramento',
+  'Refinando os detalhes do rosto',
+  'Alinhando a paleta de cores'
+];
 
 /* ---------- Ocasiões ---------- */
 // Cada base é uma direção cinematográfica ÚNICA: local específico, esquema de luz próprio,
@@ -1796,10 +1809,19 @@ async function startGeneration(){
   renderGenSlots(0);
   document.getElementById('gen-title').textContent = 'Compondo ' +
     (OCCASIONS.find(o => o.id === S.occasion)?.nome || '');
-  document.getElementById('gen-sub').textContent = 'Isso leva um minuto ou dois';
+  document.getElementById('gen-sub').textContent = GEN_TIPS[0];
   document.getElementById('gen-tip').innerHTML = 'Cada imagem aparece assim que fica pronta.<br>Você pode fechar o app, o trabalho continua.';
   document.getElementById('gen-upsell-starter').style.display = 'none';
   document.getElementById('btn-gen-done').style.display = 'none';
+
+  // Gira as frases pra manter o clima de "fotógrafo trabalhando" quando a
+  // API demora mais que o normal — sem isso o usuário acha que travou.
+  clearInterval(S.genTipInterval);
+  let tipIndex = 0;
+  S.genTipInterval = setInterval(() => {
+    tipIndex = (tipIndex + 1) % GEN_TIPS.length;
+    document.getElementById('gen-sub').textContent = GEN_TIPS[tipIndex];
+  }, 4000);
 
   try {
     // O servidor lê as referências do banco, então elas precisam estar lá
@@ -1829,6 +1851,7 @@ async function startGeneration(){
       })
     });
     const d = await r.json();
+    clearInterval(S.genTipInterval);
     if (!r.ok){
       go('confirm');
       showMsg('conf-err', d.erro || 'Algo falhou. Tente de novo.');
@@ -1870,6 +1893,7 @@ async function startGeneration(){
 
     pollGeneration();
   } catch {
+    clearInterval(S.genTipInterval);
     document.getElementById('gen-sub').textContent = 'Algo falhou. Volte e tente de novo.';
   }
 }
