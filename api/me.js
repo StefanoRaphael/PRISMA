@@ -50,7 +50,7 @@ export default async function handler(req, res) {
       const { error } = await sb.from('perfis').upsert({
         id: usuario.id,
         plano: 'tester',
-        creditos: 3,
+        creditos: 5,
         validade: validade.toISOString(),
         metodo: 'Teste PRISMA'
       });
