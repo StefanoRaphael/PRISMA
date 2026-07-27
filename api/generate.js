@@ -141,8 +141,11 @@ export default async function handler(req, res) {
     console.error('[generate]', e);
     // Devolve o crédito: o cliente não paga por falha nossa.
     // Conta ilimitada não teve débito, então não há o que devolver.
+    // Soma atômica no banco (não um valor absoluto calculado aqui): se um
+    // pagamento recarregou os créditos nesse meio-tempo, isso preserva o
+    // saldo novo em vez de sobrescrevê-lo com o snapshot de antes do débito.
     if (!ilimitado) {
-      await sb.from('perfis').update({ creditos: perfil.creditos }).eq('id', usuario.id);
+      await sb.rpc('devolver_creditos', { uid: usuario.id, quantidade: CUSTO });
     }
     await sb.from('geracoes')
       .update({ status: 'erro', erro: String(e.message).slice(0, 500) })

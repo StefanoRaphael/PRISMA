@@ -96,8 +96,10 @@ export default async function handler(req, res) {
   } catch (e) {
     console.error('[regenerate]', e);
     // Devolve o crédito: o cliente não paga por falha do motor.
+    // Soma atômica no banco, não o snapshot de antes do débito — evita
+    // apagar créditos que um pagamento tenha recarregado nesse meio-tempo.
     if (creditosAntesDoDebito !== null) {
-      await sb.from('perfis').update({ creditos: creditosAntesDoDebito }).eq('id', usuario.id);
+      await sb.rpc('devolver_creditos', { uid: usuario.id, quantidade: CUSTO_PAGO });
     }
     return res.status(502).json({ erro: 'O motor de geração não respondeu. Tente de novo.' });
   }
