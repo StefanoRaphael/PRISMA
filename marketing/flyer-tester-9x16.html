@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>PRISMA — Flyer Tester 1080x1920</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#333;}
+:root{
+  --abyss:#050D18; --ink:#0A1A2F; --text:#F4F7FB; --muted:#93A3B8;
+  --amber:#FF9160; --magenta:#FF5FA2; --violet:#A96BFF; --cyan:#4FC9F5; --aurora:#6FE3C4;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+.canvas{
+  width:1080px;height:1920px;position:relative;overflow:hidden;margin:0 auto;
+  background:var(--abyss); font-family:var(--sans); color:var(--text);
+}
+.glow{
+  position:absolute; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 1000px 600px at 50% -8%, rgba(169,107,255,.22), transparent 60%),
+    radial-gradient(ellipse 900px 550px at 0% 105%, rgba(255,145,96,.16), transparent 60%),
+    radial-gradient(ellipse 900px 550px at 100% 105%, rgba(79,201,245,.16), transparent 60%);
+}
+
+.topo{position:relative;z-index:9;padding:190px 90px 0;text-align:center;}
+.wordmark{
+  font-size:26px;font-weight:800;letter-spacing:8px;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.eyebrow{margin-top:30px;font-size:19px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--cyan);}
+.headline{
+  margin-top:22px;font-weight:800;font-size:62px;line-height:1.16;letter-spacing:-2px;color:var(--text);
+}
+.headline .grad{
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.sub{
+  margin:26px auto 0;max-width:800px;font-size:24px;line-height:1.55;color:var(--muted);font-weight:400;letter-spacing:-.2px;
+}
+.sub b{color:var(--text);font-weight:600;}
+
+.selo{
+  position:relative;z-index:9;margin:100px 90px 0;
+  border:1px solid rgba(169,107,255,.35);border-radius:24px;
+  background:rgba(169,107,255,.06);
+  padding:44px 40px;text-align:center;
+}
+.selo-num{
+  font-size:96px;font-weight:800;letter-spacing:-3px;line-height:1;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.selo-label{margin-top:8px;font-size:20px;font-weight:600;color:var(--text);}
+.selo-sub{margin-top:6px;font-size:16px;color:var(--muted);}
+
+.passos{position:relative;z-index:9;margin:90px 90px 0;}
+.passo{display:flex;align-items:flex-start;gap:18px;margin-bottom:36px;}
+.passo-num{
+  flex:none;width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;color:var(--abyss);
+}
+.passo-texto{font-size:21px;line-height:1.5;color:var(--text);padding-top:4px;}
+.passo-texto b{color:var(--cyan);}
+
+.rodape{position:relative;z-index:9;text-align:center;padding:80px 90px 0;}
+.slogan{margin-top:70px;font-size:19px;color:var(--muted);font-weight:400;letter-spacing:-.2px;}
+.cta{
+  display:inline-block;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  color:var(--abyss);font-weight:800;font-size:32px;letter-spacing:-.4px;
+  padding:28px 64px;border-radius:999px;text-decoration:none;
+  box-shadow:0 24px 50px rgba(169,107,255,.35);
+}
+.link-texto{
+  margin-top:20px;font-size:16px;color:var(--muted);word-break:break-all;
+}
+.link-texto a{color:var(--cyan);text-decoration:none;}
+</style>
+</head>
+<body>
+  <div class="canvas">
+    <div class="glow"></div>
+
+    <div class="topo">
+      <div class="wordmark">P R I S M A</div>
+      <div class="eyebrow">Acesso antecipado</div>
+      <div class="headline">Você foi <span class="grad">escolhido</span><br>pra testar o PRISMA.</div>
+      <div class="sub">Antes do lançamento oficial, <b>5 pessoas</b> vão testar o motor de retratos do PRISMA em primeira mão. Você é uma delas.</div>
+    </div>
+
+    <div class="selo">
+      <div class="selo-num">3</div>
+      <div class="selo-label">retratos seus, gerados com IA</div>
+      <div class="selo-sub">Nas 12 ocasiões disponíveis. Você escolhe qual. Sem custo.</div>
+    </div>
+
+    <div class="passos">
+      <div class="passo">
+        <div class="passo-num">1</div>
+        <div class="passo-texto">Acesse o link abaixo e <b>crie sua conta</b> com este e-mail.</div>
+      </div>
+      <div class="passo">
+        <div class="passo-num">2</div>
+        <div class="passo-texto">Suba de <b>8 a 12 fotos de referência</b>, o próprio app te guia.</div>
+      </div>
+      <div class="passo">
+        <div class="passo-num">3</div>
+        <div class="passo-texto">Responda o <b>diagnóstico visual</b>, leva 2 minutos.</div>
+      </div>
+      <div class="passo">
+        <div class="passo-num">4</div>
+        <div class="passo-texto">Escolha a ocasião e <b>gere seu retrato</b>.</div>
+      </div>
+    </div>
+
+    <div class="rodape">
+      <a class="cta" href="https://prisma-ten-tau.vercel.app">Acessar o PRISMA</a>
+      <div class="link-texto"><a href="https://prisma-ten-tau.vercel.app">prisma-ten-tau.vercel.app</a></div>
+      <div class="slogan">Você tem mais de um lado. Mostre todos.</div>
+    </div>
+  </div>
+</body>
+</html>
