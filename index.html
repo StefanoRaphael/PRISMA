@@ -976,32 +976,35 @@ const S = {
 };
 
 /* ---------- Ocasiões ---------- */
+// Cada base é uma direção cinematográfica ÚNICA: local específico, esquema de luz próprio,
+// ângulo e composição já embutidos. Nunca "luz quente e janela" repetido — cada ocasião
+// tem sua própria linguagem visual, para não parecer prompt genérico de IA.
 const OCCASIONS = [
   { id:'executivo', nome:'Executivo',  ph:'ph-exec',      free:true,
-    base:'Editorial corporate portrait in a modern glass-walled office on a high floor, floor-to-ceiling windows, blurred city skyline. 85mm lens, f/2.0.' },
+    base:'Corporate power portrait, either a private elevator lobby with book-matched marble and brass trim, or a corner office with a chesterfield leather chair against floor-to-ceiling windows over a dense downtown skyline. Hard directional daylight cutting through venetian blinds, casting discrete parallel shadow stripes across the space — not soft window light. Slight low angle from below chest height to read as authority. Subject placed off-center in the right third of frame, generous negative space carrying the scale of the room. 85mm lens, f/2.0, Cooke Speed Panchro rendering.' },
   { id:'editorial', nome:'Editorial',  ph:'ph-editorial', free:true,
-    base:'High-end magazine editorial portrait, seamless studio backdrop, controlled key light with soft rim separation. 85mm lens, f/2.8.' },
+    base:'High-fashion magazine cover treatment. Seamless colored studio backdrop (deep charcoal, oxblood, or cobalt — never plain white/grey), single hard beauty-dish key light from camera-left with deep unlit falloff on the right side of the frame. Asymmetric graphic pose: weight on one hip, one shoulder turned toward camera, a deliberate hand gesture near jaw or collar. Off-center composition with bold negative space, not a centered headshot. 100mm lens, f/2.8, punchy contrast color grade.' },
   { id:'viagem',    nome:'Viagem',     ph:'ph-viagem',    free:true,
-    base:'Travel lifestyle portrait, airport terminal or historic European street, natural available light, shallow depth of field. 50mm lens, f/1.8.' },
+    base:'Cinematic travel storytelling frame, not a tourist snapshot. One specific scene: a Lisbon tram street with a yellow tram blurred in motion behind, a narrow Kyoto alley strung with paper lanterns at dusk, or a Moroccan riad courtyard with hard geometric tile shadows. Golden-hour side light with visible atmosphere (dust or haze catching the beam). Subject small within the frame, walking away or glancing back over one shoulder — narrative angle, camera at hip height looking slightly up. 35mm lens, f/2.0, wide environmental framing.' },
   { id:'casual',    nome:'Casual',     ph:'ph-casual',    free:true,
-    base:'Relaxed lifestyle portrait in a bright specialty coffee shop, large window light, warm wood tones. 50mm lens, f/1.8.' },
+    base:'Candid documentary-style street photography, deliberately unposed. Urban rooftop patio at brunch hour with dappled light falling through a wooden pergola, or a sunlit sidewalk table outside a corner café. Subject caught mid-laugh or mid-gesture, looking slightly off camera as if unaware of the shot. Camera positioned a touch above eye-level, tilted, shooting through foreground elements (a plant, a doorway edge) for layered depth. 35mm lens, f/1.8, slightly desaturated candid color.' },
   { id:'noite',     nome:'Noite',      ph:'ph-noite',     free:false,
-    base:'Evening portrait at an upscale rooftop bar, city lights bokeh, warm practical lights, cinematic low-key lighting. 85mm lens, f/1.4.' },
+    base:'Moody nocturnal scene, no ambient fill at all. Either a jazz club with a single hard spotlight cutting through heavy haze, or a rain-slicked street outside with neon signage reflecting in puddles. Rim-light only silhouette treatment — the far side of the face falls to near-black. Teal shadow / amber highlight color grade. Camera at a slight low angle, subject off-center against a deep dark background with the light source visible in frame. 85mm lens, f/1.4, Cinestill 800T halation on point lights.' },
   { id:'esporte',   nome:'Esporte',    ph:'ph-esporte',   free:false,
-    base:'Athletic portrait, modern gym or outdoor track at sunrise, crisp directional light, dynamic but controlled posture. 70mm lens, f/2.8.' },
+    base:'Frozen action-in-motion, not a static gym pose. Mid-stride on an outdoor track under stadium floodlights at dusk, or mid-motion in a boxing gym with chalk dust suspended in a hard sidelight beam. Extreme low angle from near ground level looking sharply up, exaggerating power and scale. Hard directional light casting one long graphic shadow across the ground. Subject off-center, motion blur at the frame edges. 35mm lens, f/2.8, high-contrast desaturated grade.' },
   { id:'praia',     nome:'Praia',      ph:'ph-praia',     free:false,
-    base:'Coastal portrait at golden hour, ocean and soft sand behind, warm backlight with gentle fill. 85mm lens, f/2.0.' },
+    base:'Dramatic coastal environmental portrait, not a generic sunny postcard. Either an overcast beach with heavy storm clouds rolling over slate-grey water, or a rocky cliff edge above crashing surf. Subject rendered small against an enormous sky — wide establishing composition, rule-of-thirds low in frame. Backlit silhouette with rim light only, no warm golden fill. 35mm lens, f/4, muted maritime palette.' },
   { id:'natureza',  nome:'Natureza',   ph:'ph-campo',     free:false,
-    base:'Outdoor portrait in open countryside or forest trail, overcast diffused daylight, earthy palette. 50mm lens, f/2.0.' },
+    base:'Layered forest or mountain environmental portrait. Misty forest with crepuscular light shafts cutting through the canopy, or a fog-covered mountaintop with cloud sea rolling below. Camera positioned low, shooting through foreground foliage or branches that partially frame the edges of the composition. Subject in the upper or side third of frame, small against the landscape. 50mm lens, f/2.8, cool desaturated earth tones.' },
   // "Em casa", não "Família": o clone é individual, prometer família geraria rostos inventados.
   { id:'casa',      nome:'Em casa',    ph:'ph-familia',   free:false,
-    base:'Warm domestic portrait in a bright, well-designed living room, soft window light, relaxed and approachable. 50mm lens, f/2.0.' },
+    base:'Intimate domestic vignette shot like a film still, never a bright staged living-room photo. Either a rainy-window reading nook lit only by a single warm practical lamp, or a kitchen morning scene with steam rising from a cup and hard low-angle morning light slicing through blinds. Candid unposed angle, shot through a doorway or from behind an object as if caught off guard. Subject off-center, shallow depth of field. 50mm lens, f/2.0, warm-shadow low-key lighting.' },
   { id:'perfil',    nome:'Foto de perfil', ph:'ph-perfil',    free:false,
-    base:'Clean profile headshot for social media, centered close-up on neutral smooth background, flattering key light with soft fill, confident expression. 50mm lens, f/2.8.' },
+    base:'Clean but graphic social-media profile portrait — legible and sharp, never centered-and-flat. Single hard key light with a colored gel background (deep jewel tone), subject placed in the left or right third of frame leaving deliberate negative space. Tight crop from chest up, confident direct gaze at lens. 85mm lens, f/2.8, punchy contrast.' },
   { id:'apresentacao', nome:'Reunião/Apresentação', ph:'ph-apresentacao', free:false,
-    base:'Professional speaker portrait during presentation, modern conference setting or auditorium, warm stage lighting, dynamic posture, authoritative yet approachable. 85mm lens, f/2.0.' },
+    base:'Dynamic stage moment captured mid-gesture, not a static posed speaker photo. Low audience-POV angle looking up at a stage or podium, blurred out-of-focus heads or chair backs in the extreme foreground framing the shot. Hard spotlight beam with visible haze, dramatic falloff to the dark auditorium behind. Subject caught mid-motion — hand raised, mid-word — off-center in frame. 85mm lens, f/2.0.' },
   { id:'glamour',   nome:'Glamour',    ph:'ph-glamour',   free:false,
-    base:'High-glamour portrait, studio lighting with contoured key light and separation, polished styling, cinematic color grading with warm golden tones. 85mm lens, f/1.8.' }
+    base:'Old-Hollywood high-glamour studio treatment. Hard beauty light with dramatic falloff into near-black shadow, luxurious fabric texture catching specular highlight. Diagonal or reclining pose with a strong graphic line through the body, chin angled, one arm extended past the frame edge. Asymmetric off-center composition with a deep negative-space void. 85mm lens, f/1.8, rich saturated cinematic color grade.' }
 ];
 
 // Foto de demonstração de cada ocasião. O id da ocasião é o nome do arquivo.
