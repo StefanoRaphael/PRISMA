@@ -687,6 +687,28 @@ a{color:inherit}
     <textarea class="textarea" id="i-dir" placeholder="Escreva do seu jeito, com quantos detalhes quiser. Por exemplo: quero de vestido ciano, que é a cor da minha marca, num escritório envidraçado de fim de tarde, em pé, expressão serena, sem óculos."></textarea>
     <div class="link" onclick="showExamples()" style="margin-top:14px"><b>Não sei o que escrever</b></div>
 
+    <div id="brand-colors-section" style="margin-top:28px;display:none">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:12px 14px;border-radius:14px;border:1px solid var(--line-2);background:rgba(255,255,255,.025)">
+        <input type="checkbox" id="toggle-cores" onchange="toggleBrandColors()" style="width:18px;height:18px;cursor:pointer">
+        <label for="toggle-cores" style="flex:1;cursor:pointer;font-size:14px;color:var(--t-hi);margin:0">Usar sua paleta de cor</label>
+        <button type="button" onclick="showBrandColorsInfo()" style="background:none;border:none;color:var(--t-mid);font-size:14px;cursor:pointer;padding:0;margin:0">ⓘ</button>
+      </div>
+
+      <div id="brand-colors-input" style="display:none;margin-top:12px">
+        <div class="field">
+          <label style="display:block;font-size:11px;font-weight:590;letter-spacing:.09em;text-transform:uppercase;color:var(--t-low);margin-bottom:8px">Cores da marca (até 5)</label>
+          <div id="brand-colors-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+            <input type="text" class="input" placeholder="#FF9160" maxlength="7" oninput="updateBrandColor(0, this.value)" style="font-family:monospace">
+            <input type="text" class="input" placeholder="#A96BFF" maxlength="7" oninput="updateBrandColor(1, this.value)" style="font-family:monospace">
+            <input type="text" class="input" placeholder="#4FC9F5" maxlength="7" oninput="updateBrandColor(2, this.value)" style="font-family:monospace">
+            <input type="text" class="input" placeholder="#FF5FA2" maxlength="7" oninput="updateBrandColor(3, this.value)" style="font-family:monospace">
+            <input type="text" class="input" placeholder="#6FE3C4" maxlength="7" oninput="updateBrandColor(4, this.value)" style="font-family:monospace">
+          </div>
+          <p class="p-sm" style="margin-top:8px;color:var(--t-low)">Ex: #FF9160. Cores aparecerão em roupas, acessórios ou fundo, mantendo fidelidade facial 100%.</p>
+        </div>
+      </div>
+    </div>
+
     <div class="spacer"></div>
     <button class="btn" id="btn-dir" onclick="buildPrompt()">Continuar</button>
   </div>
@@ -948,7 +970,9 @@ const S = {
   filter: 'all',
   dlPhoto: null,
   dlRatio: '9:16',
-  aceitouQualidadeBaixa: false
+  aceitouQualidadeBaixa: false,
+  usarCoresMarca: false,
+  coresMarca: []
 };
 
 /* ---------- Ocasiões ---------- */
@@ -1655,6 +1679,7 @@ function renderDirection(){
   document.getElementById('dir-oc').textContent = o ? o.nome : '';
   document.getElementById('i-dir').value = S.direction || '';
   showMsg('dir-err','');
+  loadBrandColorsUI();
 }
 
 function showExamples(){
@@ -1795,7 +1820,9 @@ async function startGeneration(){
         prompt: S.prompt,
         ocasiao: S.occasion,
         direcao: S.direction,
-        aceitouQualidadeBaixa: S.aceitouQualidadeBaixa
+        aceitouQualidadeBaixa: S.aceitouQualidadeBaixa,
+        usar_cores_marca: S.usarCoresMarca,
+        cores_marca: S.usarCoresMarca ? S.coresMarca : []
       })
     });
     const d = await r.json();
@@ -1855,6 +1882,51 @@ function renderGenSlots(done, urls){
   ring.style.strokeDashoffset = 150.8 - (150.8 * (done / 4));
   document.getElementById('gen-sub').textContent =
     done === 0 ? 'Preparando' : `${done} de 4 · cerca de ${Math.max(1,(4-done)*2)} minutos`;
+}
+
+/* =========================================================================
+   CORES DE MARCA
+   ========================================================================= */
+function loadBrandColorsUI(){
+  const sec = document.getElementById('brand-colors-section');
+  if (!sec) return;
+
+  // Mostra seção pra planos pagos + ilimitados
+  const planosComCores = ['basico','pro','legacy','ilimitado'];
+  const temAcesso = S.profile && planosComCores.includes(S.profile.plano);
+  sec.style.display = temAcesso ? '' : 'none';
+
+  // Reset da UI quando muda de ocasião
+  document.getElementById('toggle-cores').checked = S.usarCoresMarca;
+  const inputDiv = document.getElementById('brand-colors-input');
+  if (inputDiv) inputDiv.style.display = S.usarCoresMarca ? '' : 'none';
+
+  // Popular campos com cores salvas
+  const inputs = document.querySelectorAll('#brand-colors-grid input');
+  inputs.forEach((inp,i) => {
+    inp.value = S.coresMarca[i] || '';
+  });
+}
+
+function toggleBrandColors(){
+  const checked = document.getElementById('toggle-cores').checked;
+  S.usarCoresMarca = checked;
+  const inputDiv = document.getElementById('brand-colors-input');
+  if (inputDiv) inputDiv.style.display = checked ? '' : 'none';
+}
+
+function updateBrandColor(index, valor){
+  const hex = valor.trim().toUpperCase();
+  if (hex === '') {
+    S.coresMarca[index] = '';
+  } else if (/^#[0-9A-F]{6}$/.test(hex)) {
+    S.coresMarca[index] = hex;
+  }
+  S.coresMarca = S.coresMarca.filter(c => c); // remove strings vazias
+}
+
+function showBrandColorsInfo(){
+  alert('Cores estratégicas: sua paleta aparecerá em roupas, acessórios ou cenário, mantendo 100% de fidelidade facial. Nenhuma cor será forçada.');
 }
 
 async function token(){

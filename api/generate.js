@@ -24,7 +24,7 @@ export default async function handler(req, res) {
   const usuario = await usuarioDaRequisicao(req);
   if (!usuario) return res.status(401).json({ erro: 'Faça login de novo.' });
 
-  const { prompt, ocasiao, direcao, aceitouQualidadeBaixa } = req.body || {};
+  const { prompt, ocasiao, direcao, aceitouQualidadeBaixa, usar_cores_marca, cores_marca } = req.body || {};
   if (!prompt || !ocasiao) return res.status(400).json({ erro: 'Pedido incompleto.' });
 
   const sb = admin();
@@ -53,6 +53,16 @@ export default async function handler(req, res) {
     .from('perfis').select('creditos, validade, plano').eq('id', usuario.id).single();
 
   if (!perfil) return res.status(400).json({ erro: 'Perfil não encontrado.' });
+
+  // --- validação de paywall para cores de marca -------------------------
+  // Feature disponível APENAS nos planos pagos (R$99/R$199), não em tester/basico grátis
+  if (usar_cores_marca && cores_marca?.length > 0) {
+    const planosComCores = ['basico', 'pro', 'legacy']; // planos pagos
+    const ilimitado_temp = ehIlimitada(usuario.email);
+    if (!ilimitado_temp && !planosComCores.includes(perfil.plano)) {
+      return res.status(403).json({ erro: 'Cores de marca disponível apenas em planos pagos.' });
+    }
+  }
 
   // Contas internas do estúdio não passam por plano, validade nem crédito.
   const ilimitado = ehIlimitada(usuario.email);
@@ -94,7 +104,9 @@ export default async function handler(req, res) {
       direcao: (direcao || '').slice(0, 4000),
       prompt,
       status: 'processando',
-      aceitou_qualidade_baixa: !!aceitouQualidadeBaixa
+      aceitou_qualidade_baixa: !!aceitouQualidadeBaixa,
+      usar_cores_marca: !!usar_cores_marca,
+      cores_marca: (cores_marca || []).filter(c => /^#[0-9A-Fa-f]{6}$/.test(c))
     })
     .select('id')
     .single();
@@ -103,7 +115,8 @@ export default async function handler(req, res) {
   // O Gemini já devolve as imagens prontas nesta mesma chamada — não há
   // task_id nem fila para /api/status acompanhar depois.
   try {
-    const { urls, parcial, erros } = await gerarRetratos(prompt, referencias, CUSTO);
+    const coresMarca = usar_cores_marca ? (cores_marca || []).filter(c => /^#[0-9A-Fa-f]{6}$/.test(c)) : [];
+    const { urls, parcial, erros } = await gerarRetratos(prompt, referencias, CUSTO, coresMarca);
 
     await sb.from('geracoes')
       .update({
