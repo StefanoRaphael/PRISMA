@@ -1389,9 +1389,28 @@ function temAcesso(){
   return true;
 }
 
+/**
+ * Grava no banco o arquétipo que só existia no navegador.
+ *
+ * O diagnóstico fica salvo em localStorage como rascunho, e o banco é a fonte
+ * de verdade. Quando os dois divergem (o rascunho tem, o banco não), quem
+ * responde as 12 perguntas num aparelho tem de responder tudo de novo no
+ * próximo, para sempre. Foi o que sobrou do perfil ausente: o UPDATE original
+ * caiu numa linha que não existia.
+ */
+async function persistirArquetipo(){
+  if (!sb || !S.user || !S.archetype) return;
+  const { data } = await sb.from('perfis')
+    .update({ arquetipo: S.archetype }).eq('id', S.user.id).select('id');
+  if (!data || !data.length) console.error('[persistirArquetipo] perfil ausente');
+}
+
 function routeAfterLogin(){
   if (!S.profile?.arquetipo){
     if (!loadQuizState()) return go('quiz');
+    // O diagnóstico veio do rascunho local. Sobe para o banco agora, senão ele
+    // continua existindo só neste aparelho.
+    persistirArquetipo();
   }
   syncPerfilText(); // já tem arquétipo salvo: garante que a tela de perfil não fique em branco se o cliente voltar até ela
 
