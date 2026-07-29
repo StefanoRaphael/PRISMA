@@ -140,6 +140,21 @@ export default async function handler(req, res) {
     const variantesReasoned = Array.isArray(variantes) ? variantes.filter(v => typeof v === 'string' && v.trim()) : [];
     const { urls, parcial, erros } = await gerarRetratos(prompt, referencias, CUSTO, coresMarca, variantesReasoned);
 
+    // O débito no início cobra o lote inteiro (CUSTO), mas o Gemini pode
+    // entregar menos imagens do que pedimos (Promise.allSettled tolera
+    // falha parcial sem lançar erro). Sem este reembolso, um cliente pagava
+    // por 4 retratos e recebia 2 — cobrança por trabalho que não existiu.
+    // 1 crédito paga exatamente 1 retrato entregue, nunca mais que isso.
+    if (parcial && !ilimitado) {
+      const faltantes = CUSTO - urls.length;
+      if (faltantes > 0) {
+        await sb.rpc('devolver_creditos', { uid: usuario.id, quantidade: faltantes });
+        const { data: perfilAtualizado } = await sb
+          .from('perfis').select('creditos').eq('id', usuario.id).single();
+        if (perfilAtualizado) saldo = perfilAtualizado.creditos;
+      }
+    }
+
     await sb.from('geracoes')
       .update({
         status: 'pronto',
