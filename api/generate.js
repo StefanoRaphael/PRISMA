@@ -49,10 +49,31 @@ export default async function handler(req, res) {
   }
 
   // --- crédito e validade -------------------------------------------------
-  const { data: perfil } = await sb
-    .from('perfis').select('creditos, validade, plano').eq('id', usuario.id).single();
+  // maybeSingle, não single: perfil ausente não é erro de banco, é conta que
+  // nasceu sem a linha (gatilho inativo). Nesse caso criamos na hora e o
+  // cliente cai no aviso de plano logo abaixo — nunca num "Perfil não
+  // encontrado", que não diz nada a quem está do outro lado da tela.
+  let { data: perfil, error: erroPerfil } = await sb
+    .from('perfis').select('creditos, validade, plano').eq('id', usuario.id).maybeSingle();
 
-  if (!perfil) return res.status(400).json({ erro: 'Perfil não encontrado.' });
+  if (erroPerfil) {
+    console.error('[generate] leitura do perfil', erroPerfil);
+    return res.status(500).json({ erro: 'Não consegui carregar sua conta. Tente de novo.' });
+  }
+
+  if (!perfil) {
+    const { data: criado, error: erroCriacao } = await sb
+      .from('perfis')
+      .insert({ id: usuario.id, nome: usuario.nome || '', plano: 'nenhum', creditos: 0 })
+      .select('creditos, validade, plano')
+      .single();
+
+    if (erroCriacao && erroCriacao.code !== '23505') {
+      console.error('[generate] criação do perfil', erroCriacao);
+      return res.status(500).json({ erro: 'Não consegui carregar sua conta. Tente de novo.' });
+    }
+    perfil = criado || { plano: 'nenhum', creditos: 0, validade: null };
+  }
 
   // --- validação de paywall para cores de marca -------------------------
   // Feature disponível APENAS nos planos pagos (R$99/R$199), não em tester/basico grátis

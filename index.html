@@ -610,7 +610,7 @@ a{color:inherit}
       <p class="p" id="prof-desc" style="max-width:330px;margin:0 auto"></p>
     </div>
     <div class="spacer"></div>
-    <button class="btn" id="prof-btn" onclick="S.uploadFrom='profile';go('upload')">Enviar minhas fotos</button>
+    <button class="btn" id="prof-btn" onclick="seguirDoPerfil()">Enviar minhas fotos</button>
   </div>
 </section>
 
@@ -848,6 +848,10 @@ a{color:inherit}
     <h2 class="h-lg">Escolha o seu</h2>
     <p class="p" style="margin:8px 0 22px">Pagamento por Pix ou cartão, via Mercado Pago.</p>
     <div class="msg err" id="plan-err"></div>
+    <div id="plan-fallback" style="display:none;margin-bottom:20px">
+      <p class="p-sm" style="margin-bottom:12px">O pagamento automático está fora do ar neste momento. Fale comigo no WhatsApp que eu libero seu acesso na hora, sem você perder o que já fez aqui.</p>
+      <button class="btn" onclick="window.open(WHATSAPP_SUPORTE_URL,'_blank')">Liberar meu acesso no WhatsApp</button>
+    </div>
     <div class="price-grid" id="plan-grid"></div>
   </div>
 </section>
@@ -1164,6 +1168,10 @@ const EXAMPLES_POR_OCASIAO = {
 /* ---------- Planos ---------- */
 const WHATSAPP_URL = 'https://wa.me/5511986468081?text=' + encodeURIComponent('Vim pelo PRISMA. Quero falar sobre um projeto personalizado.');
 
+// Saída manual para quando o Mercado Pago recusa criar o checkout. Sem isso o
+// cliente batia num "não consegui abrir o pagamento" e o assunto morria ali.
+const WHATSAPP_SUPORTE_URL = 'https://wa.me/5511986468081?text=' + encodeURIComponent('Tentei assinar o PRISMA e o pagamento não abriu. Pode liberar meu acesso?');
+
 const PLANS = [
   { id:'starter', nome:'Starter', preco:'R$ 39', sufixo:'pagamento único', best:false, unico:true,
     itens:['5 retratos em 1 ocasião à sua escolha','Sem assinatura, sem mensalidade','Ideal para conhecer a qualidade'] },
@@ -1190,6 +1198,7 @@ function go(name){
   if (name === 'account')   renderAccount();
   if (name === 'plans')     renderPlans();
   if (name === 'upload')    renderThumbs();
+  if (name === 'profile')   syncPerfilCta();
 }
 function openSheet(id){ document.getElementById(id).classList.add('on'); }
 function closeSheet(id){ document.getElementById(id).classList.remove('on'); }
@@ -1332,13 +1341,14 @@ async function syncEntitlement(){
       method:'POST',
       headers:{ 'Authorization':'Bearer ' + (await token()) }
     });
-    console.log('[syncEntitlement] status:', r.status);
     if (!r.ok) {
-      const err = await r.json();
-      console.error('[syncEntitlement] error:', err);
+      console.error('[syncEntitlement] status', r.status);
+      return false;
     }
+    return true;
   } catch(e) {
-    console.error('[syncEntitlement] exception:', e);
+    console.error('[syncEntitlement]', e);
+    return false;
   }
 }
 
@@ -1355,6 +1365,28 @@ async function loadProfile(){
   if (data?.arquetipo) S.archetype = data.arquetipo;
   S.photos = fotos || [];
   S.refs = (refs || []).map(r => ({ id:r.id, url:r.url, saved:true }));
+
+  // /api/me já garante a linha de perfil antes daqui. Se mesmo assim ela não
+  // veio, algo está errado no banco e seguir em frente significa deixar o
+  // cliente responder o diagnóstico e enviar fotos para nada — foi assim que o
+  // "Perfil não encontrado" chegou até a tela de geração. Falhar aqui, alto e
+  // cedo, é o comportamento correto.
+  if (!data) throw new Error('perfil');
+}
+
+/**
+ * O acesso está ativo? Espelha exatamente a regra que /api/generate aplica no
+ * servidor — plano diferente de 'nenhum' e validade não vencida.
+ *
+ * Existe para que a barreira apareça ANTES do trabalho, não depois. O servidor
+ * continua sendo a autoridade: isto aqui é só a interface parando de pedir
+ * esforço que ela já sabe que não vai poder cumprir.
+ */
+function temAcesso(){
+  const plano = S.profile?.plano || 'nenhum';
+  if (plano === 'nenhum') return false;
+  if (S.profile?.validade && new Date(S.profile.validade) < new Date()) return false;
+  return true;
 }
 
 function routeAfterLogin(){
@@ -1362,9 +1394,38 @@ function routeAfterLogin(){
     if (!loadQuizState()) return go('quiz');
   }
   syncPerfilText(); // já tem arquétipo salvo: garante que a tela de perfil não fique em branco se o cliente voltar até ela
-  if (!S.refs.length)         return go('upload');
-  if (!S.photos.length)       return go('occasions');
+
+  // Quem já tem retratos entra na galeria mesmo com o acesso vencido: o que
+  // ele já pagou continua sendo dele.
+  if (S.photos.length) return go('gallery');
+
+  // Sem acesso, a tela de planos vem ANTES do envio de fotos. O caminho antigo
+  // levava direto ao upload e só barrava no clique em "Gerar" — o cliente
+  // fazia diagnóstico, enviava doze fotos e escrevia a direção para então
+  // descobrir que precisava escolher um plano. Nunca mais.
+  if (!temAcesso()) return go('plans');
+
+  if (!S.refs.length)   return go('upload');
+  if (!S.photos.length) return go('occasions');
   go('gallery');
+}
+
+/** Botão do fim do diagnóstico: só manda para o upload quem já pode gerar. */
+function seguirDoPerfil(){
+  if (!temAcesso()) return go('plans');
+  S.uploadFrom = 'profile';
+  go('upload');
+}
+
+/**
+ * Ajusta o botão da tela de perfil ao direito de acesso da conta.
+ * Sem isso o botão prometia "Enviar minhas fotos" para quem ainda ia esbarrar
+ * na escolha de plano no passo seguinte.
+ */
+function syncPerfilCta(){
+  const btn = document.getElementById('prof-btn');
+  if (!btn) return;
+  btn.textContent = temAcesso() ? 'Enviar minhas fotos' : 'Escolher meu plano';
 }
 
 /* =========================================================================
@@ -1414,7 +1475,18 @@ async function finishQuiz(){
   saveQuizState();
 
   if (sb && S.user){
-    await sb.from('perfis').update({ arquetipo: best }).eq('id', S.user.id);
+    // .select() é o que revela se o UPDATE pegou alguma linha. Sem ele, um
+    // perfil inexistente devolvia sucesso com zero linhas afetadas e o
+    // arquétipo se perdia sem ninguém saber — o cliente seguia para o upload
+    // achando que o diagnóstico dele tinha sido guardado.
+    const { data: atualizado } = await sb
+      .from('perfis').update({ arquetipo: best }).eq('id', S.user.id).select('id');
+
+    if (!atualizado || !atualizado.length){
+      console.error('[finishQuiz] perfil ausente ao gravar arquétipo');
+      await syncEntitlement();               // /api/me cria a linha que falta
+      await sb.from('perfis').update({ arquetipo: best }).eq('id', S.user.id);
+    }
     if (S.profile) S.profile.arquetipo = best;
   }
   go('profile');
@@ -2259,10 +2331,24 @@ function priceCard(p, ctx){
 
 function renderPlans(){
   document.getElementById('plan-grid').innerHTML = PLANS.map(p => priceCard(p,'app')).join('');
+  document.getElementById('plan-fallback').style.display = 'none';
+  showMsg('plan-err','');
+}
+
+/**
+ * Mostra a saída pelo WhatsApp quando o pagamento não pode ser aberto.
+ * O servidor manda o código PAGAMENTO_INDISPONIVEL nesses casos: são falhas
+ * nossas (credencial do Mercado Pago, conta com pendência), e mandar o cliente
+ * "tentar de novo" só faz ele bater na mesma parede.
+ */
+function mostrarFallbackPagamento(){
+  showMsg('plan-err','Não consegui abrir o pagamento agora. Isso é problema nosso, não seu.');
+  document.getElementById('plan-fallback').style.display = '';
 }
 
 async function checkout(planId){
   showMsg('plan-err','');
+  document.getElementById('plan-fallback').style.display = 'none';
   try {
     const r = await fetch('/api/checkout', {
       method:'POST',
@@ -2271,14 +2357,16 @@ async function checkout(planId){
     });
     const d = await r.json();
     if (!r.ok) {
+      if (d.erro === 'PAGAMENTO_INDISPONIVEL') return mostrarFallbackPagamento();
       // Sem isso, o motivo real (ex: "já usou o Starter") era descartado e
       // o cliente só via um erro genérico de falha técnica.
       showMsg('plan-err', d.erro || 'Não consegui abrir o pagamento. Tente de novo.');
       return;
     }
+    if (!d.url) return mostrarFallbackPagamento();
     location.href = d.url;
   } catch {
-    showMsg('plan-err','Não consegui abrir o pagamento. Tente de novo.');
+    mostrarFallbackPagamento();
   }
 }
 
@@ -2328,7 +2416,16 @@ function renderLanding(){
     if (data?.session?.user){
       S.user = data.session.user;
       await syncEntitlement();
-      await loadProfile();
+      try {
+        await loadProfile();
+      } catch {
+        // Sem perfil não dá para prometer nada ao cliente. Volta para o login
+        // com o motivo à mostra, em vez de deixá-lo avançar num app que vai
+        // falhar lá na frente, depois do trabalho todo.
+        go('auth');
+        showMsg('auth-err','Não consegui carregar sua conta agora. Entre de novo em alguns instantes.');
+        return;
+      }
       // Reforça no momento exato do pagamento que o Starter é avulso —
       // não tem "próxima cobrança" pra ninguém esquecer de cancelar.
       if (pagamentoAprovado){

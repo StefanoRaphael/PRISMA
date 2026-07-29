@@ -57,9 +57,12 @@ export default async function handler(req, res) {
   let creditosAntesDoDebito = null;
 
   if (!ilimitado && !gratis) {
-    const { data: perfil } = await sb
-      .from('perfis').select('creditos, validade, plano').eq('id', usuario.id).single();
-    if (!perfil) return res.status(400).json({ erro: 'Perfil não encontrado.' });
+    // maybeSingle e queda para 'nenhum': perfil ausente vira o aviso de plano,
+    // que o cliente entende e sabe resolver. "Perfil não encontrado" é recado
+    // de banco de dados e não deve chegar a tela nenhuma.
+    const { data: perfilLido } = await sb
+      .from('perfis').select('creditos, validade, plano').eq('id', usuario.id).maybeSingle();
+    const perfil = perfilLido || { plano: 'nenhum', creditos: 0, validade: null };
     if (perfil.plano === 'nenhum') {
       return res.status(402).json({ erro: 'Escolha um plano para continuar.' });
     }

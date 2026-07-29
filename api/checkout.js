@@ -26,6 +26,15 @@ export default async function handler(req, res) {
   const plano = PLANOS[req.body?.plano];
   if (!plano) return res.status(400).json({ erro: 'Plano inválido.' });
 
+  // Falta de credencial é problema nosso, não do cliente. Sem esta checagem a
+  // chamada saía com "Bearer undefined", o Mercado Pago devolvia 401/403 e o
+  // log virava um erro de gateway genérico, difícil de ligar à variável que
+  // faltava na Vercel.
+  if (!process.env.MP_ACCESS_TOKEN) {
+    console.error('[checkout] MP_ACCESS_TOKEN ausente no ambiente');
+    return res.status(503).json({ erro: 'PAGAMENTO_INDISPONIVEL' });
+  }
+
   const site = process.env.SITE_URL || 'https://usarprisma.com.br';
   const sb = admin();
 
@@ -46,7 +55,9 @@ export default async function handler(req, res) {
   }
 
   // Registra o pagamento como pendente antes de mandar para o checkout.
-  const { data: pagamento } = await sb
+  // O erro precisa ser tratado: sem esta linha o código seguia com pagamento
+  // nulo e estourava em pagamento.id fora do try, virando 500 sem mensagem.
+  const { data: pagamento, error: erroPagamento } = await sb
     .from('pagamentos')
     .insert({
       user_id: usuario.id,
@@ -56,6 +67,11 @@ export default async function handler(req, res) {
     })
     .select('id')
     .single();
+
+  if (erroPagamento || !pagamento) {
+    console.error('[checkout] registro do pagamento', erroPagamento);
+    return res.status(500).json({ erro: 'PAGAMENTO_INDISPONIVEL' });
+  }
 
   const preferencia = {
     items: [{
@@ -92,7 +108,16 @@ export default async function handler(req, res) {
     if (!r.ok) {
       const texto = await r.text().catch(() => '');
       console.error('[checkout] Mercado Pago', r.status, texto.slice(0, 400));
-      return res.status(502).json({ erro: 'Não consegui abrir o pagamento.' });
+
+      // 401/403 aqui não é falha passageira de rede: é a conta ou a aplicação
+      // do Mercado Pago sem permissão para criar preferência (credencial de
+      // produção não habilitada, cadastro com pendência, token do app errado).
+      // Repetir não resolve, então o cliente recebe uma saída humana em vez de
+      // um "tente de novo" que vai falhar igual.
+      if (r.status === 401 || r.status === 403) {
+        return res.status(503).json({ erro: 'PAGAMENTO_INDISPONIVEL' });
+      }
+      return res.status(502).json({ erro: 'PAGAMENTO_INDISPONIVEL' });
     }
 
     const d = await r.json();
@@ -103,6 +128,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ url });
   } catch (e) {
     console.error('[checkout]', e);
-    return res.status(500).json({ erro: 'Não consegui abrir o pagamento.' });
+    return res.status(500).json({ erro: 'PAGAMENTO_INDISPONIVEL' });
   }
 }
