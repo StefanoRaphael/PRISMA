@@ -17,6 +17,26 @@ const PLANOS = {
   legacy:  { nome: 'PRISMA Legacy',  valor: 19.90,  creditos: 8,  ciclo: 'mensal' }
 };
 
+/**
+ * Endereço público deste deploy.
+ *
+ * Era um domínio fixo no código (usarprisma.com.br) com SITE_URL como
+ * alternativa. Só que o domínio ainda não aponta para lugar nenhum e o app
+ * vive no endereço da Vercel: o notification_url ia para um domínio morto, e
+ * um pagamento aprovado nunca viraria crédito porque o webhook não chegava.
+ *
+ * Deduzir do cabeçalho da própria requisição resolve isso sozinho, em qualquer
+ * endereço onde o app esteja: preview, domínio da Vercel ou domínio próprio no
+ * dia em que ele entrar no ar. SITE_URL continua tendo a palavra final quando
+ * estiver definida.
+ */
+function enderecoDoSite(req) {
+  if (process.env.SITE_URL) return process.env.SITE_URL.trim().replace(/\/+$/, '');
+  const host = req.headers['x-forwarded-host'] || req.headers.host;
+  if (host) return `https://${host}`;
+  return 'https://prisma-ten-tau.vercel.app';
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ erro: 'Use POST' });
 
@@ -35,7 +55,7 @@ export default async function handler(req, res) {
     return res.status(503).json({ erro: 'PAGAMENTO_INDISPONIVEL' });
   }
 
-  const site = process.env.SITE_URL || 'https://usarprisma.com.br';
+  const site = enderecoDoSite(req);
   const sb = admin();
 
   // Starter é avulso e só pode ser comprado uma vez por conta: se já existe
