@@ -48,14 +48,25 @@ export default async function handler(req, res) {
 
     const sb = admin();
 
-    // Idempotência: se já processamos este pagamento, para aqui.
-    const { data: existente } = await sb
-      .from('pagamentos').select('id, status').eq('mp_id', String(pg.id)).maybeSingle();
-    if (existente?.status === 'aprovado') return res.status(200).end();
-
-    await sb.from('pagamentos')
+    // Idempotência: SELECT e UPDATE separados deixam uma janela de corrida.
+    // O Mercado Pago reenvia notificação quando não recebe 200 rápido o
+    // bastante, e duas entregas quase simultâneas passariam pelo SELECT
+    // antes que qualquer UPDATE tivesse comprometido — as duas seguiriam e
+    // reescreveriam creditos com o valor fixo do plano, apagando o consumo
+    // que o cliente já tivesse feito nesse intervalo.
+    //
+    // A trava real é o próprio UPDATE: .neq('status','aprovado') só deixa
+    // UMA chamada vencer a corrida (a que efetivamente muda a linha).
+    // Quem não afeta nenhuma linha para aqui, sem tocar em créditos.
+    const { data: atualizado } = await sb
+      .from('pagamentos')
       .update({ status: 'aprovado', mp_id: String(pg.id) })
-      .eq('id', pagamentoId);
+      .eq('id', pagamentoId)
+      .neq('status', 'aprovado')
+      .select('id')
+      .maybeSingle();
+
+    if (!atualizado) return res.status(200).end();
 
     // Starter é avulso: não renova, então dá uma janela generosa (90 dias)
     // pra usar os 5 créditos sem depender do ciclo mensal dos outros planos.
