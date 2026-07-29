@@ -24,7 +24,7 @@ export default async function handler(req, res) {
   const usuario = await usuarioDaRequisicao(req);
   if (!usuario) return res.status(401).json({ erro: 'Faça login de novo.' });
 
-  const { prompt, ocasiao, direcao, aceitouQualidadeBaixa, usar_cores_marca, cores_marca } = req.body || {};
+  const { prompt, ocasiao, direcao, aceitouQualidadeBaixa, usar_cores_marca, cores_marca, variantes } = req.body || {};
   if (!prompt || !ocasiao) return res.status(400).json({ erro: 'Pedido incompleto.' });
 
   const sb = admin();
@@ -137,7 +137,8 @@ export default async function handler(req, res) {
   // task_id nem fila para /api/status acompanhar depois.
   try {
     const coresMarca = usar_cores_marca ? (cores_marca || []).filter(c => /^#[0-9A-Fa-f]{6}$/.test(c)) : [];
-    const { urls, parcial, erros } = await gerarRetratos(prompt, referencias, CUSTO, coresMarca);
+    const variantesReasoned = Array.isArray(variantes) ? variantes.filter(v => typeof v === 'string' && v.trim()) : [];
+    const { urls, parcial, erros } = await gerarRetratos(prompt, referencias, CUSTO, coresMarca, variantesReasoned);
 
     await sb.from('geracoes')
       .update({

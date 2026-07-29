@@ -1832,8 +1832,9 @@ async function buildPrompt(){
     });
     if (!r.ok) throw new Error();
     const d = await r.json();
-    S.prompt  = d.prompt;
-    S.reading = d.leitura;
+    S.prompt    = d.prompt;
+    S.reading   = d.leitura;
+    S.variantes = Array.isArray(d.variantes) ? d.variantes : [];
     document.getElementById('conf-oc').textContent =
       OCCASIONS.find(o => o.id === S.occasion)?.nome || '';
     document.getElementById('conf-read').innerHTML = d.leitura;
@@ -1944,7 +1945,8 @@ async function startGeneration(){
         direcao: S.direction,
         aceitouQualidadeBaixa: S.aceitouQualidadeBaixa,
         usar_cores_marca: S.usarCoresMarca,
-        cores_marca: S.usarCoresMarca ? S.coresMarca : []
+        cores_marca: S.usarCoresMarca ? S.coresMarca : [],
+        variantes: S.variantes || []
       })
     });
     const d = await r.json();

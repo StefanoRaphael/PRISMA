@@ -32,9 +32,14 @@ const ESQUEMA = {
     conflito: {
       type: 'string',
       description: 'Se o pedido do cliente tiver contradição impossível (praia e escritório na mesma foto), descreva em uma frase em português. String vazia se não houver conflito.'
+    },
+    variantes: {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'Exatamente 5 direções de câmera e enquadramento em INGLÊS, uma por retrato do lote, pensadas como um fotógrafo pensaria para ESTA ocasião e ESTE pedido específico, não uma fórmula genérica repetida em todo prompt. Decida o grau de dinamismo apropriado: um retrato executivo ou institucional pode pedir variações mais sóbrias, quase centradas, com deslocamentos sutis; um editorial de viagem ou ação pode pedir mais assimetria e ângulo. Cada item descreve altura de câmera, posição do sujeito no quadro (terço esquerdo, terço direito, centro, ambiente amplo) e, se fizer sentido pra ESTA cena, inclinação de horizonte. Nunca repita a mesma direção duas vezes na lista. Nunca force lateralização forte se o contexto pedir uma composição mais direta e equilibrada.'
     }
   },
-  required: ['prompt', 'leitura', 'completado', 'conflito']
+  required: ['prompt', 'leitura', 'completado', 'conflito', 'variantes']
 };
 
 const SISTEMA = `Você monta prompts de fotografia para um estúdio brasileiro de retratos premium. O padrão é nível editorial de revista e still cinematográfico — o oposto do retrato genérico que qualquer IA de imagem produz por padrão.
@@ -48,12 +53,14 @@ Regras inegociáveis:
 - Recuse conteúdo sexual, violento, ou que envolva menores. Nesses casos devolva prompt vazio e explique no campo conflito.
 
 PROIBIDO CAIR NO GENÉRICO (a menos que o cliente peça explicitamente o contrário):
-- NUNCA centralize o sujeito no quadro por padrão. Use a composição já definida na base da ocasião (terço esquerdo, terço direito, sujeito pequeno no ambiente) — composição centralizada e simétrica é o clichê que mais entrega "feito por IA".
-- NUNCA use câmera na altura dos olhos por padrão. Respeite o ângulo já definido na base da ocasião (baixo para autoridade, alto para intimidade, POV de plateia, através de elementos em primeiro plano).
+- Não trate composição centralizada e simétrica como padrão automático só por ser o caminho mais fácil. Use a composição já definida na base da ocasião (terço esquerdo, terço direito, sujeito pequeno no ambiente, ou centro quando o contexto pedir força e formalidade) — a decisão vem do contexto, não de uma regra fixa.
+- NUNCA use câmera na altura dos olhos só por comodidade. Respeite o ângulo já definido na base da ocasião (baixo para autoridade, alto para intimidade, POV de plateia, através de elementos em primeiro plano).
 - NUNCA aplique a fórmula universal "luz quente + preenchimento suave lateral" em toda ocasião. Cada base já tem seu próprio esquema de luz (dura e direcional, silhueta com rim light only, feixes de luz cortando neblina, gel colorido, etc.) — use exatamente esse, não o dilua para algo morno e seguro.
-- Se o cliente não especificar pose, prefira gesto assimétrico e dinâmico (peso numa perna só, ombro girado, mão em movimento) a uma pose frontal estática e simétrica.
+- Se o cliente não especificar pose, prefira gesto assimétrico e dinâmico (peso numa perna só, ombro girado, mão em movimento) a uma pose frontal estática e simétrica, a menos que a ocasião peça formalidade e presença direta.
 - O fundo é elemento de produção, não pano de fundo genérico. Descreva profundidade de camadas (primeiro plano, sujeito, fundo em planos distintos) e textura de material visível (concreto, madeira, vidro, tecido, metal), no padrão de um estúdio que vende 20 anos de experiência internacional. Nunca aceite fundo raso, desfocado sem propósito ou liso demais.
 - Flare, reflexo de lente ou partícula de luz (poeira, névoa, respingo) só entram quando o esquema de luz da própria base da ocasião já pede esse efeito (ex: contraluz forte, golden hour, neon). Não adicione por padrão em toda foto — quando forçado sem motivo de luz, denuncia composição artificial.
+
+VARIANTES DO LOTE (campo "variantes"): cada retrato do mesmo pedido precisa de um enquadramento levemente diferente dos outros, mas a variação tem que nascer do julgamento de um fotógrafo lendo esta ocasião e este pedido, nunca de uma fórmula fixa aplicada sempre. Um executivo de terno numa sala de reunião pede variações contidas, quase centradas, com deslocamento sutil de posição entre um retrato e outro. Uma cena de ação ou viagem pede mais liberdade de ângulo e assimetria. Errar pra mais lateralização do que a cena pede é o mesmo erro que errar pra mais centralização: os dois entregam "genérico", um pelo excesso, outro pela falta.
 
 Quando o pedido do cliente entra em conflito direto com a base (ex: cliente pede "olhando direto pra câmera, brincando com bolha de sabão" mas a base pede ângulo de ação), o pedido do cliente vence só naquilo que ele especificou — o resto (ângulo, luz, composição) continua vindo da base.
 
@@ -126,20 +133,24 @@ export default async function handler(req, res) {
       prompt: d.prompt,
       leitura: d.leitura,
       completado: d.completado,
-      conflito: d.conflito || ''
+      conflito: d.conflito || '',
+      variantes: Array.isArray(d.variantes) ? d.variantes : []
     });
   } catch (e) {
     console.error('[prompt]', e.message || e);
     console.error('[prompt-stack]', e.stack);
 
-    // Fallback: se Gemini falhar, monta um prompt básico
+    // Fallback: se Gemini falhar, monta um prompt básico.
+    // Sem variantes raciocinadas aqui: lib/gemini.js cai na lista fixa própria
+    // dele quando recebe array vazio, então a geração não trava por isso.
     const promptBasico = `${ocasiaoBase || 'Retrato profissional'}. Cliente pediu: ${texto.trim()}. Aplicar direção do perfil: ${arquetipoDir || 'postura natural, luz equilibrada'}. 9:16 aspect ratio, respiro nas bordas.`;
 
     return res.status(200).json({
       prompt: promptBasico,
       leitura: `Você pediu: <b>${texto.trim()}</b>. Vamos gerar nesse estilo.`,
       completado: 'Ocasião base, perfil visual e enquadramento preenchidos automaticamente.',
-      conflito: ''
+      conflito: '',
+      variantes: []
     });
   }
 }
