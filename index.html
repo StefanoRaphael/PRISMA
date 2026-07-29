@@ -620,7 +620,7 @@ a{color:inherit}
     <div class="top" style="padding-top:0">
       <button class="back" onclick="voltarDoUpload()">‹</button>
       <div class="wordmark">P R I S M A</div>
-      <div style="width:36px"></div>
+      <button class="back gal-shortcut" title="Sua galeria" onclick="go('gallery')" style="display:none">▦</button>
     </div>
     <h2 class="h-lg">Suas referências</h2>
     <p class="p" style="margin:8px 0 20px">Quanto melhor o material, mais fiel o resultado.</p>
@@ -658,7 +658,7 @@ a{color:inherit}
     <div class="top" style="padding-top:0">
       <button class="back" onclick="go('upload')">‹</button>
       <div class="wordmark">P R I S M A</div>
-      <div style="width:36px"></div>
+      <button class="back gal-shortcut" title="Sua galeria" onclick="go('gallery')" style="display:none">▦</button>
     </div>
     <h2 class="h-lg">Onde você quer<br>ser visto</h2>
     <p class="p" style="margin:10px 0 8px">Escolha uma para começar. Você volta e gera outras quando precisar.</p>
@@ -676,7 +676,7 @@ a{color:inherit}
     <div class="top" style="padding-top:0">
       <button class="back" onclick="go('occasions')">‹</button>
       <div class="wordmark">P R I S M A</div>
-      <div style="width:36px"></div>
+      <button class="back gal-shortcut" title="Sua galeria" onclick="go('gallery')" style="display:none">▦</button>
     </div>
     <div class="kicker" id="dir-oc" style="margin-bottom:12px"></div>
     <div class="ask">Como você imagina<br>essa foto?</div>
@@ -1192,6 +1192,11 @@ function go(name){
   const v = document.getElementById('v-' + name);
   if (v) v.classList.add('on');
   window.scrollTo(0,0);
+  // Só quem já gerou tem o que ver na galeria; sem isso, o atalho ficaria
+  // levando a uma tela vazia pra quem nunca gerou nada.
+  document.querySelectorAll('.gal-shortcut').forEach(b => {
+    b.style.display = S.photos.length ? 'grid' : 'none';
+  });
   if (name === 'quiz')      renderQuiz();
   if (name === 'occasions') renderOccasions();
   if (name === 'direction') renderDirection();
