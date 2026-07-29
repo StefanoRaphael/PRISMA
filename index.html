@@ -2196,14 +2196,6 @@ function renderDests(){
     </button>`).join('');
 }
 
-/**
- * Um <a download> com data URI não confia: no Safari do iPhone ele só abre
- * a imagem numa aba nova, sem salvar em lugar nenhum — não existe forma de
- * uma página web escrever direto no álbum de fotos do celular. O caminho
- * confiável é o Web Share (nível 2, com files): abre a folha nativa do
- * sistema, e "Salvar imagem" ali cai direto na galeria, tanto no iPhone
- * quanto no Android. Mantém o <a download> como reserva só pra desktop.
- */
 async function downloadCrop(){
   const btn = document.querySelector('#sheet-dl .btn');
   if (btn){ btn.disabled = true; btn.textContent = 'Preparando...'; }
@@ -2217,7 +2209,7 @@ async function downloadCrop(){
     let sw = img.width, sh = Math.round(img.width / alvo);
     if (sh > img.height){ sh = img.height; sw = Math.round(img.height * alvo); }
     const sx = Math.round((img.width - sw) / 2);
-    const sy = Math.round((img.height - sh) * 0.18); // preserva a cabeça
+    const sy = Math.round((img.height - sh) * 0.18);
     const c = document.createElement('canvas');
     c.width = sw; c.height = sh;
     c.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
@@ -2225,7 +2217,20 @@ async function downloadCrop(){
     const nomeArquivo = `prisma-${S.dlPhoto.ocasiao}-${S.dlRatio.replace(':','x')}.jpg`;
     const blob = await new Promise(res => c.toBlob(res, 'image/jpeg', 0.95));
 
-    if (navigator.canShare && navigator.share){
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+    if (isAndroid){
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = nomeArquivo;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+      closeSheet('sheet-dl');
+    } else if (isIOS && navigator.canShare && navigator.share){
       const file = new File([blob], nomeArquivo, { type: 'image/jpeg' });
       if (navigator.canShare({ files: [file] })){
         try {
@@ -2233,18 +2238,26 @@ async function downloadCrop(){
           closeSheet('sheet-dl');
           return;
         } catch (e) {
-          if (e?.name === 'AbortError') return; // usuário fechou a folha, sem erro
-          // qualquer outro erro: cai no download tradicional abaixo
+          if (e?.name === 'AbortError') return;
         }
       }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = nomeArquivo;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+      closeSheet('sheet-dl');
+    } else {
+      const a = document.createElement('a');
+      a.download = nomeArquivo;
+      a.href = URL.createObjectURL(blob);
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      closeSheet('sheet-dl');
     }
-
-    const a = document.createElement('a');
-    a.download = nomeArquivo;
-    a.href = URL.createObjectURL(blob);
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    closeSheet('sheet-dl');
   } catch {
     alert('Não consegui preparar o download. Tente de novo.');
   } finally {
