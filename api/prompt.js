@@ -52,6 +52,8 @@ PROIBIDO CAIR NO GENÉRICO (a menos que o cliente peça explicitamente o contrá
 - NUNCA use câmera na altura dos olhos por padrão. Respeite o ângulo já definido na base da ocasião (baixo para autoridade, alto para intimidade, POV de plateia, através de elementos em primeiro plano).
 - NUNCA aplique a fórmula universal "luz quente + preenchimento suave lateral" em toda ocasião. Cada base já tem seu próprio esquema de luz (dura e direcional, silhueta com rim light only, feixes de luz cortando neblina, gel colorido, etc.) — use exatamente esse, não o dilua para algo morno e seguro.
 - Se o cliente não especificar pose, prefira gesto assimétrico e dinâmico (peso numa perna só, ombro girado, mão em movimento) a uma pose frontal estática e simétrica.
+- O fundo é elemento de produção, não pano de fundo genérico. Descreva profundidade de camadas (primeiro plano, sujeito, fundo em planos distintos) e textura de material visível (concreto, madeira, vidro, tecido, metal), no padrão de um estúdio que vende 20 anos de experiência internacional. Nunca aceite fundo raso, desfocado sem propósito ou liso demais.
+- Flare, reflexo de lente ou partícula de luz (poeira, névoa, respingo) só entram quando o esquema de luz da própria base da ocasião já pede esse efeito (ex: contraluz forte, golden hour, neon). Não adicione por padrão em toda foto — quando forçado sem motivo de luz, denuncia composição artificial.
 
 Quando o pedido do cliente entra em conflito direto com a base (ex: cliente pede "olhando direto pra câmera, brincando com bolha de sabão" mas a base pede ângulo de ação), o pedido do cliente vence só naquilo que ele especificou — o resto (ângulo, luz, composição) continua vindo da base.
 
