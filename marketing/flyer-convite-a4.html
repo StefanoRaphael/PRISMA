@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRISMA — Convite Pessoal</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    html, body {
+      width: 210mm;
+      height: 297mm;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #050D18;
+    }
+
+    .page {
+      width: 210mm;
+      height: 297mm;
+      background: #050D18;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 35mm 25mm;
+      box-sizing: border-box;
+      position: relative;
+      color: #ffffff;
+    }
+
+    .stripe-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: linear-gradient(90deg, #FF9160 0%, #FF5FA2 20%, #A96BFF 40%, #4FC9F5 70%, #6FE3C4 100%);
+    }
+
+    .stripe-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: linear-gradient(90deg, #FF9160 0%, #FF5FA2 20%, #A96BFF 40%, #4FC9F5 70%, #6FE3C4 100%);
+    }
+
+    .content {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      width: 100%;
+      max-width: 160mm;
+    }
+
+    .header {
+      margin-bottom: 40px;
+    }
+
+    .logo {
+      font-size: 72px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      margin-bottom: 20px;
+      line-height: 1;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .logo-p { color: #FF9160; display: inline-block; }
+    .logo-r { color: #FF5FA2; display: inline-block; }
+    .logo-i { color: #A96BFF; display: inline-block; }
+    .logo-s { color: #4FC9F5; display: inline-block; }
+    .logo-m { color: #6FE3C4; display: inline-block; }
+    .logo-a { color: #FF9160; display: inline-block; }
+
+    .tagline {
+      font-size: 32px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    .tagline-sub {
+      font-size: 14px;
+      color: #a0aab8;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+    }
+
+    .body-text {
+      margin: 50px 0;
+      line-height: 1.7;
+    }
+
+    .body-text p {
+      font-size: 15px;
+      color: #d0d8e0;
+      margin-bottom: 18px;
+      font-weight: 400;
+    }
+
+    .body-text .highlight {
+      font-size: 17px;
+      font-weight: 600;
+      color: #ffffff;
+      display: block;
+      margin: 35px 0 18px 0;
+    }
+
+    .cta-box {
+      margin: 45px 0;
+      padding: 28px 24px;
+      background: rgba(5, 13, 24, 0.8);
+      border: 2px solid #4FC9F5;
+      border-radius: 10px;
+    }
+
+    .cta-button {
+      display: inline-block;
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.08em;
+      padding: 14px 28px;
+      background: linear-gradient(90deg, #FF9160 0%, #FF5FA2 25%, #A96BFF 50%, #4FC9F5 75%, #6FE3C4 100%);
+      border-radius: 6px;
+      margin: 14px 0;
+      display: block;
+      text-decoration: none;
+    }
+
+    .cta-url {
+      font-size: 15px;
+      color: #4FC9F5;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-top: 12px;
+    }
+
+    .footer {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      font-size: 11px;
+      color: #6b7280;
+      line-height: 1.5;
+      padding-top: 18px;
+      border-top: 1px solid rgba(107, 114, 128, 0.2);
+    }
+
+    .footer strong {
+      color: #9ca3af;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .footer p {
+      margin: 3px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+  <div class="stripe-top"></div>
+
+  <div class="content">
+    <div class="header">
+      <div class="logo">
+        <span class="logo-p">P</span><span class="logo-r"> R</span><span class="logo-i"> I</span><span class="logo-s"> S</span><br>
+        <span class="logo-m">M A</span>
+      </div>
+      <div class="tagline">Você foi convidado a fazer o teste.</div>
+      <div class="tagline-sub">Retratos com o seu rosto de verdade</div>
+    </div>
+
+    <div class="body-text">
+      <p>Você recebeu este convite porque acreditamos que sua presença e sua imagem merecem estar na sua melhor versão.</p>
+
+      <p class="highlight">Neste teste, você envia 8 a 12 fotos suas e nossa IA gera retratos profissionais personalizados.</p>
+
+      <p>Exatamente como você imagina ser visto. Sem edição genérica. Sem clichês. Apenas você, ampliado e refinado.</p>
+    </div>
+
+    <div class="cta-box">
+      <div class="cta-button">FAZER O TESTE AGORA</div>
+      <div class="cta-url">usarprisma.com.br</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p><strong>P R I S M A</strong></p>
+    <p>Retratos com o seu rosto de verdade</p>
+    <p>Segurança: suas fotos nunca são publicadas.</p>
+  </div>
+
+  <div class="stripe-bottom"></div>
+</div>
+
+</body>
+</html>

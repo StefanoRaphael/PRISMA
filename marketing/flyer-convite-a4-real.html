@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRISMA — Convite Pessoal</title>
+  <style>
+    :root {
+      --abyss: #050D18;
+      --ink: #0A1A2F;
+      --t-hi: #F2F6FB;
+      --t-mid: #A9BCD2;
+      --t-low: #63799A;
+      --sp1: #FF9160;
+      --sp2: #FF5FA2;
+      --sp3: #A96BFF;
+      --sp4: #4FC9F5;
+      --sp5: #6FE3C4;
+      --spectrum: linear-gradient(90deg, var(--sp1), var(--sp2), var(--sp3), var(--sp4), var(--sp5));
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    html, body {
+      width: 210mm;
+      height: 297mm;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--abyss);
+      color: var(--t-hi);
+    }
+
+    .page {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 40px;
+      background: var(--abyss);
+      position: relative;
+    }
+
+    .stripe {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 10px;
+      background: var(--spectrum);
+    }
+
+    .stripe-top {
+      top: 0;
+    }
+
+    .stripe-bottom {
+      bottom: 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 68px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      margin-bottom: 28px;
+      line-height: 1.1;
+      background: var(--spectrum);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tagline {
+      font-size: 28px;
+      font-weight: 640;
+      color: var(--t-hi);
+      margin-bottom: 8px;
+      letter-spacing: -0.015em;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      font-weight: 590;
+      color: var(--t-low);
+      margin-bottom: 50px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .body {
+      max-width: 160mm;
+      line-height: 1.6;
+    }
+
+    .body p {
+      font-size: 14px;
+      color: var(--t-mid);
+      margin-bottom: 20px;
+      letter-spacing: -0.01em;
+    }
+
+    .body .highlight {
+      font-size: 15px;
+      font-weight: 640;
+      color: var(--t-hi);
+      margin: 35px 0 20px 0;
+    }
+
+    .cta-section {
+      margin-top: 50px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn {
+      background: var(--spectrum);
+      color: #0B0714;
+      padding: 16px 36px;
+      border-radius: 100px;
+      font-weight: 640;
+      font-size: 14px;
+      letter-spacing: -0.015em;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 30px -12px rgba(169, 107, 255, 0.7);
+    }
+
+    .cta-url {
+      font-size: 13px;
+      font-weight: 590;
+      color: var(--sp4);
+      letter-spacing: -0.01em;
+    }
+
+    .footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 16px;
+    }
+
+    .footer-brand {
+      font-size: 12px;
+      font-weight: 640;
+      color: var(--t-mid);
+      letter-spacing: 0.09em;
+      margin-bottom: 4px;
+    }
+
+    .footer-desc {
+      font-size: 11px;
+      color: var(--t-low);
+      letter-spacing: -0.01em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+  <div class="stripe stripe-top"></div>
+
+  <div class="content">
+    <div class="logo">PRISMA</div>
+    <div class="tagline">Você foi convidado a fazer o teste.</div>
+    <div class="subtitle">Retratos com o seu rosto de verdade</div>
+
+    <div class="body">
+      <p>Você recebeu este convite porque acreditamos que sua presença e sua imagem merecem estar na sua melhor versão.</p>
+
+      <p class="highlight">Neste teste, você envia 8 a 12 fotos suas e nossa IA gera retratos profissionais personalizados.</p>
+
+      <p>Exatamente como você imagina ser visto. Sem edição genérica. Sem clichês. Apenas você, ampliado e refinado.</p>
+
+      <div class="cta-section">
+        <button class="btn">FAZER O TESTE AGORA</button>
+        <div class="cta-url">usarprisma.com.br</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand">P R I S M A</div>
+    <div class="footer-desc">Retratos com o seu rosto de verdade · Segurança: suas fotos nunca são publicadas.</div>
+  </div>
+
+  <div class="stripe stripe-bottom"></div>
+</div>
+
+</body>
+</html>

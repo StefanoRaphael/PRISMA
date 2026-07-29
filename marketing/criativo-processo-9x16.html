@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>PRISMA — Anúncio 9:16 "Processo"</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#1a1a1a;}
+:root{
+  --abyss:#050D18; --ink:#0A1A2F; --text:#F4F7FB; --muted:#8FA0B6;
+  --amber:#FF9160; --magenta:#FF5FA2; --violet:#A96BFF; --cyan:#4FC9F5; --aurora:#6FE3C4;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --safe-top:250px; --safe-bottom:340px;
+}
+.canvas{
+  width:1080px;height:1920px;position:relative;overflow:hidden;margin:0 auto;
+  background:var(--abyss);font-family:var(--sans);color:var(--text);
+}
+.glow{
+  position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 1100px 620px at 50% 2%, rgba(79,201,245,.18), transparent 62%),
+    radial-gradient(ellipse 800px 480px at 12% 44%, rgba(169,107,255,.13), transparent 60%),
+    radial-gradient(ellipse 900px 520px at 88% 56%, rgba(255,145,96,.10), transparent 60%),
+    radial-gradient(ellipse 1000px 560px at 50% 100%, rgba(111,227,196,.15), transparent 62%);
+}
+.grain{
+  position:absolute;inset:0;z-index:1;opacity:.05;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.conteudo{
+  position:absolute;z-index:9;left:0;right:0;
+  top:var(--safe-top);bottom:var(--safe-bottom);
+  padding:0 70px;
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+}
+
+.topo{text-align:center;}
+.wordmark{
+  font-size:34px;font-weight:800;letter-spacing:14px;text-indent:14px;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.headline{
+  margin-top:34px;font-weight:800;font-size:64px;line-height:1.08;letter-spacing:-2.6px;
+}
+.headline .grad{
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+
+/* par comparativo — rótulos neutros, sem "antes/depois" */
+.par{display:flex;gap:24px;width:100%;}
+.foto{
+  position:relative;flex:1;height:470px;border-radius:20px;overflow:hidden;
+  box-shadow:0 30px 70px rgba(0,0,0,.55);
+}
+.foto img{width:100%;height:100%;object-fit:cover;display:block;}
+.foto::after{
+  content:'';position:absolute;inset:0;z-index:2;
+  background:linear-gradient(180deg,rgba(5,13,24,0) 55%,rgba(5,13,24,.85) 100%);
+}
+.ref img{filter:saturate(.5) brightness(.72) contrast(.94);}
+.ref{border:1px solid rgba(143,160,182,.35);}
+.res::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:5px;z-index:4;
+  background:linear-gradient(90deg,var(--violet),var(--cyan),var(--aurora));
+}
+.res{box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(79,201,245,.35);}
+.rotulo{
+  position:absolute;left:0;right:0;bottom:20px;z-index:5;text-align:center;
+  font-size:23px;font-weight:600;letter-spacing:.3px;
+}
+.ref .rotulo{color:var(--muted);}
+.res .rotulo{color:var(--text);}
+
+/* 4 passos */
+.passos{display:grid;grid-template-columns:1fr 1fr;gap:18px;width:100%;}
+.passo{
+  display:flex;align-items:center;gap:16px;
+  background:rgba(244,247,251,.05);
+  border:1px solid rgba(244,247,251,.12);
+  border-radius:18px;padding:22px 22px;
+  min-height:118px;
+}
+.num{
+  flex:none;width:46px;height:46px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;font-weight:800;color:var(--abyss);
+}
+.p1 .num{background:var(--amber);}
+.p2 .num{background:var(--magenta);}
+.p3 .num{background:var(--violet);}
+.p4 .num{background:var(--aurora);}
+.passo p{font-size:25px;line-height:1.32;font-weight:500;letter-spacing:-.4px;color:var(--text);}
+
+/* quebra de objeção */
+.objecao{text-align:center;}
+.objecao .forte{font-size:39px;font-weight:700;letter-spacing:-1px;color:var(--text);}
+.objecao .fraca{margin-top:12px;font-size:31px;font-weight:400;letter-spacing:-.5px;color:var(--muted);}
+
+.acao{text-align:center;}
+.cta{
+  display:inline-block;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  color:var(--abyss);font-weight:800;font-size:31px;letter-spacing:-.5px;
+  padding:27px 62px;border-radius:999px;
+  box-shadow:0 26px 55px rgba(79,201,245,.28);
+}
+
+.guias{display:none;position:absolute;inset:0;z-index:99;}
+body.mostrar-guias .guias{display:block;}
+.guias .zona{
+  position:absolute;left:0;right:0;background:rgba(255,95,162,.22);
+  border:2px dashed rgba(255,95,162,.75);
+  font-size:20px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;
+}
+.guias .zt{top:0;height:var(--safe-top);}
+.guias .zb{bottom:0;height:var(--safe-bottom);}
+</style>
+</head>
+<body>
+  <div class="canvas">
+    <div class="glow"></div>
+    <div class="grain"></div>
+
+    <div class="conteudo">
+
+      <div class="topo">
+        <div class="wordmark">P R I S M A</div>
+        <div class="headline">
+          Como uma foto do celular<br>
+          vira <span class="grad">retrato de capa.</span>
+        </div>
+      </div>
+
+      <!-- TROCAR pelas fotos do Stefano: referência (selfie) + retrato gerado -->
+      <div class="par">
+        <div class="foto ref">
+          <img src="assets/ref-stefano.jpg" style="object-position:50% 2%" alt="">
+          <div class="rotulo">Sua referência</div>
+        </div>
+        <div class="foto res">
+          <img src="assets/res-editorial.jpg" style="object-position:50% 18%" alt="">
+          <div class="rotulo">Seu retrato</div>
+        </div>
+      </div>
+
+      <div class="passos">
+        <div class="passo p1"><div class="num">1</div><p>Você envia fotos do seu celular</p></div>
+        <div class="passo p2"><div class="num">2</div><p>Responde o diagnóstico em dois minutos</p></div>
+        <div class="passo p3"><div class="num">3</div><p>Entra a direção de imagem de 20 anos de ofício</p></div>
+        <div class="passo p4"><div class="num">4</div><p>Recebe seus retratos em três formatos</p></div>
+      </div>
+
+      <div class="objecao">
+        <div class="forte">Seu rosto continua seu.</div>
+        <div class="fraca">Sem distorção, sem virar outra pessoa.</div>
+      </div>
+
+      <div class="acao">
+        <div class="cta">Gerar meus retratos</div>
+      </div>
+
+    </div>
+
+    <div class="guias">
+      <div class="zona zt">SAFE ZONE TOPO 250px</div>
+      <div class="zona zb">SAFE ZONE BASE 340px</div>
+    </div>
+  </div>
+
+  <script>
+    if (location.hash === '#guias') document.body.classList.add('mostrar-guias');
+  </script>
+</body>
+</html>

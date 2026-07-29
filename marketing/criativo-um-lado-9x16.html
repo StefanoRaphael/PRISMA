@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>PRISMA — Anúncio 9:16 "Mais de um lado"</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#1a1a1a;}
+:root{
+  --abyss:#050D18; --ink:#0A1A2F; --text:#F4F7FB; --muted:#8FA0B6;
+  --amber:#FF9160; --magenta:#FF5FA2; --violet:#A96BFF; --cyan:#4FC9F5; --aurora:#6FE3C4;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --safe-top:250px; --safe-bottom:340px;
+}
+.canvas{
+  width:1080px;height:1920px;position:relative;overflow:hidden;margin:0 auto;
+  background:var(--abyss);font-family:var(--sans);color:var(--text);
+}
+
+/* luz de fundo: espectro só como atmosfera, nunca sobre o rosto */
+.glow{
+  position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 1100px 620px at 50% 2%, rgba(79,201,245,.18), transparent 62%),
+    radial-gradient(ellipse 800px 480px at 12% 46%, rgba(169,107,255,.13), transparent 60%),
+    radial-gradient(ellipse 900px 520px at 88% 58%, rgba(255,145,96,.10), transparent 60%),
+    radial-gradient(ellipse 1000px 560px at 50% 100%, rgba(111,227,196,.15), transparent 62%);
+}
+.grain{
+  position:absolute;inset:0;z-index:1;opacity:.05;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* área útil entre as safe zones da UI do Instagram */
+.conteudo{
+  position:absolute;z-index:9;left:0;right:0;
+  top:var(--safe-top);bottom:var(--safe-bottom);
+  padding:0 70px;
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+}
+
+.topo{text-align:center;}
+.wordmark{
+  font-size:34px;font-weight:800;letter-spacing:14px;text-indent:14px;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+
+/* BLOCO 1 — headline */
+.headline{
+  margin-top:38px;text-align:center;
+  font-weight:800;font-size:82px;line-height:1.04;letter-spacing:-3.6px;
+}
+.headline .grad{
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+
+/* BLOCO 2 — prova: o mesmo rosto em ocasiões diferentes */
+.trio{display:flex;gap:20px;width:100%;}
+.card{
+  position:relative;flex:1;height:520px;border-radius:20px;overflow:hidden;
+  box-shadow:0 30px 70px rgba(0,0,0,.55);
+}
+.card img{width:100%;height:100%;object-fit:cover;display:block;}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:5px;z-index:4;
+}
+.card::after{
+  content:'';position:absolute;inset:0;z-index:2;
+  background:linear-gradient(180deg,rgba(5,13,24,0) 58%,rgba(5,13,24,.82) 100%);
+}
+.c1::before{background:var(--cyan);}
+.c2::before{background:var(--magenta);}
+.c3::before{background:var(--amber);}
+.tag{
+  position:absolute;left:0;right:0;bottom:18px;z-index:5;text-align:center;
+  font-size:22px;font-weight:600;letter-spacing:.5px;color:var(--text);
+}
+
+/* BLOCO 3 — proposta */
+.proposta{text-align:center;}
+.linha1{font-size:39px;line-height:1.38;font-weight:600;letter-spacing:-1px;color:var(--text);}
+.linha2{margin-top:14px;font-size:33px;font-weight:400;letter-spacing:-.5px;color:var(--muted);}
+.divisor{
+  width:210px;height:2px;margin:34px auto 0;
+  background:linear-gradient(90deg,transparent,var(--violet),var(--cyan),transparent);
+}
+.assinatura{
+  margin-top:28px;font-size:25px;line-height:1.4;font-weight:500;letter-spacing:0;color:var(--muted);
+}
+
+/* CTA */
+.acao{text-align:center;}
+.cta{
+  display:inline-block;
+  background:linear-gradient(90deg,var(--amber),var(--magenta),var(--violet),var(--cyan),var(--aurora));
+  color:var(--abyss);font-weight:800;font-size:31px;letter-spacing:-.5px;
+  padding:27px 62px;border-radius:999px;
+  box-shadow:0 26px 55px rgba(79,201,245,.28);
+}
+
+/* overlay de conferência das safe zones — some no PNG final */
+.guias{display:none;position:absolute;inset:0;z-index:99;}
+body.mostrar-guias .guias{display:block;}
+.guias .zona{
+  position:absolute;left:0;right:0;background:rgba(255,95,162,.22);
+  border:2px dashed rgba(255,95,162,.75);
+  font-size:20px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;
+}
+.guias .zt{top:0;height:var(--safe-top);}
+.guias .zb{bottom:0;height:var(--safe-bottom);}
+</style>
+</head>
+<body>
+  <div class="canvas">
+    <div class="glow"></div>
+    <div class="grain"></div>
+
+    <div class="conteudo">
+
+      <div class="topo">
+        <div class="wordmark">P R I S M A</div>
+        <div class="headline">
+          Você tem<br>
+          mais de um lado.<br>
+          <span class="grad">Mostre todos.</span>
+        </div>
+      </div>
+
+      <!-- TROCAR pelos 3 retratos da MESMA pessoa quando o trio estiver gerado -->
+      <div class="trio">
+        <div class="card c1">
+          <img src="assets/oc-executivo.jpg" style="object-position:50% 16%" alt="">
+          <div class="tag">Executivo</div>
+        </div>
+        <div class="card c2">
+          <img src="assets/oc-editorial.jpg" style="object-position:50% 22%" alt="">
+          <div class="tag">Editorial</div>
+        </div>
+        <div class="card c3">
+          <img src="assets/oc-noite.jpg" style="object-position:52% 28%" alt="">
+          <div class="tag">Noite</div>
+        </div>
+      </div>
+
+      <div class="proposta">
+        <div class="linha1">Fotos do seu celular entram.<br>Retratos com direção de imagem saem.</div>
+        <div class="linha2">Doze ocasiões. Três formatos por geração.</div>
+        <div class="divisor"></div>
+        <div class="assinatura">Direção de imagem por quem trabalha luz e rosto há 20 anos.</div>
+      </div>
+
+      <div class="acao">
+        <div class="cta">Comece pelo diagnóstico</div>
+      </div>
+
+    </div>
+
+    <div class="guias">
+      <div class="zona zt">SAFE ZONE TOPO 250px</div>
+      <div class="zona zb">SAFE ZONE BASE 340px</div>
+    </div>
+  </div>
+
+  <script>
+    if (location.hash === '#guias') document.body.classList.add('mostrar-guias');
+  </script>
+</body>
+</html>

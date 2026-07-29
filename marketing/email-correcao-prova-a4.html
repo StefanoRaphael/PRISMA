@@ -1,0 +1,166 @@
+<meta charset="utf-8">
+<title>PRISMA — prova de leitura do e-mail "Prisma Correção"</title>
+
+<!--
+  PROVA DE LEITURA, não é o arquivo que vai ser enviado.
+
+  O e-mail real (email-desculpas-falha.html) tem 600px de largura fixa porque
+  é o que cliente de e-mail suporta, e nessa largura o texto fica apertado para
+  revisar. Este documento tem o MESMO texto em A4, com tipografia de leitura,
+  para o Stefano aprovar o conteúdo com conforto. Qualquer mudança aprovada
+  aqui precisa ser repetida no arquivo do e-mail.
+-->
+
+<style>
+  @page { size: A4; margin: 0; }
+
+  :root{
+    --abyss:#050D18; --ink:#0A1A2F; --ink-2:#0F2540;
+    --t-hi:#F2F6FB; --t-mid:#B7C8DC; --t-low:#7A90AC;
+    --sp1:#FF9160; --sp2:#FF5FA2; --sp3:#A96BFF; --sp4:#4FC9F5; --sp5:#6FE3C4;
+    --spectrum:linear-gradient(90deg,#FF9160,#FF5FA2,#A96BFF,#4FC9F5,#6FE3C4);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI","Helvetica Neue",Arial,sans-serif;
+    background:#050D18; color:#F2F6FB;
+  }
+
+  .pagina{
+    width:210mm; height:297mm; background:#050D18;
+    /* Base folgada para o número da folha não encostar no último bloco. */
+    padding:18mm 20mm 24mm 20mm; position:relative; overflow:hidden;
+    display:flex; flex-direction:column;
+    page-break-after:always;
+  }
+  .pagina:last-child{ page-break-after:auto; }
+
+  .faixa{ height:5px; background:var(--spectrum); margin:-18mm -20mm 12mm -20mm; }
+  /* Fixa na base da folha: com margin:auto ela subia e empurrava o rodapé
+     por cima da assinatura. */
+  .faixa-fim{ position:absolute; left:0; right:0; bottom:0; height:5px; background:var(--spectrum); }
+
+  .marca{ font-size:13pt; font-weight:700; letter-spacing:.44em; margin-bottom:2mm; }
+  .marca b{ font-weight:700; }
+  .m1{color:#F2F6FB} .m2{color:#FF9160} .m3{color:#FF5FA2} .m4{color:#A96BFF} .m5{color:#4FC9F5}
+
+  .nota{
+    font-size:9.5pt; color:#7A90AC; letter-spacing:.02em;
+    border:1px solid rgba(255,255,255,.12); border-radius:8px;
+    padding:4mm 5mm; margin-bottom:9mm; line-height:1.5;
+  }
+  .nota b{ color:#B7C8DC; }
+
+  .kicker{
+    font-size:10pt; font-weight:700; letter-spacing:.22em; text-transform:uppercase;
+    color:#FF9160; margin-bottom:4mm;
+  }
+  h1{
+    font-size:34pt; line-height:1.08; font-weight:800; letter-spacing:-.03em;
+    color:#F2F6FB; margin-bottom:6mm;
+  }
+  .risco{ height:3px; width:26mm; background:var(--spectrum); margin-bottom:9mm; }
+
+  p{ font-size:14.5pt; line-height:1.62; color:#B7C8DC; margin-bottom:6mm; }
+  p.forte{ color:#F2F6FB; font-weight:640; }
+
+  .caixa{
+    background:#0F2540; border-radius:12px; padding:7mm 8mm; margin-bottom:6mm;
+  }
+  .caixa.alerta{ border-left:4px solid #FF9160; }
+  .caixa .rot{
+    font-size:10pt; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+    color:#6FE3C4; margin-bottom:4mm;
+  }
+  .caixa.alerta .rot{ color:#FF9160; }
+  .caixa h2{
+    font-size:22pt; font-weight:750; letter-spacing:-.02em; color:#F2F6FB;
+    line-height:1.2; margin-bottom:4mm;
+  }
+  .caixa p{ font-size:13.5pt; margin-bottom:4mm; }
+  .caixa p:last-child{ margin-bottom:0; }
+
+  .botao{
+    display:inline-block; background:var(--spectrum); color:#0B0714;
+    font-size:15pt; font-weight:700; letter-spacing:-.01em;
+    padding:5mm 14mm; border-radius:100px; margin:2mm 0 4mm 0;
+  }
+  .centro{ text-align:center; }
+  .legenda{ font-size:11.5pt; color:#7A90AC; }
+
+  .divisor{ height:1px; background:rgba(255,255,255,.1); margin:8mm 0; }
+  .assin{ font-size:15pt; font-weight:700; color:#F2F6FB; }
+  .cargo{ font-size:12.5pt; color:#7A90AC; margin-top:1mm; }
+  .zap{ font-size:12.5pt; color:#4FC9F5; margin-top:3mm; }
+
+  .rodape{ text-align:center; font-size:11pt; color:#7A90AC; line-height:1.6; margin-top:auto; padding-bottom:10mm; }
+  .pag{ position:absolute; bottom:9mm; right:20mm; font-size:9pt; color:#4A5F7D; letter-spacing:.1em; }
+</style>
+
+<!-- ===================== PÁGINA 1 ===================== -->
+<div class="pagina">
+  <div class="faixa"></div>
+
+  <div class="marca">
+    <span class="m1">P</span> <span class="m1">R</span> <span class="m2">I</span> <span class="m3">S</span> <span class="m4">M</span> <span class="m5">A</span>
+  </div>
+
+  <div class="nota">
+    <b>Prova de leitura.</b> Este documento existe para você revisar o texto em tamanho confortável. O e-mail que chega ao cliente tem a mesma mensagem, no formato de 600px que os aplicativos de e-mail exigem.
+  </div>
+
+  <div class="kicker">Pedido de desculpas</div>
+  <h1>A falha foi minha,<br>não sua.</h1>
+  <div class="risco"></div>
+
+  <p>Você respondeu o diagnóstico, enviou suas fotos e chegou até o fim para receber uma mensagem de erro na hora de gerar os retratos.</p>
+
+  <p>Não foi o seu cadastro nem as suas fotos. Havia uma falha no meu sistema: a conta era criada sem um registro interno, e isso só se revelava no último passo, depois de todo o trabalho já feito. Pior ainda, o aplicativo deixou você seguir até o final em vez de avisar logo no começo.</p>
+
+  <p>Isso é erro de projeto, e a responsabilidade é inteiramente minha. Já está corrigido, e a barreira agora aparece antes de qualquer esforço seu.</p>
+
+  <p class="forte">Suas fotos de referência continuam salvas. Você não precisa fotografar nem enviar nada de novo.</p>
+
+  <div class="caixa">
+    <div class="rot">Liberado para você</div>
+    <h2>5 gerações completas</h2>
+    <p>Cada geração sai em qualquer uma das 12 ocasiões, à sua escolha: executivo, editorial, viagem, casual, noite, esporte, praia, natureza, família, palco, inverno e gala. Todas abertas, sem custo, sem cartão.</p>
+    <p>Cada retrato vem em três formatos, prontos para o feed, o stories e a foto de perfil.</p>
+  </div>
+
+  <div class="pag">1 de 2</div>
+</div>
+
+<!-- ===================== PÁGINA 2 ===================== -->
+<div class="pagina">
+  <div class="faixa"></div>
+
+  <div class="caixa alerta">
+    <div class="rot">Importante antes de começar</div>
+    <h2>É provável que o app peça as 12 perguntas de novo.</h2>
+    <p>O diagnóstico que você tinha respondido se perdeu junto com a falha. Se você voltar pelo mesmo aparelho, talvez ele já esteja lá. Em qualquer outro, são 12 perguntas rápidas, cerca de dois minutos.</p>
+    <p>Se aparecer, não pule e não responda no automático. É ele que define o estilo, a luz e a postura dos seus retratos. Sem ele, o resultado sai genérico.</p>
+  </div>
+
+  <div class="centro">
+    <div class="botao">Entrar e gerar meus retratos</div>
+    <div class="legenda">Entre com o mesmo e-mail e senha que você já cadastrou.</div>
+  </div>
+
+  <div class="divisor"></div>
+
+  <p>Se qualquer coisa sair errada, me chame direto. Prefiro saber e corrigir a deixar passar.</p>
+
+  <div class="assin">Stefano Raphael</div>
+  <div class="cargo">Fotógrafo e diretor do PRISMA</div>
+  <div class="zap">WhatsApp: 11 98646 8081</div>
+
+  <div class="rodape">
+    PRISMA<br>
+    Você tem mais de um lado. Mostre todos.
+  </div>
+
+  <div class="faixa-fim"></div>
+  <div class="pag">2 de 2</div>
+</div>
