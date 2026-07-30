@@ -6,7 +6,7 @@
     "api/regenerate.js": { "maxDuration": 60 },
     "api/status.js":     { "maxDuration": 30 },
     "api/checkout.js":   { "maxDuration": 30 },
-    "api/webhook.js":    { "maxDuration": 30 },
+    "api/webhook.js":    { "maxDuration": 30, "includeFiles": "marketing/emails/pagamento-aprovado.html" },
     "api/avaliar-referencia.js": { "maxDuration": 30 }
   },
   "headers": [
