@@ -8,10 +8,82 @@
  * senão qualquer pessoa poderia liberar créditos mandando um POST forjado.
  */
 
+import { readFileSync } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { admin } from '../lib/auth.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const CREDITOS = { starter: 5, basico: 20, pro: 60, legacy: 8 };
 const VALORES  = { starter: 39.00, basico: 99.00, pro: 199.00, legacy: 19.90 };
+const NOME_PLANO = { starter: 'Starter', basico: 'Básico', pro: 'Pro', legacy: 'Legacy' };
+
+/**
+ * Manda o e-mail de pagamento aprovado. Melhor esforço: quem chama nunca
+ * deve deixar uma falha aqui derrubar o webhook — o crédito já foi gravado
+ * no banco antes desta função rodar, que é o que garante o acesso do
+ * cliente. O e-mail é confirmação, não o mecanismo de liberação.
+ */
+async function enviarEmailPagamento({ userId, plano, creditos, validade }) {
+  if (!process.env.RESEND_API_KEY) {
+    console.error('[webhook] RESEND_API_KEY ausente, e-mail de pagamento não enviado');
+    return;
+  }
+
+  const sb = admin();
+  const { data, error } = await sb.auth.admin.getUserById(userId);
+  if (error || !data?.user?.email) {
+    console.error('[webhook] não achei e-mail do usuário', userId, error);
+    return;
+  }
+
+  const template = readFileSync(
+    path.join(__dirname, '..', 'marketing', 'emails', 'pagamento-aprovado.html'),
+    'utf-8'
+  );
+
+  // O Vercel roda a função em UTC, não no fuso do cliente. Sem timeZone
+  // explícito, um pagamento perto da meia-noite (horário de Brasília) mostra
+  // uma data errada por um dia — já pegou 1 dia de diferença no teste local.
+  const validadeTexto = validade.toLocaleDateString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'America/Sao_Paulo'
+  });
+
+  // replaceAll é obrigatório: cada placeholder aparece mais de uma vez no
+  // arquivo (mesmo bug que já pegou o template de boas-vindas e o do
+  // Supabase — replace simples só troca a primeira ocorrência).
+  const html = template
+    .replaceAll('{{PLANO}}', NOME_PLANO[plano] || plano)
+    .replaceAll('{{CREDITOS}}', `${creditos} retratos`)
+    .replaceAll('{{VALIDADE}}', validadeTexto);
+
+  for (const chave of ['{{PLANO}}', '{{CREDITOS}}', '{{VALIDADE}}']) {
+    if (html.includes(chave)) {
+      console.error(`[webhook] placeholder ${chave} sobrou sem substituir, e-mail não enviado`);
+      return;
+    }
+  }
+
+  const resp = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${process.env.RESEND_API_KEY}`
+    },
+    body: JSON.stringify({
+      from: 'PRISMA <contato@prismaretrato.com.br>',
+      to: [data.user.email],
+      subject: `PRISMA · seu plano ${NOME_PLANO[plano] || plano} está ativo`,
+      html
+    })
+  });
+
+  if (!resp.ok) {
+    const corpo = await resp.json().catch(() => ({}));
+    console.error('[webhook] Resend recusou o envio', resp.status, corpo);
+  }
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -88,6 +160,17 @@ export default async function handler(req, res) {
       renova_dia: plano === 'starter' ? null : agora.getDate(),
       metodo: `${metodo} · ${cicloTexto}`
     }).eq('id', userId);
+
+    // Crédito já está gravado no banco: o acesso do cliente não depende do
+    // que acontece daqui pra baixo. Await aqui mesmo (não fire-and-forget)
+    // porque a função serverless pode ser encerrada assim que a resposta for
+    // enviada — sem esperar, o envio arriscaria nunca completar. Mercado
+    // Pago tolera folga de sobra no tempo de resposta do webhook.
+    try {
+      await enviarEmailPagamento({ userId, plano, creditos: CREDITOS[plano], validade });
+    } catch (e) {
+      console.error('[webhook] falha ao enviar e-mail de pagamento (crédito já gravado)', e);
+    }
 
     return res.status(200).end();
   } catch (e) {

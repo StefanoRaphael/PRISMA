@@ -1,19 +1,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pagamento aprovado — PRISMA</title>
+<title>Pagamento aprovado · PRISMA</title>
 
 <!--
-  PRISMA — e-mail de pagamento aprovado / plano ativado
+  PRISMA · e-mail de pagamento aprovado / plano ativado
 
-  Este template ainda NÃO está ligado a nenhum envio automático. Hoje
-  api/webhook.js só grava o plano e os créditos no banco quando o Mercado
-  Pago aprova — não dispara e-mail nenhum. Pra usar isto de verdade,
-  falta decidir onde ele é chamado (dentro do próprio webhook, com Resend)
-  e resolver o problema de fuso/robustez de webhook (ele já roda sem
-  sessão de usuário, então o disparo teria que ser assíncrono e não pode
-  travar a resposta 200 que o Mercado Pago espera rápido).
+  Disparado por api/webhook.js, em modo melhor esforço: se o envio falhar,
+  o webhook loga o erro e segue — crédito já gravado no banco é o que
+  importa de verdade, o e-mail é confirmação, não o que garante o acesso.
 
-  Placeholders: {{PLANO}}, {{CREDITOS}}, {{VALIDADE}}.
+  Cada placeholder aparece mais de uma vez no arquivo ({{PLANO}} 3x,
+  {{CREDITOS}} e {{VALIDADE}} 2x cada): a substituição no código PRECISA
+  usar replaceAll, nunca replace simples, senão só a primeira ocorrência
+  troca e sobra chave dupla visível pro cliente.
 -->
 
 <div style="margin:0;padding:0;background-color:#050D18;">
