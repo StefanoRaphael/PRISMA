@@ -22,6 +22,35 @@ import { admin } from '../lib/auth.js';
 import { montarEmailBoasVindas, lerProtocoloPdf } from '../marketing/lib-boas-vindas.mjs';
 
 const REMETENTE = 'PRISMA <contato@prismaretrato.com.br>';
+const PROTOCOLO_URL = 'https://www.prismaretrato.com.br/PROTOCOLO-FOTOS-PRISMA.pdf';
+
+/**
+ * O PDF do protocolo, com duas saídas.
+ *
+ * A primeira é o arquivo do próprio pacote da função, que depende do
+ * includeFiles do vercel.json ser resolvido do jeito esperado no build — e
+ * um build local com a CLI 58 não reproduziu essa inclusão, então não dá
+ * para tratar como garantido. A segunda é o mesmo PDF servido como arquivo
+ * estático no próprio domínio, que é o que a landing já entrega hoje.
+ *
+ * Devolve null se as duas falharem: e-mail de boas-vindas sem o anexo ainda
+ * serve ao cliente, e-mail nenhum não serve.
+ */
+async function obterProtocoloPdf() {
+  try {
+    return lerProtocoloPdf();
+  } catch (e) {
+    console.error('[send-welcome-email] PDF fora do pacote, buscando o estático', e.message);
+  }
+  try {
+    const resp = await fetch(PROTOCOLO_URL);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    return Buffer.from(await resp.arrayBuffer());
+  } catch (e) {
+    console.error('[send-welcome-email] PDF estático também falhou, enviando sem anexo', e.message);
+    return null;
+  }
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -61,7 +90,21 @@ export default async function handler(req, res) {
     }
 
     const { assunto, html } = montarEmailBoasVindas(record.nome || '', 'novo');
-    const protocoloPdf = lerProtocoloPdf();
+    const protocoloPdf = await obterProtocoloPdf();
+
+    const corpo = {
+      from: REMETENTE,
+      to: [data.user.email],
+      subject: assunto,
+      html
+    };
+    if (protocoloPdf) {
+      corpo.attachments = [{
+        filename: 'PRISMA-Protocolo-de-Fotos.pdf',
+        content: protocoloPdf.toString('base64'),
+        contentType: 'application/pdf'
+      }];
+    }
 
     const resp = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -69,17 +112,7 @@ export default async function handler(req, res) {
         'content-type': 'application/json',
         authorization: `Bearer ${process.env.RESEND_API_KEY_PRISMA || process.env.RESEND_API_KEY}`
       },
-      body: JSON.stringify({
-        from: REMETENTE,
-        to: [data.user.email],
-        subject: assunto,
-        html,
-        attachments: [{
-          filename: 'PRISMA-Protocolo-de-Fotos.pdf',
-          content: protocoloPdf.toString('base64'),
-          contentType: 'application/pdf'
-        }]
-      })
+      body: JSON.stringify(corpo)
     });
 
     if (!resp.ok) {
