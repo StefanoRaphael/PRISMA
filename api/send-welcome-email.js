@@ -28,16 +28,34 @@ function getWelcomeEmailTemplate(userId, email) {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body { margin: 0; padding: 0; background: #050D18; color: #F2F6FB; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; background: #050D18; }
+        .header { text-align: left; margin-bottom: 28px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px; padding-top: 20px; border-bottom: 2px solid; border-image: linear-gradient(90deg, #FF9160, #FF5FA2, #A96BFF, #4FC9F5, #6FE3C4) 1; }
+        .header h1 { font-size: 28px; letter-spacing: 0.25em; font-weight: 700; margin: 0; color: #F2F6FB; }
+        .content { padding: 20px; }
+        h2 { font-size: 18px; font-weight: 700; margin: 22px 0 11px 0; color: #F2F6FB; text-transform: uppercase; letter-spacing: 0.08em; border-left: 4px solid #FF9160; padding-left: 12px; }
+        p { font-size: 14px; color: #A9BCD2; margin-bottom: 16px; line-height: 1.6; }
+        .footer { text-align: center; margin-top: 40px; padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .logo-footer { font-size: 12px; font-weight: 700; letter-spacing: 0.15em; color: #F2F6FB; margin-bottom: 6px; }
+        .footer-text { font-size: 10px; color: #63799A; margin: 4px 0; }
+      </style>
     </head>
-    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #050D18; color: #F2F6FB; padding: 20px;">
-      <div style="max-width: 600px; margin: 0 auto;">
-        <h1 style="font-size: 24px; color: #F2F6FB; margin-bottom: 16px;">Bem-vindo ao PRISMA</h1>
-        <p style="font-size: 14px; color: #A9BCD2; margin-bottom: 16px; line-height: 1.6;">Seu cadastro foi confirmado com sucesso.</p>
-        <p style="font-size: 14px; color: #A9BCD2; margin-bottom: 16px; line-height: 1.6;">Em breve você receberá um e-mail com o protocolo completo de fotos de referência.</p>
-        <p style="font-size: 14px; color: #A9BCD2; margin-bottom: 24px; line-height: 1.6;">Qualquer dúvida, responda este e-mail.</p>
-        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
-          <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #F2F6FB; margin-bottom: 4px;">P R I S M A</div>
-          <div style="font-size: 10px; color: #63799A;">Retratos com o seu rosto de verdade.</div>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>PRISMA</h1>
+        </div>
+        <div class="content">
+          <h2>Bem-vindo ao PRISMA</h2>
+          <p>Seu cadastro foi confirmado com sucesso.</p>
+          <p>Em breve você receberá um e-mail com o protocolo completo de fotos de referência. Siga o guia à risca para garantir retratos de qualidade premium.</p>
+          <p>Qualquer dúvida, responda este e-mail ou abra o PRISMA.</p>
+        </div>
+        <div class="footer">
+          <div class="logo-footer">P R I S M A</div>
+          <div class="footer-text">Retratos com o seu rosto de verdade.</div>
+          <div class="footer-text">Segurança: suas fotos nunca são publicadas nem compartilhadas.</div>
         </div>
       </div>
     </body>
