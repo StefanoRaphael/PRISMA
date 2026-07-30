@@ -19,7 +19,7 @@ const ESQUEMA = {
   properties: {
     prompt: {
       type: 'string',
-      description: 'Master prompt em INGLÊS para o motor de imagem. Funde a base da ocasião, a direção do arquétipo e o pedido do cliente. O pedido do cliente sempre vence em caso de conflito. Descreve roupa, ambiente, luz, hora do dia, postura, expressão, lente e enquadramento. Enquadramento sempre com respiro em cima e nas laterais, para sobreviver a cortes.'
+      description: 'Master prompt em INGLÊS para o motor de imagem. Funde a base da ocasião, a direção do arquétipo e o pedido do cliente. O pedido do cliente sempre vence em caso de conflito. Descreve roupa, ambiente, luz, hora do dia, postura, expressão, lente e enquadramento. Enquadramento sempre com respiro em cima e nas laterais, para sobreviver a cortes. NÃO defina aqui a posição lateral do sujeito no quadro (nada de "off-center", "negative space", "left/right third of frame"): quem decide isso é o campo "variantes", e repetir aqui soma com ele e estoura a composição.'
     },
     leitura: {
       type: 'string',
@@ -36,7 +36,7 @@ const ESQUEMA = {
     variantes: {
       type: 'array',
       items: { type: 'string' },
-      description: 'Exatamente 5 direções de câmera e enquadramento em INGLÊS, uma por retrato do lote, pensadas como um fotógrafo pensaria para ESTA ocasião e ESTE pedido específico, não uma fórmula genérica repetida em todo prompt. Decida o grau de dinamismo apropriado: um retrato executivo ou institucional pode pedir variações mais sóbrias, quase centradas, com deslocamentos sutis; um editorial de viagem ou ação pode pedir mais assimetria e ângulo. Cada item descreve altura de câmera, posição do sujeito no quadro (terço esquerdo, terço direito, centro, ambiente amplo) e, se fizer sentido pra ESTA cena, inclinação de horizonte. Nunca repita a mesma direção duas vezes na lista. Nunca force lateralização forte se o contexto pedir uma composição mais direta e equilibrada.'
+      description: 'Exatamente 5 direções de câmera e enquadramento em INGLÊS, uma por retrato do lote, pensadas como um fotógrafo pensaria para ESTA ocasião e ESTE pedido, não uma fórmula repetida em todo prompt. RESTRIÇÃO GEOMÉTRICA QUE MANDA EM TUDO: a imagem sai em 9:16, quadro vertical ESTREITO. Deslocamento lateral pesa muito mais aqui do que num quadro deitado — pedir "terço esquerdo" ou "terço direito" num 9:16 encosta o sujeito na borda e o resultado parece erro de geração, não direção de arte. Então: o padrão é o sujeito PRÓXIMO DO EIXO CENTRAL, e a variação entre os retratos do lote vem primeiro de ALTURA DE CÂMERA (baixa, alta, altura dos olhos), DISTÂNCIA (close, médio, ambiente amplo) e PROFUNDIDADE (elemento em primeiro plano entrando na borda), não de empurrar o corpo para o lado. Deslocamento lateral é permitido como ajuste SUTIL, e só ganha força de verdade em plano ambiente bem aberto, onde o sujeito aparece pequeno e o cenário justifica o espaço. Nunca repita a mesma direção duas vezes na lista. Nunca escreva "generous negative space" nem "off-center" sem que a cena realmente peça.'
     }
   },
   required: ['prompt', 'leitura', 'completado', 'conflito', 'variantes']
@@ -53,14 +53,17 @@ Regras inegociáveis:
 - Recuse conteúdo sexual, violento, ou que envolva menores. Nesses casos devolva prompt vazio e explique no campo conflito.
 
 PROIBIDO CAIR NO GENÉRICO (a menos que o cliente peça explicitamente o contrário):
-- Posição do sujeito no quadro (centro, terço esquerdo, terço direito, pequeno no ambiente) não vem da base nem de regra fixa nenhuma: é decidida no campo "variantes", uma vez por retrato, olhando o contexto real desta ocasião e deste pedido.
+- Posição do sujeito no quadro não vem da base nem de regra fixa nenhuma: é decidida no campo "variantes", uma vez por retrato. E o quadro é 9:16, estreito, então o padrão dessa decisão é perto do eixo central — o que varia entre um retrato e outro é sobretudo altura de câmera, distância e profundidade, não o quanto o corpo foi jogado para o lado.
+- NUNCA escreva no prompt em inglês, por conta própria, termos de deslocamento lateral como "off-center", "generous negative space", "left third of frame" ou "right third of frame". Composição lateral entra pelo campo "variantes", que é o único lugar que enxerga o lote inteiro e sabe dosar. Repetir esses termos no prompt principal soma com a variante e produz o exagero que o cliente lê como falha de geração.
 - NUNCA use câmera na altura dos olhos só por comodidade. Respeite o ângulo já definido na base da ocasião (baixo para autoridade, alto para intimidade, POV de plateia, através de elementos em primeiro plano).
 - NUNCA aplique a fórmula universal "luz quente + preenchimento suave lateral" em toda ocasião. Cada base já tem seu próprio esquema de luz (dura e direcional, silhueta com rim light only, feixes de luz cortando neblina, gel colorido, etc.) — use exatamente esse, não o dilua para algo morno e seguro.
 - Se o cliente não especificar pose, prefira gesto assimétrico e dinâmico (peso numa perna só, ombro girado, mão em movimento) a uma pose frontal estática e simétrica, a menos que a ocasião peça formalidade e presença direta.
 - O fundo é elemento de produção, não pano de fundo genérico. Descreva profundidade de camadas (primeiro plano, sujeito, fundo em planos distintos) e textura de material visível (concreto, madeira, vidro, tecido, metal), no padrão de um estúdio que vende 20 anos de experiência internacional. Nunca aceite fundo raso, desfocado sem propósito ou liso demais.
 - Flare, reflexo de lente ou partícula de luz (poeira, névoa, respingo) só entram quando o esquema de luz da própria base da ocasião já pede esse efeito (ex: contraluz forte, golden hour, neon). Não adicione por padrão em toda foto — quando forçado sem motivo de luz, denuncia composição artificial.
 
-VARIANTES DO LOTE (campo "variantes"): cada retrato do mesmo pedido precisa de um enquadramento levemente diferente dos outros, mas a variação tem que nascer do julgamento de um fotógrafo lendo esta ocasião e este pedido, nunca de uma fórmula fixa aplicada sempre. Um executivo de terno numa sala de reunião pede variações contidas, quase centradas, com deslocamento sutil de posição entre um retrato e outro. Uma cena de ação ou viagem pede mais liberdade de ângulo e assimetria. Errar pra mais lateralização do que a cena pede é o mesmo erro que errar pra mais centralização: os dois entregam "genérico", um pelo excesso, outro pela falta.
+VARIANTES DO LOTE (campo "variantes"): cada retrato do mesmo pedido precisa de um enquadramento diferente dos outros, e essa diferença nasce do julgamento de um fotógrafo lendo esta ocasião e este pedido, nunca de fórmula fixa. Num quadro 9:16 estreito, a variação boa vem de altura de câmera, distância e camada de primeiro plano, com o sujeito trabalhando perto do eixo central. Deslocamento lateral é tempero, não é a base da variação, e só vira protagonista em plano ambiente bem aberto onde o cenário justifica.
+
+Errar pra mais lateralização é pior do que errar pra mais centralização, porque o cliente não lê aquilo como escolha estética: lê como a IA tendo errado o enquadramento. Perder um pouco de ousadia é aceitável; entregar uma foto que parece defeito, não é.
 
 Quando o pedido do cliente entra em conflito direto com a base (ex: cliente pede "olhando direto pra câmera, brincando com bolha de sabão" mas a base pede ângulo de ação), o pedido do cliente vence só naquilo que ele especificou — o resto (ângulo, luz, composição) continua vindo da base.
 
