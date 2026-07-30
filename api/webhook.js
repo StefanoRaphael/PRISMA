@@ -26,8 +26,8 @@ const NOME_PLANO = { starter: 'Starter', basico: 'Básico', pro: 'Pro', legacy: 
  * cliente. O e-mail é confirmação, não o mecanismo de liberação.
  */
 async function enviarEmailPagamento({ userId, plano, creditos, validade }) {
-  if (!process.env.RESEND_API_KEY) {
-    console.error('[webhook] RESEND_API_KEY ausente, e-mail de pagamento não enviado');
+  if (!process.env.RESEND_API_KEY_PRISMA) {
+    console.error('[webhook] RESEND_API_KEY_PRISMA ausente, e-mail de pagamento não enviado');
     return;
   }
 
@@ -69,7 +69,7 @@ async function enviarEmailPagamento({ userId, plano, creditos, validade }) {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      authorization: `Bearer ${process.env.RESEND_API_KEY}`
+      authorization: `Bearer ${process.env.RESEND_API_KEY_PRISMA}`
     },
     body: JSON.stringify({
       from: 'PRISMA <contato@prismaretrato.com.br>',
