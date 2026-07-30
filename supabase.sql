@@ -181,7 +181,7 @@ begin
     url := 'https://www.prismaretrato.com.br/api/send-welcome-email',
     headers := jsonb_build_object(
       'Content-Type', 'application/json',
-      'x-prisma-webhook-secret', '79c7611818129bfbfcb0ab0fccbd65d2a255abdffef647e8'
+      'x-prisma-webhook-secret', 'COLE_AQUI_O_SEGREDO'
     ),
     body := jsonb_build_object(
       'type', 'INSERT',

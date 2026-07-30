@@ -13,3 +13,6 @@ marketing/protocolo-guilherme-envio.log
 marketing/protocolo-guilherme-launchd.log
 .vercel
 .env*
+
+# SQL com o segredo real preenchido, nunca versionar (repo é público)
+supabase-gatilho-boas-vindas.LOCAL.sql
