@@ -44,6 +44,16 @@ function getWelcomeEmailTemplate(userId, email) {
     </head>
     <body>
       <div class="container">
+        <!-- Spectrum Bar (tabela com cores sólidas) -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="background: #050D18;">
+          <tr>
+            <td width="20%" style="background: #FF9160; height: 3px; padding: 0; margin: 0;"></td>
+            <td width="20%" style="background: #FF5FA2; height: 3px; padding: 0; margin: 0;"></td>
+            <td width="20%" style="background: #A96BFF; height: 3px; padding: 0; margin: 0;"></td>
+            <td width="20%" style="background: #4FC9F5; height: 3px; padding: 0; margin: 0;"></td>
+            <td width="20%" style="background: #6FE3C4; height: 3px; padding: 0; margin: 0;"></td>
+          </tr>
+        </table>
         <div class="header">
           <h1>PRISMA</h1>
         </div>
