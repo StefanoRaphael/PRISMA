@@ -23,8 +23,9 @@ async function gerarPDFs() {
     await flyerPage.close();
     console.log('✅ flyer-convite-a4.pdf');
 
-    // Gerar PDF do protocolo
-    const protocoloPath = `file://${path.join(__dirname, '..', 'protocolo-fotos-prisma.html')}`;
+    // Gerar PDF do protocolo — protocolo-final-lux.html é a versão aprovada,
+    // a mesma que já gera PROTOCOLO-FOTOS-PRISMA.pdf em render-protocolo-pdf.mjs.
+    const protocoloPath = `file://${path.join(__dirname, '..', 'protocolo-final-lux.html')}`;
     const protocoloPage = await browser.newPage();
     await protocoloPage.goto(protocoloPath, { waitUntil: 'networkidle0' });
     await protocoloPage.pdf({

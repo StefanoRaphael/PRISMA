@@ -10,8 +10,13 @@ if (!RESEND_API_KEY) {
   process.exit(1);
 }
 
-const protocoloHtmlPath = path.join(__dirname, '..', 'protocolo-fotos-prisma.html');
-const protocoloHtml = readFileSync(protocoloHtmlPath, 'utf-8');
+// Anexa o PDF, não o HTML. O HTML dependia de imagem hospedada e abria como
+// página no navegador; o PDF carrega as fotos dentro do próprio arquivo, abre
+// igual no iPhone, no Android e no desktop, e é o formato que o cliente espera
+// receber. Gerado por render-protocolo-pdf.mjs a partir de
+// protocolo-final-lux.html, que é a versão aprovada do documento.
+const protocoloPdfPath = path.join(__dirname, '..', 'PROTOCOLO-FOTOS-PRISMA.pdf');
+const protocoloPdf = readFileSync(protocoloPdfPath);
 
 // Fonte única do template: marketing/emails/boas-vindas.html. Editar o visual
 // ali, não aqui — evita as duas cópias divergentes que existiam antes (uma
@@ -38,7 +43,6 @@ function emailTemplate(nomeUsuario) {
 
 async function enviarPara(destinatario, nomeUsuario = '') {
   const html = emailTemplate(nomeUsuario);
-  const protocoloBuffer = Buffer.from(protocoloHtml, 'utf-8');
 
   const payload = {
     from: REMETENTE,
@@ -47,9 +51,9 @@ async function enviarPara(destinatario, nomeUsuario = '') {
     html,
     attachments: [
       {
-        filename: 'PRISMA-Protocolo-Fotos.html',
-        content: protocoloBuffer.toString('base64'),
-        contentType: 'text/html',
+        filename: 'PRISMA-Protocolo-de-Fotos.pdf',
+        content: protocoloPdf.toString('base64'),
+        contentType: 'application/pdf',
       },
     ],
   };
