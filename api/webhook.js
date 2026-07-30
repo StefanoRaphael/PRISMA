@@ -26,8 +26,11 @@ const NOME_PLANO = { starter: 'Starter', basico: 'Básico', pro: 'Pro', legacy: 
  * cliente. O e-mail é confirmação, não o mecanismo de liberação.
  */
 async function enviarEmailPagamento({ userId, plano, creditos, validade }) {
-  if (!process.env.RESEND_API_KEY_PRISMA) {
-    console.error('[webhook] RESEND_API_KEY_PRISMA ausente, e-mail de pagamento não enviado');
+  // A variável do projeto na Vercel se chama RESEND_API_KEY; RESEND_API_KEY_PRISMA
+  // nunca chegou a existir lá, e era por isso que este e-mail nunca saía sozinho.
+  const chaveResend = process.env.RESEND_API_KEY_PRISMA || process.env.RESEND_API_KEY;
+  if (!chaveResend) {
+    console.error('[webhook] chave do Resend ausente, e-mail de pagamento não enviado');
     return;
   }
 
@@ -69,7 +72,7 @@ async function enviarEmailPagamento({ userId, plano, creditos, validade }) {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      authorization: `Bearer ${process.env.RESEND_API_KEY_PRISMA}`
+      authorization: `Bearer ${chaveResend}`
     },
     body: JSON.stringify({
       from: 'PRISMA <contato@prismaretrato.com.br>',

@@ -11,3 +11,5 @@ marketing/follow-up-envio.log
 marketing/follow-up-launchd.log
 marketing/protocolo-guilherme-envio.log
 marketing/protocolo-guilherme-launchd.log
+.vercel
+.env*
