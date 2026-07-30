@@ -1,14 +1,10 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { chaveResend } from './lib-env.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-
-if (!RESEND_API_KEY) {
-  console.error('Falta env var RESEND_API_KEY');
-  process.exit(1);
-}
+const RESEND_API_KEY = chaveResend();
 
 // Anexa o PDF, não o HTML. O HTML dependia de imagem hospedada e abria como
 // página no navegador; o PDF carrega as fotos dentro do próprio arquivo, abre

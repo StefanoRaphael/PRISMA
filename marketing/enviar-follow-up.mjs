@@ -16,33 +16,13 @@
  * permite o envio agendado rodar sem a chave escrita no crontab.
  */
 
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { chaveResend } from './lib-env.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const RAIZ = path.join(__dirname, '..');
-
-/** Lê uma variável do .env.local sem depender de pacote externo. */
-function doEnvLocal(nome) {
-  const arquivo = path.join(RAIZ, '.env.local');
-  if (!existsSync(arquivo)) return null;
-  for (const linha of readFileSync(arquivo, 'utf-8').split('\n')) {
-    const limpa = linha.trim();
-    if (!limpa || limpa.startsWith('#')) continue;
-    const i = limpa.indexOf('=');
-    if (i > 0 && limpa.slice(0, i).trim() === nome) {
-      return limpa.slice(i + 1).trim().replace(/^["']|["']$/g, '');
-    }
-  }
-  return null;
-}
-
-const CHAVE = process.env.RESEND_API_KEY || doEnvLocal('RESEND_API_KEY');
-if (!CHAVE) {
-  console.error('Falta RESEND_API_KEY (no ambiente ou em .env.local).');
-  process.exit(1);
-}
+const CHAVE = chaveResend();
 
 const ASSUNTO = 'PRISMA · correções no ar';
 const REMETENTE = 'PRISMA <contato@prismaretrato.com.br>';
