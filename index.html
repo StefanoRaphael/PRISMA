@@ -580,6 +580,8 @@ a{color:inherit}
         <input class="input" id="i-pass" type="password" placeholder="Mínimo de 8 caracteres" autocomplete="current-password" style="padding-right:56px">
         <button type="button" class="pass-toggle" id="pass-toggle-btn" onclick="togglePass()">Ver</button>
       </div>
+      <!-- Só existe na tela de Entrar: no cadastro não há senha ainda pra esquecer. -->
+      <div class="link" id="link-esqueci-senha" onclick="irParaRecuperarSenha()" style="margin-top:8px;display:none">Esqueci minha senha</div>
     </div>
 
     <div class="consent" id="f-consent" onclick="toggleConsent()">
@@ -592,6 +594,49 @@ a{color:inherit}
     <div class="link" onclick="toggleAuth()" id="auth-toggle" style="margin-top:14px">
       Já tem conta? <b>Entrar</b>
     </div>
+  </div>
+</section>
+
+<!-- ================= RECUPERAR SENHA ================= -->
+<section class="view" id="v-recuperar-senha">
+  <div class="wrap pad-t pad-b">
+    <div class="wordmark" style="margin-bottom:30px">P R I S M A</div>
+    <h2 class="h-lg">Recuperar senha</h2>
+    <p class="p" style="margin:8px 0 26px">Digite seu e-mail. Se tiver conta, mandamos um link pra criar uma senha nova.</p>
+
+    <div class="msg err" id="recsenha-err"></div>
+    <div class="msg ok" id="recsenha-ok"></div>
+
+    <div class="field">
+      <label>E-mail</label>
+      <input class="input" id="i-recsenha-email" type="email" placeholder="nome@empresa.com" autocomplete="email" inputmode="email">
+    </div>
+
+    <div class="spacer"></div>
+    <button class="btn" id="btn-recsenha" onclick="pedirRecuperacaoSenha()">Enviar link</button>
+    <div class="link" onclick="go('auth')" style="margin-top:14px">Lembrou a senha? <b>Entrar</b></div>
+  </div>
+</section>
+
+<!-- ================= NOVA SENHA (chegou pelo link do e-mail) ================= -->
+<section class="view" id="v-nova-senha">
+  <div class="wrap pad-t pad-b">
+    <div class="wordmark" style="margin-bottom:30px">P R I S M A</div>
+    <h2 class="h-lg">Nova senha</h2>
+    <p class="p" style="margin:8px 0 26px">Escolha uma senha nova pra sua conta.</p>
+
+    <div class="msg err" id="novasenha-err"></div>
+
+    <div class="field">
+      <label>Senha nova</label>
+      <div class="pass-wrap">
+        <input class="input" id="i-nova-senha" type="password" placeholder="Mínimo de 8 caracteres" autocomplete="new-password" style="padding-right:56px">
+        <button type="button" class="pass-toggle" id="nova-senha-toggle-btn" onclick="toggleNovaSenha()">Ver</button>
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+    <button class="btn" id="btn-nova-senha" onclick="salvarNovaSenha()">Salvar nova senha</button>
   </div>
 </section>
 
@@ -1238,6 +1283,7 @@ function toggleAuth(){
   document.getElementById('btn-auth').textContent   = isSignup ? 'Criar acesso' : 'Entrar';
   document.getElementById('f-name').style.display   = isSignup ? '' : 'none';
   document.getElementById('f-consent').style.display = isSignup ? '' : 'none';
+  document.getElementById('link-esqueci-senha').style.display = isSignup ? 'none' : '';
   document.getElementById('auth-toggle').innerHTML  = isSignup
     ? 'Já tem conta? <b>Entrar</b>' : 'Ainda não tem conta? <b>Criar acesso</b>';
   showMsg('auth-err','');
@@ -1329,6 +1375,77 @@ async function signOut(){
   S.user = null; S.profile = null;
   clearQuizState();
   go('landing');
+}
+
+/* ---------- Recuperação de senha ---------- */
+function irParaRecuperarSenha(){
+  // Leva o e-mail já digitado na tela de Entrar, se houver: poupa o cliente
+  // de digitar de novo.
+  document.getElementById('i-recsenha-email').value = document.getElementById('i-email').value.trim();
+  showMsg('recsenha-err','');
+  showMsg('recsenha-ok','','ok');
+  go('recuperar-senha');
+}
+
+async function pedirRecuperacaoSenha(){
+  const email = document.getElementById('i-recsenha-email').value.trim();
+  const btn   = document.getElementById('btn-recsenha');
+
+  showMsg('recsenha-err','');
+  showMsg('recsenha-ok','','ok');
+  if (!email) return showMsg('recsenha-err','Digite seu e-mail.');
+  if (!sb) return showMsg('recsenha-err','Conexão com o servidor ainda não configurada.');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>';
+  try {
+    await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+  } catch(e) {
+    // Segue para a mesma mensagem mesmo se der erro: o Supabase não revela se
+    // o e-mail tem conta, e mostrar isso aqui abriria essa brecha.
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Enviar link';
+    showMsg('recsenha-ok','Se esse e-mail tiver conta, chegou um link pra criar uma senha nova. Confere sua caixa de entrada.','ok');
+  }
+}
+
+function toggleNovaSenha(){
+  const inp = document.getElementById('i-nova-senha');
+  const btn = document.getElementById('nova-senha-toggle-btn');
+  const mostrar = inp.type === 'password';
+  inp.type = mostrar ? 'text' : 'password';
+  btn.textContent = mostrar ? 'Ocultar' : 'Ver';
+}
+
+async function salvarNovaSenha(){
+  const pass = document.getElementById('i-nova-senha').value;
+  const btn  = document.getElementById('btn-nova-senha');
+
+  showMsg('novasenha-err','');
+  if (pass.length < 8) return showMsg('novasenha-err','A senha precisa de no mínimo 8 caracteres.');
+  if (!sb) return showMsg('novasenha-err','Conexão com o servidor ainda não configurada.');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>';
+  try {
+    const { error } = await sb.auth.updateUser({ password: pass });
+    if (error) throw error;
+
+    // O link de recuperação já deixou uma sessão válida (é assim que o
+    // Supabase confirma que foi mesmo o dono do e-mail quem clicou). Segue
+    // direto pro app, sem pedir login de novo com a senha que acabou de trocar.
+    const { data } = await sb.auth.getSession();
+    S.user = data?.session?.user || null;
+    await syncEntitlement();
+    await loadProfile();
+    routeAfterLogin();
+  } catch(e) {
+    showMsg('novasenha-err','Não consegui salvar a nova senha. O link pode ter expirado — peça um novo em "Esqueci minha senha".');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Salvar nova senha';
+  }
 }
 
 async function ensureProfile(nome){
@@ -2460,6 +2577,12 @@ function renderLanding(){
     history.replaceState({}, '', location.pathname);
   }
 
+  // Link de "esqueci minha senha": o Supabase estabelece uma sessão temporária
+  // via hash da URL (#...&type=recovery&...) e devolve ela no getSession()
+  // logo abaixo, indistinguível de um login normal. Sem esta checagem, o
+  // cliente cairia direto na galeria em vez de poder escolher a senha nova.
+  const chegouPeloLinkDeRecuperacao = location.hash.includes('type=recovery');
+
   // Enquanto resolve a sessão, fica na splash neutra (v-boot) — mostrar a
   // LP completa e trocar sozinho pra galeria alguns segundos depois parecia
   // bug pra quem já tinha conta.
@@ -2467,6 +2590,10 @@ function renderLanding(){
     const { data } = await sb.auth.getSession();
     if (data?.session?.user){
       S.user = data.session.user;
+      if (chegouPeloLinkDeRecuperacao){
+        go('nova-senha');
+        return;
+      }
       await syncEntitlement();
       try {
         await loadProfile();
