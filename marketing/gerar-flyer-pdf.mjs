@@ -161,7 +161,7 @@ function criarFlyer() {
   doc.fontSize(13);
   doc.font('Helvetica-Bold');
   doc.fillColor(cores.ciano);
-  doc.text('usarprisma.com.br', boxX, boxY + 60, {
+  doc.text('prismaretrato.com.br', boxX, boxY + 60, {
     width: boxWidth,
     align: 'center',
   });

@@ -58,7 +58,7 @@ const emailTemplate = (nomeUsuario) => `
     <div class="section">
       <h2>Próximo passo: enviar suas fotos de referência</h2>
       <p>Para começar a gerar seus retratos, você precisa enviar 8 a 12 fotos suas que sirvam de referência. Anexado neste e-mail você encontra o protocolo completo com todas as orientações.</p>
-      <a href="https://prisma-ten-tau.vercel.app" class="button">Abrir PRISMA</a>
+      <a href="https://prismaretrato.com.br" class="button">Abrir PRISMA</a>
     </div>
 
     <div class="section">

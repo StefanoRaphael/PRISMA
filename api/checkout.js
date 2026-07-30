@@ -20,21 +20,17 @@ const PLANOS = {
 /**
  * Endereço público deste deploy.
  *
- * Era um domínio fixo no código (usarprisma.com.br) com SITE_URL como
- * alternativa. Só que o domínio ainda não aponta para lugar nenhum e o app
- * vive no endereço da Vercel: o notification_url ia para um domínio morto, e
- * um pagamento aprovado nunca viraria crédito porque o webhook não chegava.
- *
- * Deduzir do cabeçalho da própria requisição resolve isso sozinho, em qualquer
- * endereço onde o app esteja: preview, domínio da Vercel ou domínio próprio no
- * dia em que ele entrar no ar. SITE_URL continua tendo a palavra final quando
- * estiver definida.
+ * Deduz do cabeçalho da própria requisição, então funciona em qualquer
+ * endereço onde o app esteja: preview, domínio da Vercel ou o domínio
+ * próprio (prismaretrato.com.br, no ar desde 30/07/2026). SITE_URL continua
+ * tendo a palavra final quando estiver definida. O valor abaixo só entra em
+ * cena se a requisição chegar sem host nenhum, o que não deveria acontecer.
  */
 function enderecoDoSite(req) {
   if (process.env.SITE_URL) return process.env.SITE_URL.trim().replace(/\/+$/, '');
   const host = req.headers['x-forwarded-host'] || req.headers.host;
   if (host) return `https://${host}`;
-  return 'https://prisma-ten-tau.vercel.app';
+  return 'https://prismaretrato.com.br';
 }
 
 export default async function handler(req, res) {
