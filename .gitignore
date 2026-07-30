@@ -9,3 +9,5 @@ node_modules/
 # Logs de envio de e-mail: gerados em runtime
 marketing/follow-up-envio.log
 marketing/follow-up-launchd.log
+marketing/protocolo-guilherme-envio.log
+marketing/protocolo-guilherme-launchd.log

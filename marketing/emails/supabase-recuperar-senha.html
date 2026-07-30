@@ -3,7 +3,10 @@
   PRISMA — template do Supabase Auth: "Reset Password"
 
   Cola isso em Authentication → Email Templates → Reset Password, no painel
-  do Supabase. {{ .ConfirmationURL }} é variável do próprio Supabase.
+  do Supabase. O href do botão usa a variável de confirmação do próprio
+  Supabase (ponto ConfirmationURL entre chaves duplas). Escrita aqui sem as
+  chaves de propósito, senão um replace de preview troca este comentário em
+  vez do href e o botão sai sem link.
 
   A tag charset acima é seguro extra: o painel do Supabase deveria declarar
   UTF-8 sozinho, mas sem ela os acentos correm risco de corromper
