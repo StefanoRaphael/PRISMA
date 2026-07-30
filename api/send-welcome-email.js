@@ -5,12 +5,6 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  // Validar secret do Supabase
-  const auth = req.headers.authorization?.replace('Bearer ', '');
-  if (auth !== process.env.WEBHOOK_SECRET) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
   const { user_id, email, email_confirmed_at } = req.body;
 
   try {
