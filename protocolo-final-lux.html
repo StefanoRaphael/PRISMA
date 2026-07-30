@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Protocolo de Fotos — PRISMA</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @page { size: A4; margin: 0; }
+    @media print {
+      body { margin: 0; padding: 0; background: white; }
+      .page { page-break-after: always; margin: 0; box-shadow: none; background: white; }
+      a { color: #050D18; text-decoration: none; }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #050D18;
+      color: #F2F6FB;
+    }
+
+    .page {
+      width: 210mm;
+      height: 297mm;
+      background: #050D18;
+      padding: 45px 50px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      color: #F2F6FB;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: left;
+      margin-bottom: 40px;
+      padding-bottom: 30px;
+      border-bottom: 2px solid;
+      border-image: linear-gradient(90deg, #FF9160, #FF5FA2, #A96BFF, #4FC9F5, #6FE3C4) 1;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      letter-spacing: 0.25em;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #F2F6FB;
+    }
+
+    .header p {
+      font-size: 11px;
+      color: #A9BCD2;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-weight: 600;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 32px 0 16px 0;
+      color: #F2F6FB;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-left: 4px solid #FF9160;
+      padding-left: 12px;
+    }
+
+    h3 {
+      font-size: 14px;
+      font-weight: 650;
+      margin: 18px 0 10px 0;
+      color: #F2F6FB;
+    }
+
+    p {
+      font-size: 13px;
+      color: #A9BCD2;
+      margin-bottom: 12px;
+      line-height: 1.7;
+    }
+
+    strong { font-weight: 650; color: #F2F6FB; }
+
+    ul, ol {
+      margin-left: 22px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #A9BCD2;
+    }
+
+    li { margin-bottom: 8px; line-height: 1.6; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .example-box {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid;
+      padding: 0;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .example-box.good {
+      border-color: #6FE3C4;
+      background: linear-gradient(135deg, rgba(111, 227, 196, 0.12) 0%, rgba(79, 201, 245, 0.08) 100%);
+    }
+
+    .example-box.bad {
+      border-color: #FF6B9D;
+      background: linear-gradient(135deg, rgba(255, 107, 157, 0.12) 0%, rgba(255, 145, 96, 0.08) 100%);
+    }
+
+    .example-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      padding: 12px 14px 0;
+      display: block;
+    }
+
+    .example-box.good .example-label {
+      color: #6FE3C4;
+    }
+
+    .example-box.bad .example-label {
+      color: #FF6B9D;
+    }
+
+    .example-image {
+      width: 100%;
+      height: 180px;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: #63799A;
+      object-fit: cover;
+      font-weight: 500;
+    }
+
+    .example-text {
+      font-size: 12px;
+      color: #A9BCD2;
+      line-height: 1.5;
+      padding: 12px 14px;
+    }
+
+    .spec-box {
+      background: linear-gradient(135deg, rgba(255, 145, 96, 0.08) 0%, rgba(107, 227, 196, 0.08) 100%);
+      border: 1.5px solid;
+      border-image: linear-gradient(90deg, #FF9160, #6FE3C4) 1;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 18px 0;
+    }
+
+    .spec-header {
+      font-weight: 700;
+      color: #F2F6FB;
+      margin-bottom: 14px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .spec-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .spec-item {
+      font-size: 12.5px;
+      color: #A9BCD2;
+      display: flex;
+      align-items: center;
+      padding: 6px 0;
+    }
+
+    .spec-item:before {
+      content: "✓";
+      color: #4FC9F5;
+      font-weight: 800;
+      margin-right: 8px;
+      font-size: 14px;
+    }
+
+    .checklist {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .check-box {
+      padding: 12px;
+      border-radius: 10px;
+      border-left: 4px solid;
+      font-size: 12px;
+    }
+
+    .check-box.do {
+      background: rgba(111, 227, 196, 0.1);
+      border-left-color: #6FE3C4;
+    }
+
+    .check-box.dont {
+      background: rgba(255, 107, 157, 0.1);
+      border-left-color: #FF6B9D;
+    }
+
+    .check-box strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .check-box.do strong { color: #6FE3C4; }
+    .check-box.dont strong { color: #FF6B9D; }
+    .check-box.do, .check-box.dont { color: #A9BCD2; }
+
+    .angles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .angle-card {
+      background: rgba(255,255,255,0.04);
+      padding: 12px;
+      text-align: center;
+      border-radius: 10px;
+      border: 1.5px solid rgba(255,255,255,0.08);
+      transition: all 0.2s ease;
+    }
+
+    .angle-card:hover {
+      border-color: #4FC9F5;
+      background: rgba(79, 201, 245, 0.08);
+    }
+
+    .card-image {
+      width: 100%;
+      height: 100px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 6px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #63799A;
+      object-fit: cover;
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 650;
+      color: #F2F6FB;
+    }
+
+    .warning-box {
+      background: rgba(255, 95, 162, 0.08);
+      border-left: 4px solid #FF5FA2;
+      padding: 16px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 12.5px;
+    }
+
+    .warning-box strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #FF9B9B;
+    }
+
+    .warning-box { color: #A9BCD2; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 12px;
+      color: #A9BCD2;
+    }
+
+    td {
+      padding: 11px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    td:first-child {
+      font-weight: 650;
+      color: #F2F6FB;
+      width: 35%;
+    }
+
+    .page-number {
+      text-align: center;
+      margin-top: auto;
+      padding-top: 24px;
+      border-top: 1.5px solid rgba(255,255,255,0.1);
+      font-size: 11px;
+      color: #63799A;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: auto;
+      padding-top: 28px;
+      border-top: 1.5px solid rgba(255,255,255,0.1);
+      font-size: 11px;
+    }
+
+    .logo-footer {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      margin-bottom: 6px;
+      color: #F2F6FB;
+    }
+
+    .footer-text {
+      color: #63799A;
+      font-size: 10px;
+      margin: 4px 0;
+    }
+
+    .content { flex: 1; }
+  </style>
+</head>
+<body>
+
+<!-- PAGE 1 -->
+<div class="page">
+  <div class="header">
+    <h1>PRISMA</h1>
+    <p>Protocolo de Fotos de Referência</p>
+  </div>
+
+  <div class="content">
+    <h2>Introdução</h2>
+    <p>Para gerar seus retratos incríveis, você precisa enviar 8-12 fotos suas que sirvam como referência. A qualidade dessas fotos é fundamental — quanto melhor a entrada, melhor será o resultado final.</p>
+
+    <div class="spec-box">
+      <div class="spec-header">Resumo Rápido</div>
+      <div class="spec-grid">
+        <div class="spec-item">Quantidade: 8 a 12 fotos</div>
+        <div class="spec-item">Fundo: Branco ou cinza claro</div>
+        <div class="spec-item">Luz: Natural (perto de janela)</div>
+        <div class="spec-item">Roupas: Básicas, sem logos</div>
+        <div class="spec-item">Posição: Câmera ao nível dos olhos</div>
+        <div class="spec-item">Expressões: Sorrindo, sério, pensativo</div>
+      </div>
+    </div>
+
+    <h2>Posicionamento Profissional</h2>
+    <p><strong>A regra de ouro:</strong> câmera ao nível dos seus olhos, não selfie com braço esticado. Isso remove distorção e garante fidelidade ao seu rosto real.</p>
+
+    <div class="grid-2">
+      <div class="example-box good">
+        <div class="example-label">Correto</div>
+        <img src="https://pikaso.cdnpk.net/private/production/5000445604/render.jpg?token=exp=1785369600~hmac=3f65ba9eb0359bc472a1cd1c93e830d77ef3aa8a6ebddb2c15800a8b401b5fd1" alt="Posicionamento correto" class="example-image" id="img-pos-good">
+        <div class="example-text">Câmera ao nível dos olhos, ~1m de distância. Postura neutra.</div>
+      </div>
+      <div class="example-box bad">
+        <div class="example-label">Incorreto</div>
+        <img src="https://pikaso.cdnpk.net/private/production/5000445567/render.jpg?token=exp=1785369600~hmac=3b7ca7f4ce3ea438138b9c61bee97e81d08a28718661a86dfab6e885bbea1f72" alt="Posicionamento incorreto" class="example-image" id="img-pos-bad">
+        <div class="example-text">Selfie com braço esticado. Distorce o rosto.</div>
+      </div>
+    </div>
+
+    <div class="warning-box">
+      <strong>Se você só tem câmera frontal (selfie)</strong>
+      Tire normalmente, mas VIRE a foto horizontalmente antes de enviar. Seu rosto não fica espelhado no PRISMA, mas ajuda você a se reconhecer melhor.
+    </div>
+
+    <h2>Fundo</h2>
+    <p><strong>Obrigatório: branco ou cinza claro.</strong> Sem texturas, quadros ou objetos atrás.</p>
+
+    <div class="grid-2">
+      <div class="example-box good">
+        <div class="example-label">Ideal</div>
+        <img src="https://pikaso.cdnpk.net/private/production/5000445581/render.jpg?token=exp=1785369600~hmac=a6348b2565a2f315d890b452b09c13485d8228bd28d870de10ae1cf71f9501e6" alt="Fundo ideal" class="example-image" id="img-bg-good">
+        <div class="example-text">Parede branca lisa, limpa e uniforme.</div>
+      </div>
+      <div class="example-box bad">
+        <div class="example-label">Evitar</div>
+        <img src="https://pikaso.cdnpk.net/private/production/5000446620/render.jpg?token=exp=1785369600~hmac=e8a8f21ad8d849b3635ea3be230848394f7daa5508359ec173b89f5e125119cd" alt="Fundo evitar" class="example-image" id="img-bg-bad">
+        <div class="example-text">Fundo com texturas, cortinas ou móveis.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-number">Página 1 de 3</div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page">
+  <div class="header">
+    <h1>PRISMA</h1>
+    <p>Protocolo — Continuação</p>
+  </div>
+
+  <div class="content">
+    <h2>Luz (Crítico)</h2>
+    <p><strong>Sempre luz natural.</strong> Sente-se de frente para uma janela. Sem iluminação artificial, spots ou lâmpadas. Luz homogênea, sem sombras fortes no rosto.</p>
+
+    <div class="spec-box">
+      <div class="spec-header">✓ Natural</div>
+      <p style="margin: 0; font-size: 12px; color: #A9BCD2;">Frente a uma janela. Rosto iluminado de forma homogênea.</p>
+    </div>
+
+    <div class="spec-box" style="border-left: 4px solid #FF6B9D; background: rgba(255, 107, 157, 0.08);">
+      <div class="spec-header" style="color: #FF6B9D;">✗ Evitar</div>
+      <p style="margin: 0; font-size: 12px; color: #A9BCD2;">Luz artificial de cima. Sombras fortes no rosto.</p>
+    </div>
+
+    <h2>Roupas</h2>
+    <p><strong>Simples e neutras.</strong> Camiseta básica, cores neutras (branca, preta, cinza). Sem estampas ou logos.</p>
+
+    <div class="checklist">
+      <div class="check-box do">
+        <strong>Use</strong>
+        Camiseta branca, preta ou cinza
+      </div>
+      <div class="check-box dont">
+        <strong>Evite</strong>
+        Estampas, logos, escritos
+      </div>
+      <div class="check-box do">
+        <strong>Use</strong>
+        Roupas confortáveis, soltas
+      </div>
+      <div class="check-box dont">
+        <strong>Evite</strong>
+        Roupas muito apertadas
+      </div>
+    </div>
+
+    <h2>Ângulos (6+ variações)</h2>
+    <p>Envie fotos com ângulos diferentes. Isso ajuda a IA a entender sua estrutura facial.</p>
+
+    <div class="angles-grid">
+      <div class="angle-card">
+        <div class="card-label">Frontal</div>
+      </div>
+      <div class="angle-card">
+        <div class="card-label">3/4 Esquerda</div>
+      </div>
+      <div class="angle-card">
+        <div class="card-label">3/4 Direita</div>
+      </div>
+      <div class="angle-card">
+        <div class="card-label">Perfil Esquerdo</div>
+      </div>
+      <div class="angle-card">
+        <div class="card-label">Perfil Direito</div>
+      </div>
+      <div class="angle-card">
+        <div class="card-label">Corpo Inteiro</div>
+      </div>
+    </div>
+
+    <h2>Expressões (4+ variações)</h2>
+    <p><strong>Variações de expressão:</strong> sorrindo (dentes), sorriso leve, sério e pensativo.</p>
+  </div>
+
+  <div class="page-number">Página 2 de 3</div>
+</div>
+
+<!-- PAGE 3 -->
+<div class="page">
+  <div class="header">
+    <h1>PRISMA</h1>
+    <p>Protocolo — Finalizando</p>
+  </div>
+
+  <div class="content">
+    <div class="warning-box" style="background: rgba(255, 145, 96, 0.12); border-left: 4px solid #FF9160; margin-top: 24px; margin-bottom: 24px;">
+      <strong style="color: #FF9160;">⚠ Atenção Obrigatória</strong>
+      <p style="margin-top: 8px; margin-bottom: 0; color: #A9BCD2;">
+        O sucesso dos seus retratos depende diretamente da qualidade das fotos de referência. Câmera ao nível dos olhos, fundo branco limpo, luz natural de frente, roupas básicas e ângulos variados são inegociáveis.
+      </p>
+    </div>
+
+    <h2>Espelhamento de Selfie (Se usar câmera frontal)</h2>
+    <p>Se você tirar a foto com a câmera frontal do celular (selfie), seu rosto sai espelhado na imagem. No PRISMA, ele é desespelhado automaticamente. Mas se quiser que o retrato fique mais próximo do que você vê no espelho, vire a foto antes de enviar.</p>
+
+    <h3 style="font-size: 12px; color: #A9BCD2; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 14px; margin-bottom: 8px;">iPhone (iOS)</h3>
+    <ol style="margin-bottom: 16px;">
+      <li>Abra a galeria (app Fotos)</li>
+      <li>Toque na foto que quer virar</li>
+      <li>Toque em "Editar" (lápis no canto superior direito)</li>
+      <li>Toque no ícone de ferramentas (≡) no canto inferior direito</li>
+      <li>Toque em "Virar" (ícone de setas horizontais ↔)</li>
+      <li>Toque em "Pronto" para salvar</li>
+    </ol>
+
+    <h3 style="font-size: 12px; color: #A9BCD2; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 12px; margin-bottom: 8px;">Android</h3>
+    <ol style="margin-bottom: 12px;">
+      <li>Abra a galeria (Google Fotos ou Galeria Samsung)</li>
+      <li>Toque na foto e segure, depois toque em "Editar" (lápis)</li>
+      <li>Procure por "Virar", "Espelhar" ou ícone de setas (⇄)</li>
+      <li>Toque para virar horizontalmente</li>
+      <li>Toque em "Salvar" ou "Concluído"</li>
+    </ol>
+
+    <div class="warning-box" style="background: rgba(79, 201, 245, 0.08); border-left: 4px solid #4FC9F5;">
+      <strong style="color: #4FC9F5;">Dúvida?</strong>
+      <p style="margin-top: 6px; margin-bottom: 0;">Se você não tem certeza como virar, envie as fotos normalmente. A IA vai reconhecer seu rosto do mesmo jeito. Desespelhamos automaticamente.</p>
+    </div>
+
+    <h2>Resumo: O Que Enviar</h2>
+    <div class="spec-box">
+      <table>
+        <tr>
+          <td>Total de fotos</td>
+          <td>8 a 12 (qualidade > quantidade)</td>
+        </tr>
+        <tr>
+          <td>Rosto (closeup)</td>
+          <td>6 fotos com ângulos e expressões variadas</td>
+        </tr>
+        <tr>
+          <td>Corpo inteiro</td>
+          <td>3 a 4 fotos (frontal, 3/4, perfil)</td>
+        </tr>
+        <tr>
+          <td>Fundo</td>
+          <td>Branco ou cinza claro, limpo</td>
+        </tr>
+        <tr>
+          <td>Iluminação</td>
+          <td>Natural, perto de janela</td>
+        </tr>
+        <tr>
+          <td>Roupas</td>
+          <td>Camiseta básica, sem logos</td>
+        </tr>
+        <tr>
+          <td>Posicionamento</td>
+          <td>Câmera ao nível dos olhos (não selfie)</td>
+        </tr>
+      </table>
+    </div>
+
+    <h2>Próximos Passos</h2>
+    <ol>
+      <li>Reúna suas 8-12 fotos seguindo este protocolo</li>
+      <li>Abra o app PRISMA e faça upload na tela de referência</li>
+      <li>Responda o questionário de arquétipos (2 minutos)</li>
+      <li>Escolha a ocasião e descreva como você imagina a foto</li>
+      <li>Gere seus retratos! A IA processará em alguns minutos</li>
+    </ol>
+
+    <div class="warning-box" style="background: rgba(79, 201, 245, 0.08); border-left: 4px solid #4FC9F5; margin-top: 24px;">
+      <strong style="color: #4FC9F5;">Dúvida?</strong>
+      <p style="margin-top: 6px; margin-bottom: 0;">Responda este e-mail ou envie uma mensagem diretamente no app PRISMA. Estamos aqui para ajudar.</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="logo-footer">P R I S M A</div>
+    <div class="footer-text">Retratos com o seu rosto de verdade.</div>
+    <div class="footer-text">Segurança: suas fotos nunca são publicadas nem compartilhadas.</div>
+  </div>
+
+  <div class="page-number">Página 3 de 3</div>
+</div>
+
+</body>
+</html>
