@@ -8,21 +8,17 @@ export default async function handler(req, res) {
   const { user_id, email, email_confirmed_at } = req.body;
 
   try {
-    console.log('[PRISMA-EMAIL] Enviando pra:', email);
-    console.log('[PRISMA-EMAIL] RESEND_API_KEY existe?', !!process.env.RESEND_API_KEY);
-
-    const response = await resend.emails.send({
+    await resend.emails.send({
       from: 'contato@prismaretrato.com.br',
       to: email,
       subject: 'Bem-vindo ao PRISMA • Guia de Fotos + Instruções',
       html: getWelcomeEmailTemplate(user_id, email)
     });
 
-    console.log('[PRISMA-EMAIL] Resposta Resend:', response);
-    res.status(200).json({ success: true, user_id, resend_id: response.id });
+    res.status(200).json({ success: true, user_id });
   } catch (err) {
-    console.error('[PRISMA-EMAIL] Erro:', err);
-    res.status(500).json({ error: err.message, stack: err.stack });
+    console.error('Email send error:', err);
+    res.status(500).json({ error: err.message });
   }
 }
 
@@ -59,9 +55,7 @@ function getWelcomeEmailTemplate(userId, email) {
           </tr>
         </table>
         <div class="header">
-          <h1 style="font-size: 28px; letter-spacing: 0.25em; font-weight: 700; margin: 0; color: #F2F6FB;">
-            <span style="color: #FF9160;">P</span><span style="color: #FF5FA2;">R</span><span style="color: #A96BFF;">I</span><span style="color: #4FC9F5;">S</span><span style="color: #6FE3C4;">M</span><span style="color: #FF9160;">A</span>
-          </h1>
+          <h1>PRISMA</h1>
         </div>
         <div class="content">
           <h2>Bem-vindo ao PRISMA</h2>
