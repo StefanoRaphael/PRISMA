@@ -7,7 +7,8 @@
     "api/status.js":     { "maxDuration": 30 },
     "api/checkout.js":   { "maxDuration": 30 },
     "api/webhook.js":    { "maxDuration": 30, "includeFiles": "marketing/emails/pagamento-aprovado.html" },
-    "api/avaliar-referencia.js": { "maxDuration": 30 }
+    "api/avaliar-referencia.js": { "maxDuration": 30 },
+    "api/send-welcome-email.js": { "maxDuration": 30, "includeFiles": "{marketing/emails/boas-vindas.html,PROTOCOLO-FOTOS-PRISMA.pdf}" }
   },
   "headers": [
     {
