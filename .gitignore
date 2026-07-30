@@ -1,2 +1,11 @@
 node_modules/
 .DS_Store
+
+# Chaves e segredos: nunca versionar. O .env.example fica, com valores vazios.
+.env
+.env.local
+.env.*.local
+
+# Logs de envio de e-mail: gerados em runtime
+marketing/follow-up-envio.log
+marketing/follow-up-launchd.log
