@@ -1,0 +1,134 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pagamento aprovado — PRISMA</title>
+
+<!--
+  PRISMA — e-mail de pagamento aprovado / plano ativado
+
+  Este template ainda NÃO está ligado a nenhum envio automático. Hoje
+  api/webhook.js só grava o plano e os créditos no banco quando o Mercado
+  Pago aprova — não dispara e-mail nenhum. Pra usar isto de verdade,
+  falta decidir onde ele é chamado (dentro do próprio webhook, com Resend)
+  e resolver o problema de fuso/robustez de webhook (ele já roda sem
+  sessão de usuário, então o disparo teria que ser assíncrono e não pode
+  travar a resposta 200 que o Mercado Pago espera rápido).
+
+  Placeholders: {{PLANO}}, {{CREDITOS}}, {{VALIDADE}}.
+-->
+
+<div style="margin:0;padding:0;background-color:#050D18;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#050D18;margin:0;padding:0;">
+<tr><td align="center" style="padding:32px 16px;">
+
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background-color:#0A1A2F;border-radius:20px;overflow:hidden;">
+
+  <tr>
+    <td style="height:4px;line-height:4px;font-size:0;background-color:#A96BFF;background-image:linear-gradient(90deg,#FF9160,#FF5FA2,#A96BFF,#4FC9F5,#6FE3C4);">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td align="center" style="padding:38px 32px 0 32px;">
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:6px;">
+        <span style="color:#F2F6FB;">P</span><span style="color:#F2F6FB;">R</span><span style="color:#FF9160;">I</span><span style="color:#FF5FA2;">S</span><span style="color:#A96BFF;">M</span><span style="color:#4FC9F5;">A</span>
+      </div>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="padding:30px 32px 0 32px;">
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#6FE3C4;">
+        Pagamento aprovado
+      </div>
+      <h1 style="margin:14px 0 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;font-size:30px;line-height:1.2;font-weight:700;letter-spacing:-0.8px;color:#F2F6FB;">
+        Seu plano {{PLANO}} está ativo.
+      </h1>
+      <div style="height:2px;width:52px;margin:22px 0 0 0;font-size:0;line-height:2px;background-color:#A96BFF;background-image:linear-gradient(90deg,#FF9160,#FF5FA2,#A96BFF,#4FC9F5,#6FE3C4);">&nbsp;</div>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="padding:26px 32px 0 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.6;color:#A9BCD2;">
+      <p style="margin:0;">
+        Recebemos a confirmação do Mercado Pago e seus créditos já estão liberados. Pode gerar retratos agora.
+      </p>
+    </td>
+  </tr>
+
+  <!-- Resumo do plano -->
+  <tr>
+    <td style="padding:30px 32px 0 32px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0F2540;border-radius:14px;">
+        <tr>
+          <td style="padding:24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#6FE3C4;">
+              Resumo do plano
+            </div>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:16px;">
+              <tr>
+                <td style="padding:10px 0;border-top:1px solid rgba(255,255,255,0.08);font-size:14px;color:#63799A;">Plano</td>
+                <td align="right" style="padding:10px 0;border-top:1px solid rgba(255,255,255,0.08);font-size:15px;font-weight:650;color:#F2F6FB;">{{PLANO}}</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0;border-top:1px solid rgba(255,255,255,0.08);font-size:14px;color:#63799A;">Créditos disponíveis</td>
+                <td align="right" style="padding:10px 0;border-top:1px solid rgba(255,255,255,0.08);font-size:15px;font-weight:650;color:#F2F6FB;">{{CREDITOS}}</td>
+              </tr>
+              <tr>
+                <td style="padding:10px 0;border-top:1px solid rgba(255,255,255,0.08);font-size:14px;color:#63799A;">Válido até</td>
+                <td align="right" style="padding:10px 0;border-top:1px solid rgba(255,255,255,0.08);font-size:15px;font-weight:650;color:#F2F6FB;">{{VALIDADE}}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- Botão -->
+  <tr>
+    <td align="center" style="padding:34px 32px 0 32px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td align="center" style="border-radius:100px;background-color:#A96BFF;background-image:linear-gradient(90deg,#FF9160,#FF5FA2,#A96BFF,#4FC9F5,#6FE3C4);">
+            <a href="https://prismaretrato.com.br" style="display:inline-block;padding:17px 40px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;font-size:16px;font-weight:650;letter-spacing:-0.2px;color:#0B0714;text-decoration:none;border-radius:100px;">
+              Gerar meus retratos
+            </a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- Assinatura -->
+  <tr>
+    <td style="padding:32px 32px 0 32px;">
+      <div style="height:1px;background-color:rgba(255,255,255,0.08);font-size:0;line-height:1px;">&nbsp;</div>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:24px;">
+        <tr>
+          <td style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;font-size:15px;line-height:1.6;color:#A9BCD2;">
+            <p style="margin:0;">
+              Qualquer dúvida sobre cobrança ou créditos, responde este e-mail direto pra mim.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center" style="padding:26px 32px 34px 32px;">
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:1.6;color:#63799A;">
+        PRISMA<br>
+        Você tem mais de um lado. Mostre todos.
+      </div>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="height:4px;line-height:4px;font-size:0;background-color:#A96BFF;background-image:linear-gradient(90deg,#FF9160,#FF5FA2,#A96BFF,#4FC9F5,#6FE3C4);">&nbsp;</td>
+  </tr>
+
+</table>
+
+</td></tr>
+</table>
+</div>
