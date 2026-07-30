@@ -38,7 +38,11 @@ echo "node: $NODE"
 
 # --teste manda para um destinatário só, que é exatamente o caso aqui.
 # --enviar dispararia para a lista dos 4 convidados.
-"$NODE" marketing/send-protocolo-email.mjs --teste "$DESTINO"
+#
+# --perfil cliente: ele já usa o produto, então o e-mail não o recebe como
+# se fosse a primeira vez. Assunto "seu protocolo de fotos" em vez de
+# "bem-vindo", e a abertura vai direto ao que ele não tem.
+"$NODE" marketing/send-protocolo-email.mjs --teste "$DESTINO" --perfil cliente --nome Guilherme
 STATUS=$?
 
 if [ $STATUS -eq 0 ]; then

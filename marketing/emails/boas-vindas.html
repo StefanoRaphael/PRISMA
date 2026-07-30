@@ -9,11 +9,16 @@
   600px, gradiente em cor sólida (não em texto — não renderiza no Gmail nem
   no Outlook).
 
-  O H1 logo abaixo do wordmark tem um placeholder de título (chave dupla,
-  TITULO maiúsculo): troca pela frase inteira antes de enviar — "Nome, sua
-  conta no PRISMA está pronta." quando há nome, ou "Sua conta no PRISMA está
-  pronta." quando não há (evita vírgula solta). Escrito assim no comentário,
-  sem as chaves, para não colidir com a substituição de string do script.
+  Três trechos são preenchidos por marketing/send-protocolo-email.mjs antes
+  do envio: o rótulo acima do título, o próprio título e os parágrafos de
+  abertura. Cada marcador aparece UMA única vez no arquivo, e os nomes deles
+  não são repetidos neste comentário de propósito: replace de string troca só
+  a primeira ocorrência, então um marcador citado aqui em cima seria
+  substituído no lugar do de verdade.
+
+  O script tem dois modos: cliente novo (rótulo de boas-vindas, com a
+  explicação do que é o PRISMA) e cliente que já está dentro (rótulo de
+  protocolo, direto ao ponto, sem reapresentar o produto).
 -->
 
 <div style="margin:0;padding:0;background-color:#050D18;">
@@ -40,7 +45,7 @@
   <tr>
     <td style="padding:30px 32px 0 32px;">
       <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FF9160;">
-        Bem-vindo
+        ROTULO_AQUI
       </div>
       <h1 style="margin:14px 0 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;font-size:30px;line-height:1.2;font-weight:700;letter-spacing:-0.8px;color:#F2F6FB;">
         {{TITULO}}
@@ -52,12 +57,7 @@
   <!-- O que é o PRISMA -->
   <tr>
     <td style="padding:26px 32px 0 32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.6;color:#A9BCD2;">
-      <p style="margin:0 0 18px 0;">
-        O PRISMA gera retratos profissionais com o seu rosto de verdade, em qualquer ocasião: executivo, editorial, viagem, esporte, noite, e mais. Sem sessão de fotos, sem estúdio, sem agenda.
-      </p>
-      <p style="margin:0;">
-        A entrada é um conjunto de fotos suas, e é dessa entrada que sai a qualidade do resultado. Antes de gerar o primeiro retrato, vale ler o que vem a seguir.
-      </p>
+      ABERTURA_AQUI
     </td>
   </tr>
 
