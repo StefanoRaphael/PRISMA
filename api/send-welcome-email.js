@@ -8,17 +8,21 @@ export default async function handler(req, res) {
   const { user_id, email, email_confirmed_at } = req.body;
 
   try {
-    await resend.emails.send({
+    console.log('[PRISMA-EMAIL] Enviando pra:', email);
+    console.log('[PRISMA-EMAIL] RESEND_API_KEY existe?', !!process.env.RESEND_API_KEY);
+
+    const response = await resend.emails.send({
       from: 'contato@prismaretrato.com.br',
       to: email,
       subject: 'Bem-vindo ao PRISMA • Guia de Fotos + Instruções',
       html: getWelcomeEmailTemplate(user_id, email)
     });
 
-    res.status(200).json({ success: true, user_id });
+    console.log('[PRISMA-EMAIL] Resposta Resend:', response);
+    res.status(200).json({ success: true, user_id, resend_id: response.id });
   } catch (err) {
-    console.error('Email send error:', err);
-    res.status(500).json({ error: err.message });
+    console.error('[PRISMA-EMAIL] Erro:', err);
+    res.status(500).json({ error: err.message, stack: err.stack });
   }
 }
 
