@@ -51,7 +51,7 @@ function getWelcomeEmailTemplate(userId, email) {
           <h2>Bem-vindo ao PRISMA</h2>
           <p>Seu cadastro foi confirmado com sucesso.</p>
           <p>Em breve você receberá um e-mail com o protocolo completo de fotos de referência. Siga o guia à risca para garantir retratos de qualidade premium.</p>
-          <p>Qualquer dúvida, responda este e-mail ou abra o PRISMA.</p>
+          <p>Qualquer dúvida, chame o suporte dentro do PRISMA.</p>
         </div>
         <div class="footer">
           <div class="logo-footer">P R I S M A</div>
