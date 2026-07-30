@@ -1,0 +1,34 @@
+{
+  "name": "PRISMA",
+  "short_name": "PRISMA",
+  "description": "Retratos profissionais gerados a partir das suas fotos de referência.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050D18",
+  "theme_color": "#050D18",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/assets/icons/favicon-64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
