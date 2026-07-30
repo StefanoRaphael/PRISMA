@@ -1,79 +1,94 @@
-import { Resend } from 'resend';
+/**
+ * PRISMA — POST /api/send-welcome-email
+ *
+ * Chamado por um Database Webhook do Supabase, configurado em Database →
+ * Webhooks para disparar em INSERT na tabela public.perfis. O gatilho
+ * ao_criar_usuario (supabase.sql) cria exatamente UMA linha em perfis por
+ * conta nova, com "on conflict (id) do nothing" — então este endpoint só
+ * roda uma vez por cliente, no exato momento do cadastro.
+ *
+ * Segurança: Database Webhooks do Supabase não assinam a requisição, então
+ * qualquer um que descobrisse a URL poderia mandar POST forjado. A defesa é
+ * um cabeçalho secreto configurado nos dois lados (aqui e na tela do
+ * webhook no Supabase) — sem ele, qualquer POST é recusado antes de tocar
+ * em e-mail ou banco.
+ *
+ * Best effort, igual ao e-mail de pagamento: o cadastro do cliente já foi
+ * concluído antes deste código rodar, então uma falha aqui nunca deveria
+ * impedir o cadastro nem aparecer pro cliente. Loga e sai.
+ */
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { admin } from '../lib/auth.js';
+import { montarEmailBoasVindas, lerProtocoloPdf } from '../marketing/lib-boas-vindas.mjs';
+
+const REMETENTE = 'PRISMA <contato@prismaretrato.com.br>';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { user_id, email, email_confirmed_at } = req.body;
+  // Dois nomes aceitos porque o projeto já teve as duas variáveis na Vercel
+  // em momentos diferentes. Aceitar as duas evita que o e-mail pare de sair
+  // por causa de qual delas está configurada hoje.
+  const segredosAceitos = [
+    process.env.WELCOME_WEBHOOK_SECRET,
+    process.env.WEBHOOK_SECRET
+  ].filter(Boolean);
+
+  if (!segredosAceitos.length) {
+    console.error('[send-welcome-email] nenhum segredo de webhook no ambiente');
+    return res.status(200).end();
+  }
+  if (!segredosAceitos.includes(req.headers['x-prisma-webhook-secret'])) {
+    console.error('[send-welcome-email] segredo do webhook não confere');
+    return res.status(401).end();
+  }
+
+  // Confirma que é mesmo o evento esperado — defesa extra caso o webhook no
+  // painel do Supabase seja apontado, por engano, para outra tabela ou
+  // evento (UPDATE, por exemplo, que dispararia de novo a cada pagamento).
+  const { type, table, record } = req.body || {};
+  if (type !== 'INSERT' || table !== 'perfis' || !record?.id) {
+    console.error('[send-welcome-email] payload inesperado', { type, table, id: record?.id });
+    return res.status(200).end();
+  }
 
   try {
-    await resend.emails.send({
-      from: 'contato@prismaretrato.com.br',
-      to: email,
-      subject: 'Bem-vindo ao PRISMA • Guia de Fotos + Instruções',
-      html: getWelcomeEmailTemplate(user_id, email)
+    const sb = admin();
+    const { data, error } = await sb.auth.admin.getUserById(record.id);
+    if (error || !data?.user?.email) {
+      console.error('[send-welcome-email] não achei e-mail do usuário', record.id, error);
+      return res.status(200).end();
+    }
+
+    const { assunto, html } = montarEmailBoasVindas(record.nome || '', 'novo');
+    const protocoloPdf = lerProtocoloPdf();
+
+    const resp = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${process.env.RESEND_API_KEY_PRISMA || process.env.RESEND_API_KEY}`
+      },
+      body: JSON.stringify({
+        from: REMETENTE,
+        to: [data.user.email],
+        subject: assunto,
+        html,
+        attachments: [{
+          filename: 'PRISMA-Protocolo-de-Fotos.pdf',
+          content: protocoloPdf.toString('base64'),
+          contentType: 'application/pdf'
+        }]
+      })
     });
 
-    res.status(200).json({ success: true, user_id });
-  } catch (err) {
-    console.error('Email send error:', err);
-    res.status(500).json({ error: err.message });
+    if (!resp.ok) {
+      const corpo = await resp.json().catch(() => ({}));
+      console.error('[send-welcome-email] Resend recusou o envio', resp.status, corpo);
+    }
+  } catch (e) {
+    console.error('[send-welcome-email]', e);
   }
-}
 
-function getWelcomeEmailTemplate(userId, email) {
-  return `
-    <html lang="pt-BR">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <style>
-        body { margin: 0; padding: 0; background: #050D18; color: #F2F6FB; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        .container { max-width: 600px; margin: 0 auto; background: #050D18; }
-        .header { text-align: left; padding: 20px; }
-        .header h1 { font-size: 28px; letter-spacing: 0.25em; font-weight: 700; margin: 0 0 16px 0; color: #F2F6FB; }
-        .spectrum-bar { height: 3px; background: linear-gradient(90deg, #FF9160, #FF5FA2, #A96BFF, #4FC9F5, #6FE3C4); margin-bottom: 20px; }
-        .content { padding: 0 20px 20px 20px; }
-        h2 { font-size: 16px; font-weight: 700; margin: 18px 0 12px 0; color: #F2F6FB; text-transform: uppercase; letter-spacing: 0.08em; padding-left: 0; border-left: 4px solid #FF9160; padding-left: 12px; }
-        p { font-size: 14px; color: #A9BCD2; margin-bottom: 14px; line-height: 1.6; }
-        .footer { text-align: center; margin-top: 30px; padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .logo-footer { font-size: 12px; font-weight: 700; letter-spacing: 0.15em; color: #F2F6FB; margin-bottom: 6px; }
-        .footer-text { font-size: 10px; color: #63799A; margin: 4px 0; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <!-- Spectrum Bar (tabela com cores sólidas) -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="background: #050D18;">
-          <tr>
-            <td width="20%" style="background: #FF9160; height: 3px; padding: 0; margin: 0;"></td>
-            <td width="20%" style="background: #FF5FA2; height: 3px; padding: 0; margin: 0;"></td>
-            <td width="20%" style="background: #A96BFF; height: 3px; padding: 0; margin: 0;"></td>
-            <td width="20%" style="background: #4FC9F5; height: 3px; padding: 0; margin: 0;"></td>
-            <td width="20%" style="background: #6FE3C4; height: 3px; padding: 0; margin: 0;"></td>
-          </tr>
-        </table>
-        <div class="header">
-          <svg width="200" height="50" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 16px;">
-            <text x="10" y="35" font-size="32" font-weight="700" letter-spacing="4" font-family="Arial, sans-serif">
-              <tspan fill="#FF9160">P</tspan><tspan fill="#FF5FA2">R</tspan><tspan fill="#A96BFF">I</tspan><tspan fill="#4FC9F5">S</tspan><tspan fill="#6FE3C4">M</tspan><tspan fill="#FF9160">A</tspan>
-            </text>
-          </svg>
-        </div>
-        <div class="content">
-          <h2>Bem-vindo ao PRISMA</h2>
-          <p>Seu cadastro foi confirmado com sucesso.</p>
-          <p>Em breve você receberá um e-mail com o protocolo completo de fotos de referência. Siga o guia à risca para garantir retratos de qualidade premium.</p>
-          <p>Qualquer dúvida, chame o suporte dentro do PRISMA.</p>
-        </div>
-        <div class="footer">
-          <div class="logo-footer">P R I S M A</div>
-          <div class="footer-text">Retratos com o seu rosto de verdade.</div>
-          <div class="footer-text">Segurança: suas fotos nunca são publicadas nem compartilhadas.</div>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
+  return res.status(200).end();
 }

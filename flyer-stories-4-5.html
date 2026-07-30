@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRISMA — Instagram Story</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: #050D18;
+    }
+
+    .story {
+      width: 1080px;
+      height: 1920px;
+      background: linear-gradient(135deg, #050D18 0%, #0d1620 100%);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decoração de fundo */
+    .story::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      right: -20%;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(79, 201, 245, 0.12), transparent);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .story::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -15%;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(255, 145, 96, 0.1), transparent);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      padding: 80px 60px;
+      text-align: center;
+    }
+
+    .top-section {
+      margin-bottom: 40px;
+    }
+
+    .logo {
+      font-size: 52px;
+      font-weight: 800;
+      letter-spacing: 8px;
+      background: linear-gradient(90deg, #FF9160 0%, #FF5FA2 25%, #A96BFF 50%, #4FC9F5 75%, #6FE3C4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 24px;
+    }
+
+    .tagline {
+      font-size: 18px;
+      color: #A9BCD2;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .middle-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 28px;
+      margin: 60px 0;
+    }
+
+    .headline {
+      font-size: 54px;
+      font-weight: 800;
+      line-height: 1.1;
+      color: #F2F6FB;
+      margin-bottom: 16px;
+    }
+
+    .highlight {
+      background: linear-gradient(90deg, #FF9160, #FF5FA2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subheadline {
+      font-size: 20px;
+      color: #A9BCD2;
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #FF9160, #FF5FA2);
+      color: #050D18;
+      padding: 20px 50px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-decoration: none;
+      margin-top: 24px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(255, 145, 96, 0.3);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 48px rgba(255, 145, 96, 0.4);
+    }
+
+    .bottom-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .plans-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .plan-badge {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(79, 201, 245, 0.3);
+      border-radius: 8px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+    }
+
+    .plan-badge.highlighted {
+      border: 2px solid #FF9160;
+      background: rgba(255, 145, 96, 0.12);
+    }
+
+    .plan-name {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #A9BCD2;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .plan-price {
+      font-size: 24px;
+      font-weight: 800;
+      color: #F2F6FB;
+      margin-bottom: 4px;
+    }
+
+    .plan-price small {
+      font-size: 12px;
+      color: #7a8a9e;
+    }
+
+    .plan-feature {
+      font-size: 10px;
+      color: #7a8a9e;
+      line-height: 1.4;
+    }
+
+    .trust-text {
+      font-size: 11px;
+      color: #7a8a9e;
+      letter-spacing: 0.5px;
+      line-height: 1.5;
+    }
+
+    .trust-text strong {
+      color: #6FE3C4;
+    }
+  </style>
+</head>
+<body>
+
+<div class="story">
+  <div class="content">
+
+    <!-- TOPO -->
+    <div class="top-section">
+      <div class="logo">PRISMA</div>
+      <div class="tagline">Fotógrafo 24/7</div>
+    </div>
+
+    <!-- MEIO — VALOR PRINCIPAL -->
+    <div class="middle-section">
+      <div>
+        <h1 class="headline">Você tem<br><span class="highlight">mais de um lado</span></h1>
+        <p class="subheadline">Retratos profissionais em 12 contextos diferentes.<br>Sem agendamento, sem atraso.</p>
+      </div>
+      <div class="cta-button">Começar agora</div>
+    </div>
+
+    <!-- RODAPÉ — PLANOS + CONFIANÇA -->
+    <div class="bottom-section">
+      <div class="plans-row">
+        <div class="plan-badge">
+          <div class="plan-name">Starter</div>
+          <div class="plan-price">R$39</div>
+          <div class="plan-feature">1 ocasião<br>5 retratos</div>
+        </div>
+        <div class="plan-badge">
+          <div class="plan-name">Básico</div>
+          <div class="plan-price">R$99<small>/mês</small></div>
+          <div class="plan-feature">4 ocasiões<br>20 retratos</div>
+        </div>
+        <div class="plan-badge highlighted">
+          <div class="plan-name">Pro</div>
+          <div class="plan-price">R$199<small>/mês</small></div>
+          <div class="plan-feature">12 ocasiões<br>60 retratos</div>
+        </div>
+      </div>
+
+      <div class="trust-text">
+        <strong>Segurança garantida:</strong> suas fotos nunca são publicadas.<br>Controle total, sempre.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

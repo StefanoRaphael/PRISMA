@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRISMA — Story de Curiosidade</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #050D18;
+    }
+
+    .story {
+      width: 1080px;
+      height: 1920px;
+      background: linear-gradient(135deg, #050D18 0%, #0a1520 50%, #050D18 100%);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Glow effects */
+    .glow-1 {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255, 145, 96, 0.15), transparent);
+      border-radius: 50%;
+      top: -100px;
+      right: -100px;
+      pointer-events: none;
+    }
+
+    .glow-2 {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(79, 201, 245, 0.1), transparent);
+      border-radius: 50%;
+      bottom: -50px;
+      left: -50px;
+      pointer-events: none;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 60px 50px;
+    }
+
+    /* ===== PRISMA LOGO VISUAL ===== */
+    .logo-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 140px;
+      margin-bottom: 20px;
+    }
+
+    .prisma-icon {
+      width: 120px;
+      height: 120px;
+      position: relative;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 8px 24px rgba(79, 201, 245, 0.2));
+    }
+
+    /* ===== HEADLINE ===== */
+    .headline {
+      font-size: 62px;
+      font-weight: 900;
+      line-height: 1.1;
+      color: #F2F6FB;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .highlight {
+      background: linear-gradient(90deg, #FF9160 0%, #FF5FA2 30%, #A96BFF 60%, #4FC9F5 85%, #6FE3C4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+    }
+
+    /* ===== SUBHEADLINE — CURIOSIDADE ===== */
+    .subheadline {
+      font-size: 24px;
+      color: #A9BCD2;
+      text-align: center;
+      margin-bottom: 40px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* ===== EXPLICAÇÃO DO QUE É ===== */
+    .what-is {
+      background: linear-gradient(135deg, rgba(79, 201, 245, 0.08), rgba(111, 227, 196, 0.05));
+      border: 1.5px solid rgba(79, 201, 245, 0.25);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      backdrop-filter: blur(10px);
+    }
+
+    .what-is-title {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #4FC9F5;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .what-is-text {
+      font-size: 18px;
+      color: #F2F6FB;
+      line-height: 1.5;
+      font-weight: 600;
+    }
+
+    /* ===== COMO FUNCIONA ===== */
+    .how-it-works {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+
+    .step {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(79, 201, 245, 0.2);
+      border-radius: 12px;
+      padding: 16px 12px;
+      text-align: center;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #FF9160, #FF5FA2);
+      color: #050D18;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      margin: 0 auto 10px;
+    }
+
+    .step-label {
+      font-size: 13px;
+      color: #A9BCD2;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    /* ===== PRA QUEM É ===== */
+    .who-is {
+      margin-bottom: 32px;
+    }
+
+    .who-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #7a8a9e;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .tag {
+      background: linear-gradient(135deg, rgba(255, 145, 96, 0.12), rgba(255, 95, 162, 0.08));
+      border: 1px solid rgba(255, 145, 96, 0.3);
+      color: #FFB3A0;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* ===== CTA ===== */
+    .cta-section {
+      margin-top: auto;
+      text-align: center;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #FF9160, #FF5FA2);
+      color: #050D18;
+      padding: 18px 50px;
+      border-radius: 14px;
+      font-size: 20px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 12px 32px rgba(255, 145, 96, 0.3);
+      margin-bottom: 20px;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(255, 145, 96, 0.4);
+    }
+
+    .footer-text {
+      font-size: 12px;
+      color: #7a8a9e;
+      line-height: 1.5;
+    }
+
+    .footer-text strong {
+      color: #6FE3C4;
+    }
+  </style>
+</head>
+<body>
+
+<div class="story">
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
+
+  <div class="content">
+
+    <!-- LOGO VISUAL DO PRISMA -->
+    <div class="logo-visual">
+      <div class="prisma-icon">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <!-- Prisma com spectrum -->
+          <defs>
+            <linearGradient id="prismGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#FF9160;stop-opacity:1" />
+              <stop offset="25%" style="stop-color:#FF5FA2;stop-opacity:1" />
+              <stop offset="50%" style="stop-color:#A96BFF;stop-opacity:1" />
+              <stop offset="75%" style="stop-color:#4FC9F5;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#6FE3C4;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+
+          <!-- Prisma triangular (top) -->
+          <polygon points="100,20 160,140 40,140" fill="url(#prismGradient)" opacity="0.8"/>
+
+          <!-- Prisma (bottom left) -->
+          <polygon points="40,140 70,180 10,180" fill="url(#prismGradient)" opacity="0.6"/>
+
+          <!-- Prisma (bottom right) -->
+          <polygon points="160,140 190,180 130,180" fill="url(#prismGradient)" opacity="0.6"/>
+
+          <!-- Light ray effect -->
+          <line x1="100" y1="20" x2="100" y2="60" stroke="url(#prismGradient)" stroke-width="2" opacity="0.7"/>
+          <line x1="100" y1="60" x2="80" y2="140" stroke="url(#prismGradient)" stroke-width="1.5" opacity="0.5"/>
+          <line x1="100" y1="60" x2="120" y2="140" stroke="url(#prismGradient)" stroke-width="1.5" opacity="0.5"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- HEADLINE PRINCIPAL -->
+    <h1 class="headline">
+      Retratos que<br>
+      <span class="highlight">vendem seu rosto</span>
+    </h1>
+
+    <!-- SUBHEADLINE — CURIOSIDADE -->
+    <p class="subheadline">
+      Sem agendamento. Sem atraso. Profissional em minutos.
+    </p>
+
+    <!-- O QUE É PRISMA -->
+    <div class="what-is">
+      <div class="what-is-title">✨ O que é</div>
+      <div class="what-is-text">
+        IA que reconhece SEU rosto e gera retratos 110% fiéis em qualquer contexto que você imaginar.
+      </div>
+    </div>
+
+    <!-- COMO FUNCIONA -->
+    <div class="how-it-works">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-label">Envie suas fotos</div>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-label">Descreva a cena</div>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-label">Receba em minutos</div>
+      </div>
+    </div>
+
+    <!-- PRA QUEM É -->
+    <div class="who-is">
+      <div class="who-title">Ideal para</div>
+      <div class="tags">
+        <div class="tag">Executivos</div>
+        <div class="tag">Influencers</div>
+        <div class="tag">Personal</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section">
+      <button class="cta-button">Começar agora</button>
+      <div class="footer-text">
+        <strong>Segurança:</strong> suas fotos nunca são publicadas.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

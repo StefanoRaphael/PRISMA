@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRISMA — Story Criativo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #050D18;
+    }
+
+    .story {
+      width: 1080px;
+      height: 1920px;
+      background: linear-gradient(135deg, #050D18 0%, #0d1620 100%);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .accent {
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(255, 145, 96, 0.2), transparent);
+      border-radius: 50%;
+      top: -150px;
+      right: -150px;
+      pointer-events: none;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 80px 50px;
+      justify-content: space-between;
+    }
+
+    /* ===== HOOK — PARTE SUPERIOR ===== */
+    .hook {
+      margin-bottom: 40px;
+    }
+
+    .hook-label {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #FF7C5A;
+      font-weight: 800;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .main-message {
+      font-size: 58px;
+      font-weight: 900;
+      line-height: 1.15;
+      color: #F2F6FB;
+      margin-bottom: 20px;
+    }
+
+    .main-message .highlight {
+      background: linear-gradient(90deg, #FF9160 0%, #FF5FA2 25%, #A96BFF 50%, #4FC9F5 75%, #6FE3C4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline;
+    }
+
+    .subtext {
+      font-size: 22px;
+      color: #A9BCD2;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+    /* ===== MIDDLE — CURIOSIDADE ===== */
+    .middle {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 28px;
+    }
+
+    .curiosity-box {
+      background: linear-gradient(135deg, rgba(255, 145, 96, 0.15), rgba(255, 95, 162, 0.1));
+      border: 2px solid rgba(255, 145, 96, 0.4);
+      border-radius: 18px;
+      padding: 28px;
+      backdrop-filter: blur(10px);
+    }
+
+    .curiosity-box h2 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #F2F6FB;
+      margin-bottom: 14px;
+      line-height: 1.2;
+    }
+
+    .curiosity-box p {
+      font-size: 18px;
+      color: #FFB3A0;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    /* ===== VALUE PILLS ===== */
+    .value-pills {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .pill {
+      background: rgba(79, 201, 245, 0.1);
+      border: 1px solid rgba(79, 201, 245, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .pill-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .pill-text {
+      font-size: 13px;
+      color: #A9BCD2;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    /* ===== CTA SECTION ===== */
+    .cta-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .cta-button {
+      background: linear-gradient(135deg, #FF9160, #FF5FA2);
+      color: #050D18;
+      border: none;
+      padding: 22px;
+      border-radius: 16px;
+      font-size: 22px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 12px 40px rgba(255, 145, 96, 0.3);
+      text-align: center;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 56px rgba(255, 145, 96, 0.4);
+    }
+
+    .footer-info {
+      font-size: 12px;
+      color: #7a8a9e;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .footer-info strong {
+      color: #6FE3C4;
+    }
+  </style>
+</head>
+<body>
+
+<div class="story">
+  <div class="accent"></div>
+
+  <div class="content">
+
+    <!-- HOOK — GERA CURIOSIDADE IMEDIATA -->
+    <div class="hook">
+      <span class="hook-label">PRISMA · Está no ar</span>
+      <h1 class="main-message">
+        Seu rosto.<br><span class="highlight">Doze vidas diferentes.</span>
+      </h1>
+      <p class="subtext">O fotógrafo particular que nunca dorme, nunca atrasa e nunca cobra hora extra.</p>
+    </div>
+
+    <!-- MIDDLE — CRIA URGÊNCIA/DESEJO -->
+    <div class="middle">
+      <div class="curiosity-box">
+        <h2>Terno às 9h.<br>Praia às 15h.<br>Mesma pessoa, zero avião.</h2>
+        <p>Você escreve a cena. A IA fotografa com o seu rosto de verdade, não um clone genérico.</p>
+      </div>
+
+      <div class="value-pills">
+        <div class="pill">
+          <div class="pill-icon">⏱️</div>
+          <div class="pill-text">4 fotos em minutos</div>
+        </div>
+        <div class="pill">
+          <div class="pill-icon">🎯</div>
+          <div class="pill-text">110% fidelidade facial</div>
+        </div>
+        <div class="pill">
+          <div class="pill-icon">🔒</div>
+          <div class="pill-text">Suas fotos nunca são publicadas</div>
+        </div>
+        <div class="pill">
+          <div class="pill-icon">🎬</div>
+          <div class="pill-text">12 ocasiões disponíveis</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section">
+      <button class="cta-button">Quero ver meu retrato</button>
+      <div class="footer-info">
+        A partir de R$39. Sem agenda, sem espera.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

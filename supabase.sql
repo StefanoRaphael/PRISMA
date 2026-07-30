@@ -140,6 +140,66 @@ create trigger ao_criar_usuario
   for each row execute function public.criar_perfil();
 
 -- =====================================================================
+-- GATILHO: dispara o e-mail de boas-vindas + protocolo no cadastro
+--
+-- A UI de Database Webhooks do Supabase depende do schema interno
+-- supabase_functions, que não existe neste projeto (erro 3F000 ao tentar
+-- criar um hook pela tela). Em vez de reconstituir de memória a migração
+-- interna do Supabase, o gatilho chama pg_net diretamente — mesma
+-- extensão que a feature de Webhooks usaria por baixo dos panos, já
+-- confirmada ativa neste projeto (Database → Extensions → pg_net).
+--
+-- O corpo da chamada replica exatamente o formato que um Database Webhook
+-- mandaria ({ type, table, schema, record }), então api/send-welcome-email.js
+-- não precisa saber a diferença.
+--
+-- O HEADER abaixo tem que bater com WEBHOOK_SECRET (ou
+-- WELCOME_WEBHOOK_SECRET) no Vercel. O endpoint aceita as duas variáveis.
+--
+-- Duas armadilhas que já custaram tempo aqui, não desfazer:
+--
+-- 1. search_path inclui extensions e net. O pg_net deste projeto está
+--    instalado no schema "extensions", não em "pg_net" nem em "net", então
+--    qualificar a chamada (pg_net.http_post / extensions.pg_net.http_post)
+--    dá erro 3F000 ou 0A000. Chamando http_post sem qualificar, o
+--    search_path resolve em qualquer um dos casos; schema inexistente no
+--    search_path é ignorado em silêncio pelo Postgres, então cobrir os três
+--    é seguro.
+--
+-- 2. A URL usa www. O apex prismaretrato.com.br responde 308 redirecionando
+--    pro www, e o pg_net NÃO segue redirect — o POST morre no 308 e o
+--    e-mail nunca sai, sem erro nenhum no banco.
+-- =====================================================================
+create or replace function public.notificar_boas_vindas()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, extensions, net
+as $$
+begin
+  perform http_post(
+    url := 'https://www.prismaretrato.com.br/api/send-welcome-email',
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'x-prisma-webhook-secret', 'prisma_webhook_secret_2026'
+    ),
+    body := jsonb_build_object(
+      'type', 'INSERT',
+      'table', 'perfis',
+      'schema', 'public',
+      'record', to_jsonb(new)
+    )
+  );
+  return new;
+end;
+$$;
+
+drop trigger if exists ao_criar_perfil_notificar on public.perfis;
+create trigger ao_criar_perfil_notificar
+  after insert on public.perfis
+  for each row execute function public.notificar_boas_vindas();
+
+-- =====================================================================
 -- GATILHO: mantém atualizado_em em dia
 -- =====================================================================
 create or replace function public.tocar_atualizado_em()
