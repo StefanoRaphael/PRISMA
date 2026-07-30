@@ -59,7 +59,9 @@ function getWelcomeEmailTemplate(userId, email) {
           </tr>
         </table>
         <div class="header">
-          <h1>PRISMA</h1>
+          <h1 style="font-size: 28px; letter-spacing: 0.25em; font-weight: 700; margin: 0; color: #F2F6FB;">
+            <span style="color: #FF9160;">P</span><span style="color: #FF5FA2;">R</span><span style="color: #A96BFF;">I</span><span style="color: #4FC9F5;">S</span><span style="color: #6FE3C4;">M</span><span style="color: #FF9160;">A</span>
+          </h1>
         </div>
         <div class="content">
           <h2>Bem-vindo ao PRISMA</h2>
