@@ -14,7 +14,7 @@ const protocoloHtmlPath = path.join(__dirname, '..', 'protocolo-fotos-prisma.htm
 const protocoloHtml = readFileSync(protocoloHtmlPath, 'utf-8');
 
 const ASSUNTO = 'PRISMA — Bem-vindo! Protocolo de fotos anexado';
-const REMETENTE = 'PRISMA <onboarding@resend.dev>';  // teste até domínio verificado
+const REMETENTE = 'PRISMA <contato@prismaretrato.com.br>';  // domínio verificado no Resend em 30/07/2026
 
 const LISTA_REAL = [
   'vidjow@gmail.com',

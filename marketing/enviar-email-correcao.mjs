@@ -31,8 +31,9 @@ if (!CHAVE) {
 
 const ASSUNTO = 'Prisma Correção';
 
-// Trocar para um endereço do domínio verificado assim que --checar apontar um.
-const REMETENTE = process.env.PRISMA_REMETENTE || 'PRISMA <onboarding@resend.dev>';
+// prismaretrato.com.br verificado no Resend em 30/07/2026. PRISMA_REMETENTE
+// ainda pode sobrescrever, mas o padrão já é o domínio próprio.
+const REMETENTE = process.env.PRISMA_REMETENTE || 'PRISMA <contato@prismaretrato.com.br>';
 
 const DESTINATARIOS = [
   'guilhermeamarogw@gmail.com',
