@@ -55,7 +55,11 @@ function getWelcomeEmailTemplate(userId, email) {
           </tr>
         </table>
         <div class="header">
-          <h1>PRISMA</h1>
+          <svg width="200" height="50" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 16px;">
+            <text x="10" y="35" font-size="32" font-weight="700" letter-spacing="4" font-family="Arial, sans-serif">
+              <tspan fill="#FF9160">P</tspan><tspan fill="#FF5FA2">R</tspan><tspan fill="#A96BFF">I</tspan><tspan fill="#4FC9F5">S</tspan><tspan fill="#6FE3C4">M</tspan><tspan fill="#FF9160">A</tspan>
+            </text>
+          </svg>
         </div>
         <div class="content">
           <h2>Bem-vindo ao PRISMA</h2>
