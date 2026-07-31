@@ -10,7 +10,11 @@
  *   1. base da ocasião (fixa, escrita pelo estúdio, invisível ao cliente)
  *   2. arquétipo (automático, vindo do diagnóstico)
  *   3. o que a cliente escreveu (manda em cima das outras duas)
+ *
+ * Redundância: se Gemini falha, tenta Groq automaticamente (transparente ao cliente).
  */
+
+import { gerarPromptComGroq } from './prompt-groq.js';
 
 const MODELO = 'gemini-2.5-flash';
 
@@ -140,13 +144,21 @@ export default async function handler(req, res) {
       variantes: Array.isArray(d.variantes) ? d.variantes : []
     });
   } catch (e) {
-    console.error('[prompt]', e.message || e);
-    console.error('[prompt-stack]', e.stack);
+    console.error('[prompt] Gemini falhou:', e.message || e);
 
-    // Falha real: não fazer fallback silencioso que degrada a qualidade sem avisar.
-    // O cliente merece saber que o motor não respondeu e tentar de novo.
-    return res.status(503).json({
-      erro: 'O assistente de direção não respondeu. Tente novamente em alguns segundos.'
-    });
+    // Fallback automático: tenta Groq antes de desistir (transparente ao cliente)
+    try {
+      console.log('[prompt] Tentando Groq como fallback...');
+      const d = await gerarPromptComGroq(texto, ocasiao, ocasiaoBase, arquetipo, arquetipoDir);
+      console.log('[prompt] Groq respondeu com sucesso');
+      return res.status(200).json(d);
+    } catch (eGroq) {
+      console.error('[prompt] Groq também falhou:', eGroq.message || eGroq);
+
+      // Ambos falharam: erro explícito ao cliente
+      return res.status(503).json({
+        erro: 'O assistente de direção não respondeu. Tente novamente em alguns segundos.'
+      });
+    }
   }
 }
