@@ -143,17 +143,10 @@ export default async function handler(req, res) {
     console.error('[prompt]', e.message || e);
     console.error('[prompt-stack]', e.stack);
 
-    // Fallback: se Gemini falhar, monta um prompt básico.
-    // Sem variantes raciocinadas aqui: lib/gemini.js cai na lista fixa própria
-    // dele quando recebe array vazio, então a geração não trava por isso.
-    const promptBasico = `${ocasiaoBase || 'Retrato profissional'}. Cliente pediu: ${texto.trim()}. Aplicar direção do perfil: ${arquetipoDir || 'postura natural, luz equilibrada'}. 9:16 aspect ratio, respiro nas bordas.`;
-
-    return res.status(200).json({
-      prompt: promptBasico,
-      leitura: `Você pediu: <b>${texto.trim()}</b>. Vamos gerar nesse estilo.`,
-      completado: 'Ocasião base, perfil visual e enquadramento preenchidos automaticamente.',
-      conflito: '',
-      variantes: []
+    // Falha real: não fazer fallback silencioso que degrada a qualidade sem avisar.
+    // O cliente merece saber que o motor não respondeu e tentar de novo.
+    return res.status(503).json({
+      erro: 'O assistente de direção não respondeu. Tente novamente em alguns segundos.'
     });
   }
 }
